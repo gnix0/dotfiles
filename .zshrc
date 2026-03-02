@@ -70,7 +70,7 @@ ZSH_THEME="robbyrussell"
 # Custom plugins may be added to $ZSH_CUSTOM/plugins/
 # Example format: plugins=(rails git textmate ruby lighthouse)
 # Add wisely, as too many plugins slow down shell startup.
-plugins=(git)
+plugins=(git asdf)
 
 source $ZSH/oh-my-zsh.sh
 
@@ -102,5 +102,18 @@ source $ZSH/oh-my-zsh.sh
 # Example aliases
 # alias zshconfig="mate ~/.zshrc"
 # alias ohmyzsh="mate ~/.oh-my-zsh"
+alias vi="nvim"
+alias dev='tmux-sessionizer'
+
 export PATH="$PATH:$HOME/go/bin"
 export PATH="$PATH:/home/gustavo/.dotnet/tools"
+
+eval $(thefuck --alias)
+
+# Asdf VM (Arch Linux AUR path)
+if [ -f /opt/asdf-vm/asdf.sh ]; then
+  . /opt/asdf-vm/asdf.sh
+fi
+
+autoload -U compinit && compinit
+export PATH="$HOME/.local/bin:$PATH"
