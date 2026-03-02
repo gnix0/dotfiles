@@ -1,43 +1,40 @@
 return {
-  "stevearc/conform.nvim",
-  event = { "BufWritePre" },
-  cmd = { "ConformInfo" },
-  opts = {
-    formatters_by_ft = {
-      -- C# / .NET
-      cs = { "csharpier" },
-      -- Go
-      go = { "goimports", "gofumpt" },
-      -- Rust
-      rust = { "rustfmt", lsp_format = "fallback" },
-      -- C/C++
-      c = { "clang-format" },
-      cpp = { "clang-format" },
-      -- Java
-      java = { "google-java-format" },
-      -- Python
-      python = { "ruff_format" },
-      -- Web & Configs
-      javascript = { "prettierd", "prettier", stop_after_first = true },
-      typescript = { "prettierd", "prettier", stop_after_first = true },
-      javascriptreact = { "prettierd", "prettier", stop_after_first = true },
-      typescriptreact = { "prettierd", "prettier", stop_after_first = true },
-      css = { "prettierd", "prettier", stop_after_first = true },
-      html = { "prettierd", "prettier", stop_after_first = true },
-      json = { "prettierd", "prettier", stop_after_first = true },
-      yaml = { "prettierd", "prettier", stop_after_first = true },
-      markdown = { "prettierd", "prettier", stop_after_first = true },
-      toml = { "taplo" },
-      -- Lua
-      lua = { "stylua" },
-      -- Shell Script
-      sh = { "shfmt" },
-      -- Fallback
-      ["_"] = { "trim_whitespace" },
+    "stevearc/conform.nvim",
+    event = { "BufWritePre" },
+    cmd = { "ConformInfo" },
+    opts = {
+        formatters_by_ft = {
+            cs = { "csharpier" },
+            go = { "goimports", "gofumpt" },
+            rust = { "rustfmt", lsp_format = "fallback" },
+            c = { "clang-format" },
+            cpp = { "clang-format" },
+            java = { "google-java-format" },
+            ruby = { "rubocop" },
+            python = { "ruff_format" },
+            javascript = { "prettierd", "prettier", stop_after_first = true },
+            typescript = { "prettierd", "prettier", stop_after_first = true },
+            javascriptreact = { "prettierd", "prettier", stop_after_first = true },
+            typescriptreact = { "prettierd", "prettier", stop_after_first = true },
+            css = { "prettierd", "prettier", stop_after_first = true },
+            html = { "prettierd", "prettier", stop_after_first = true },
+            json = { "prettierd", "prettier", stop_after_first = true },
+            yaml = { "prettierd", "prettier", stop_after_first = true },
+            markdown = { "prettierd", "prettier", stop_after_first = true },
+            toml = { "taplo" },
+            lua = { "stylua" },
+            sh = { "shfmt" },
+            ["_"] = { "trim_whitespace" },
+        },
+        notify_on_error = true,
+        notify_no_formatters = true,
+        formatters = {
+            prettier = { prepend_args = { "--tab-width", "4", "--use-tabs", "false" } },
+            prettierd = { prepend_args = { "--tab-width", "4", "--use-tabs", "false" } },
+            ["clang-format"] = { prepend_args = { "-style={BasedOnStyle: LLVM, IndentWidth: 4}" } },
+            stylua = { prepend_args = { "--indent-type", "Spaces", "--indent-width", "4" } },
+            shfmt = { prepend_args = { "-i", "4", "-s" } },
+            ["google-java-format"] = { prepend_args = { "--aosp" } },
+        },
     },
-
-    -- NOTIFICATIONS
-    notify_on_error = true,
-    notify_no_formatters = true,
-  },
 }

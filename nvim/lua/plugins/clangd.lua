@@ -1,49 +1,49 @@
 return {
-  {
-    "neovim/nvim-lspconfig",
-    opts = {
-      servers = {
-        clangd = {
-          cmd = {
-            "clangd",
-            "--background-index",
-            "--clang-tidy",
-            "--header-insertion=iwyu",
-            "--completion-style=detailed",
-            "--function-arg-placeholders",
-            "--fallback-style=llvm",
-            "-j=4",
-          },
-          capabilities = {
-            offsetEncoding = { "utf-8" },
-          },
-          init_options = {
-            usePlaceholders = true,
-            completeUnimported = true,
-            clangdFileStatus = true,
-          },
+    {
+        "neovim/nvim-lspconfig",
+        opts = {
+            servers = {
+                clangd = {
+                    cmd = {
+                        "clangd",
+                        "--background-index",
+                        "--clang-tidy",
+                        "--header-insertion=iwyu",
+                        "--completion-style=detailed",
+                        "--function-arg-placeholders",
+                        "--fallback-style={BasedOnStyle: LLVM, IndentWidth: 4}",
+                        "-j=4",
+                    },
+                    capabilities = {
+                        offsetEncoding = { "utf-8" },
+                    },
+                    init_options = {
+                        usePlaceholders = true,
+                        completeUnimported = true,
+                        clangdFileStatus = true,
+                    },
+                },
+            },
         },
-      },
     },
-  },
-  {
-    "p00f/clangd_extensions.nvim",
-    lazy = true,
-    config = function() end,
-    opts = {
-      inlay_hints = {
-        inline = false,
-      },
-      ast = {
-        role_icons = {
-          type = "",
-          declaration = "",
-          expression = "",
-          specifier = "",
-          statement = "",
-          ["template argument"] = "",
+    {
+        "p00f/clangd_extensions.nvim",
+        lazy = true,
+        config = function() end,
+        opts = {
+            inlay_hints = {
+                inline = false,
+            },
+            ast = {
+                role_icons = {
+                    type = "",
+                    declaration = "",
+                    expression = "",
+                    specifier = "",
+                    statement = "",
+                    ["template argument"] = "",
+                },
+            },
         },
-      },
     },
-  },
 }

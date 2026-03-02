@@ -9,9 +9,6 @@ return {
         italic = false,
       },
       transparent = true,
-      -- colors = {
-      --   background = "#000000",
-      -- },
     },
     config = function(_, opts)
       require("ashen").setup(opts)
