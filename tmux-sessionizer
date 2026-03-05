@@ -45,7 +45,7 @@ create_custom_session() {
     local s_name="$1"
     local s_dir="$2"
 
-    tmux new-session -ds "$s_name" -c "$s_dir" -n dev "vi ."
+    tmux new-session -ds "$s_name" -c "$s_dir" -n dev "vim ."
     tmux new-window -t "$s_name:2" -n agent -c "$s_dir" "claude"
     tmux new-window -t "$s_name:3" -n chores -c "$s_dir"
     tmux split-window -h -t "$s_name:3" -c "$s_dir"

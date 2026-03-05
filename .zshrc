@@ -102,7 +102,7 @@ source $ZSH/oh-my-zsh.sh
 # Example aliases
 # alias zshconfig="mate ~/.zshrc"
 # alias ohmyzsh="mate ~/.oh-my-zsh"
-alias vi="nvim"
+alias vim="nvim"
 alias dev='tmux-sessionizer'
 
 export PATH="$PATH:$HOME/go/bin"
