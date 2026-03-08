@@ -11,7 +11,10 @@ return {
                         "--header-insertion=iwyu",
                         "--completion-style=detailed",
                         "--function-arg-placeholders",
-                        "--fallback-style={BasedOnStyle: LLVM, IndentWidth: 8, UseTab: Always, TabWidth: 8, BreakBeforeBraces: Linux, AllowShortIfStatementsOnASingleLine: false, IndentCaseLabels: false, ColumnLimit: 80}",
+                        -- Fallback only when no .clang-format is found.
+                        -- ~/.clang-format covers all projects under home dir,
+                        -- so this only fires for files outside ~.
+                        "--fallback-style=Linux",
                         "-j=4",
                     },
                     capabilities = {
