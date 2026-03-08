@@ -30,7 +30,11 @@ return {
         formatters = {
             prettier = { prepend_args = { "--tab-width", "4", "--use-tabs", "false" } },
             prettierd = { prepend_args = { "--tab-width", "4", "--use-tabs", "false" } },
-            ["clang-format"] = { prepend_args = { "-style={BasedOnStyle: LLVM, IndentWidth: 4}" } },
+            ["clang-format"] = {
+                prepend_args = {
+                    "-style={BasedOnStyle: Linux, ColumnLimit: 80}",
+                },
+            },
             stylua = { prepend_args = { "--indent-type", "Spaces", "--indent-width", "4" } },
             shfmt = { prepend_args = { "-i", "4", "-s" } },
             ["google-java-format"] = { prepend_args = { "--aosp" } },

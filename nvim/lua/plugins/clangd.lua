@@ -11,7 +11,7 @@ return {
                         "--header-insertion=iwyu",
                         "--completion-style=detailed",
                         "--function-arg-placeholders",
-                        "--fallback-style={BasedOnStyle: LLVM, IndentWidth: 4}",
+                        "--fallback-style={BasedOnStyle: LLVM, IndentWidth: 8, UseTab: Always, TabWidth: 8, BreakBeforeBraces: Linux, AllowShortIfStatementsOnASingleLine: false, IndentCaseLabels: false, ColumnLimit: 80}",
                         "-j=4",
                     },
                     capabilities = {
