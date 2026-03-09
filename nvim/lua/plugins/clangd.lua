@@ -14,7 +14,7 @@ return {
                         -- Fallback only when no .clang-format is found.
                         -- ~/.clang-format covers all projects under home dir,
                         -- so this only fires for files outside ~.
-                        "--fallback-style=Linux",
+                        "--fallback-style=none",
                         "-j=4",
                     },
                     capabilities = {

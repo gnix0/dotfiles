@@ -28,8 +28,8 @@ return {
         notify_on_error = true,
         notify_no_formatters = true,
         formatters = {
-            prettier = { prepend_args = { "--tab-width", "4", "--use-tabs", "false" } },
-            prettierd = { prepend_args = { "--tab-width", "4", "--use-tabs", "false" } },
+            prettier = { prepend_args = { "--tab-width", "4" } },
+            prettierd = { prepend_args = { "--tab-width", "4" } },
             ["clang-format"] = {
                 -- Use -style=file so clang-format searches for .clang-format
                 -- going up the directory tree. For the Linux kernel source,
@@ -37,7 +37,7 @@ return {
                 -- For any other project under ~/, it finds ~/.clang-format
                 -- (which mirrors the kernel's exact style). The fallback
                 -- applies only for files outside ~ with no .clang-format.
-                prepend_args = { "--style=file", "--fallback-style=Linux" },
+                prepend_args = { "--style=file", "--fallback-style=none" },
             },
             stylua = { prepend_args = { "--indent-type", "Spaces", "--indent-width", "4" } },
             shfmt = { prepend_args = { "-i", "4", "-s" } },
