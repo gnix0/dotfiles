@@ -45,13 +45,10 @@ return {
       extendedClientCapabilities.resolveAdditionalTextEditsSupport = true
 
       local function start_jdtls()
-        local root_dir = require("jdtls.setup").find_root({ ".git", "mvnw", "gradlew", "pom.xml", "build.gradle" })
+        local root_dir = require("jdtls.setup").find_root({ ".git", "mvnw", "pom.xml" })
         if not root_dir then
           return
         end
-
-        local workspace_dir = get_workspace()
-        local system_os = (vim.fn.has("mac") == 1 and "mac") or (vim.fn.has("win32") == 1 and "win") or "linux"
 
         if vim.fn.filereadable(launcher_jar) == 0 then
           return
@@ -63,21 +60,14 @@ return {
             "-Declipse.application=org.eclipse.jdt.ls.core.id1",
             "-Dosgi.bundles.defaultStartLevel=4",
             "-Declipse.product=org.eclipse.jdt.ls.core.product",
-            "-Dlog.protocol=true",
-            "-Dlog.level=ALL",
             "-Xmx4g",
             "--add-modules=ALL-SYSTEM",
-            "--add-opens",
-            "java.base/java.util=ALL-UNNAMED",
-            "--add-opens",
-            "java.base/java.lang=ALL-UNNAMED",
+            "--add-opens", "java.base/java.util=ALL-UNNAMED",
+            "--add-opens", "java.base/java.lang=ALL-UNNAMED",
             "-javaagent:" .. lombok_path,
-            "-jar",
-            launcher_jar,
-            "-configuration",
-            jdtls_path .. "/config_" .. system_os,
-            "-data",
-            workspace_dir,
+            "-jar", launcher_jar,
+            "-configuration", jdtls_path .. "/config_linux",
+            "-data", get_workspace(),
           },
           root_dir = root_dir,
           settings = {
@@ -87,11 +77,9 @@ return {
               maven = { downloadSources = true },
               referencesCodeLens = { enabled = true },
               references = { includeDecompiledSources = true },
-              format = {
-                enabled = false,
-              },
+              format = { enabled = false },
               configuration = {
-                updateBuildConfiguration = "interactive",
+                updateBuildConfiguration = "automatic",
                 runtimes = {
                   { name = "JavaSE-8", path = "/usr/lib/jvm/java-8-openjdk" },
                   { name = "JavaSE-11", path = "/usr/lib/jvm/java-11-openjdk" },
@@ -99,6 +87,9 @@ return {
                   { name = "JavaSE-21", path = "/usr/lib/jvm/java-21-openjdk" },
                   { name = "JavaSE-25", path = "/usr/lib/jvm/java-25-openjdk" },
                 },
+              },
+              import = {
+                maven = { enabled = true },
               },
             },
           },
@@ -110,20 +101,34 @@ return {
         }
 
         config.on_attach = function(client, bufnr)
-          if jdtls.setup_dap then
-            jdtls.setup_dap({ hotcodereplace = "auto", config_overrides = {} })
-            require("jdtls.dap").setup_dap_main_class_configs()
-          end
-          local opts = { buffer = bufnr, silent = true, noremap = true }
           vim.keymap.set("n", "<leader>co", jdtls.organize_imports, { desc = "Organize Imports", buffer = bufnr })
           vim.keymap.set("n", "<leader>ct", jdtls.test_class, { desc = "Test Class", buffer = bufnr })
           vim.keymap.set("n", "<leader>tm", jdtls.test_nearest_method, { desc = "Test Method", buffer = bufnr })
-          vim.notify("JDTLS conectado!", vim.log.levels.INFO)
+        end
+
+        -- Only set up DAP if java-debug-adapter is actually installed
+        local debug_jar = vim.fn.glob(mason_path .. "/packages/java-debug-adapter/extension/server/com.microsoft.java.debug.plugin-*.jar", true)
+        if debug_jar ~= "" then
+          config.handlers = {
+            ["language/status"] = function(_, result)
+              if result and result.type == "ServiceReady" then
+                pcall(jdtls.setup_dap, { hotcodereplace = "auto", config_overrides = {} })
+                pcall(require("jdtls.dap").setup_dap_main_class_configs)
+              end
+            end,
+          }
         end
 
         jdtls.start_or_attach(config)
       end
 
+      -- Attach to ALL java buffers, not just the first one
+      vim.api.nvim_create_autocmd("FileType", {
+        pattern = "java",
+        callback = start_jdtls,
+      })
+
+      -- Also start for the current buffer (plugin just loaded)
       start_jdtls()
     end,
   },

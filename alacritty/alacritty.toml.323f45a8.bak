@@ -8,8 +8,3 @@ size = 16
 [window]
 opacity = 0.85
 dynamic_title = true
-
-[[keyboard.bindings]]
-key = "Return"
-mods = "Shift"
-chars = "\u001B\r"

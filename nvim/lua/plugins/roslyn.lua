@@ -11,7 +11,7 @@ return {
 
   {
     "seblyng/roslyn.nvim",
-    ft = "cs",
+    ft = { "cs", "razor" },
     opts = {
       filewatching = "roslyn",
       broad_search = true,
