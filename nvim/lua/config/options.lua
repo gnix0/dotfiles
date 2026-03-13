@@ -46,7 +46,7 @@ vim.opt.incsearch = true
 vim.opt.signcolumn = "yes"
 
 -- Faster updates for LSP, CursorHold, etc.
-vim.opt.updatetime = 50
+vim.opt.updatetime = 200
 
 -- No line wrapping
 vim.opt.wrap = false

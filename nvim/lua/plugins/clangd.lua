@@ -11,9 +11,9 @@ return {
                         "--header-insertion=iwyu",
                         "--completion-style=detailed",
                         "--function-arg-placeholders",
-                        -- Fallback only when no .clang-format is found.
-                        -- ~/.clang-format covers all projects under home dir,
-                        -- so this only fires for files outside ~.
+                        -- Save formatting uses conform with ~/.clang-format.
+                        -- Keep clangd from inventing a fallback style if LSP
+                        -- formatting is invoked directly.
                         "--fallback-style=none",
                         "-j=4",
                     },

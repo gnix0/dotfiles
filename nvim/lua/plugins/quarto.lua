@@ -69,7 +69,11 @@ return {
       vim.api.nvim_create_autocmd({ "FileType", "BufEnter" }, {
         group = grp,
         pattern = "quarto",
-        callback = function()
+        callback = function(event)
+          if vim.b[event.buf].otter_activated then
+            return
+          end
+          vim.b[event.buf].otter_activated = true
           require("otter").activate({ "python", "r", "sql" })
         end,
       })

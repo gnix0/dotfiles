@@ -3,6 +3,9 @@ return {
         "neovim/nvim-lspconfig",
         opts = {
             servers = {
+                rubocop = {
+                    enabled = false,
+                },
                 ruby_lsp = {
                     capabilities = require("blink.cmp").get_lsp_capabilities(),
                 },
