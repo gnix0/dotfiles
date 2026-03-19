@@ -106,7 +106,6 @@ return {
           vim.keymap.set("n", "<leader>tm", jdtls.test_nearest_method, { desc = "Test Method", buffer = bufnr })
         end
 
-        -- Only set up DAP if java-debug-adapter is actually installed
         local debug_jar = vim.fn.glob(mason_path .. "/packages/java-debug-adapter/extension/server/com.microsoft.java.debug.plugin-*.jar", true)
         if debug_jar ~= "" then
           config.handlers = {
@@ -122,13 +121,11 @@ return {
         jdtls.start_or_attach(config)
       end
 
-      -- Attach to ALL java buffers, not just the first one
       vim.api.nvim_create_autocmd("FileType", {
         pattern = "java",
         callback = start_jdtls,
       })
 
-      -- Also start for the current buffer (plugin just loaded)
       start_jdtls()
     end,
   },

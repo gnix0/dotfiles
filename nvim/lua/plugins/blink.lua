@@ -1,28 +1,31 @@
 return {
   "saghen/blink.cmp",
   version = "v0.*",
-  opts = function(_, opts)
-    opts.cmdline = nil
+  event = "InsertEnter",
+  dependencies = {
+    "rafamadriz/friendly-snippets",
+  },
+  opts = {
+    cmdline = { enabled = false },
 
-    opts.keymap = {
+    keymap = {
       preset = "none",
-      ["<CR>"] = { "accept", "fallback" },
-      ["<Esc>"] = { "hide", "fallback" },
-      ["<Tab>"] = { "select_next", "snippet_forward", "fallback" },
-      ["<S-Tab>"] = { "select_prev", "snippet_backward", "fallback" },
-      ["<C-Space>"] = { "show", "show_documentation", "hide_documentation" },
+      ["<C-n>"] = { "select_next", "fallback" },
+      ["<C-p>"] = { "select_prev", "fallback" },
+      ["<C-y>"] = { "accept", "fallback" },
       ["<C-e>"] = { "hide", "fallback" },
-    }
+      ["<C-space>"] = { "show", "show_documentation", "hide_documentation" },
+      ["<C-f>"] = { "scroll_documentation_down" },
+      ["<C-b>"] = { "scroll_documentation_up" },
+    },
 
-    opts.sources = {
+    sources = {
       default = { "lsp", "path", "snippets", "buffer" },
-    }
+    },
 
-    opts.completion = {
+    completion = {
       documentation = { auto_show = true, window = { border = "rounded" } },
       menu = { border = "rounded" },
-    }
-
-    return opts
-  end,
+    },
+  },
 }

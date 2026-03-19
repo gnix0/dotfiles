@@ -1,48 +1,63 @@
--- Keymaps are automatically loaded on the VeryLazy event
--- Default keymaps that are always set: https://github.com/LazyVim/LazyVim/blob/main/lua/lazyvim/config/keymaps.lua
--- Add any additional keymaps here
-
--- Disable arrow keys in normal mode
 vim.keymap.set("n", "<Up>", "<Nop>", { noremap = true, silent = true })
 vim.keymap.set("n", "<Down>", "<Nop>", { noremap = true, silent = true })
 vim.keymap.set("n", "<Left>", "<Nop>", { noremap = true, silent = true })
 vim.keymap.set("n", "<Right>", "<Nop>", { noremap = true, silent = true })
-
--- Disable arrow keys in insert mode
 vim.keymap.set("i", "<Up>", "<Nop>", { noremap = true, silent = true })
 vim.keymap.set("i", "<Down>", "<Nop>", { noremap = true, silent = true })
 vim.keymap.set("i", "<Left>", "<Nop>", { noremap = true, silent = true })
 vim.keymap.set("i", "<Right>", "<Nop>", { noremap = true, silent = true })
-
--- Disable arrow keys in visual mode
 vim.keymap.set("v", "<Up>", "<Nop>", { noremap = true, silent = true })
 vim.keymap.set("v", "<Down>", "<Nop>", { noremap = true, silent = true })
 vim.keymap.set("v", "<Left>", "<Nop>", { noremap = true, silent = true })
 vim.keymap.set("v", "<Right>", "<Nop>", { noremap = true, silent = true })
 
--- Center current line when scolling with Ctrl + D or Ctrl + U
 vim.keymap.set("n", "<C-d>", "<C-d>zz", { noremap = true, silent = true })
 vim.keymap.set("n", "<C-u>", "<C-u>zz", { noremap = true, silent = true })
-
--- Center the cursor when navigating search results
 vim.keymap.set("n", "n", "nzzzv", { noremap = true, silent = true })
 vim.keymap.set("n", "N", "Nzzzv", { noremap = true, silent = true })
 
--- Split window management
-vim.keymap.set("n", "<leader>sv", "<C-w>v") -- split window vertically
-vim.keymap.set("n", "<leader>sh", "<C-w>s") -- split window horizontally
-vim.keymap.set("n", "<leader>se", "<C-w>=") -- make split windows equal width
-vim.keymap.set("n", "<leader>sx", ":close<CR>") -- close split window
-vim.keymap.set("n", "<leader>sj", "<C-w>-") -- make split window height shorter
-vim.keymap.set("n", "<leader>sk", "<C-w>+") -- make split windows height taller
-vim.keymap.set("n", "<leader>s>", "<C-w>>10") -- make split windows width bigger
-vim.keymap.set("n", "<leader>s<", "<C-w><10") -- make split windows width smaller
+vim.keymap.set("n", "<C-h>", "<C-w>h", { desc = "Go to Left Window", silent = true })
+vim.keymap.set("n", "<C-j>", "<C-w>j", { desc = "Go to Lower Window", silent = true })
+vim.keymap.set("n", "<C-k>", "<C-w>k", { desc = "Go to Upper Window", silent = true })
+vim.keymap.set("n", "<C-l>", "<C-w>l", { desc = "Go to Right Window", silent = true })
 
--- Restart Java Workspace
+vim.keymap.set("n", "<A-j>", "<cmd>m .+1<cr>==", { desc = "Move Down", silent = true })
+vim.keymap.set("n", "<A-k>", "<cmd>m .-2<cr>==", { desc = "Move Up", silent = true })
+vim.keymap.set("i", "<A-j>", "<esc><cmd>m .+1<cr>==gi", { desc = "Move Down", silent = true })
+vim.keymap.set("i", "<A-k>", "<esc><cmd>m .-2<cr>==gi", { desc = "Move Up", silent = true })
+vim.keymap.set("v", "<A-j>", ":m '>+1<cr>gv=gv", { desc = "Move Down", silent = true })
+vim.keymap.set("v", "<A-k>", ":m '<-2<cr>gv=gv", { desc = "Move Up", silent = true })
+
+vim.keymap.set("n", "<S-h>", "<cmd>bprevious<cr>", { desc = "Prev Buffer", silent = true })
+vim.keymap.set("n", "<S-l>", "<cmd>bnext<cr>", { desc = "Next Buffer", silent = true })
+vim.keymap.set("n", "<leader>bd", "<cmd>bdelete<cr>", { desc = "Delete Buffer", silent = true })
+
+vim.keymap.set("v", "<", "<gv", { silent = true })
+vim.keymap.set("v", ">", ">gv", { silent = true })
+
+vim.keymap.set("n", "gl", vim.diagnostic.open_float, { desc = "Line Diagnostics", silent = true })
+vim.keymap.set("n", "[d", function() vim.diagnostic.jump({ count = -1 }) end, { desc = "Prev Diagnostic", silent = true })
+vim.keymap.set("n", "]d", function() vim.diagnostic.jump({ count = 1 }) end, { desc = "Next Diagnostic", silent = true })
+vim.keymap.set("n", "[e", function() vim.diagnostic.jump({ count = -1, severity = vim.diagnostic.severity.ERROR }) end, { desc = "Prev Error", silent = true })
+vim.keymap.set("n", "]e", function() vim.diagnostic.jump({ count = 1, severity = vim.diagnostic.severity.ERROR }) end, { desc = "Next Error", silent = true })
+vim.keymap.set("n", "[w", function() vim.diagnostic.jump({ count = -1, severity = vim.diagnostic.severity.WARN }) end, { desc = "Prev Warning", silent = true })
+vim.keymap.set("n", "]w", function() vim.diagnostic.jump({ count = 1, severity = vim.diagnostic.severity.WARN }) end, { desc = "Next Warning", silent = true })
+vim.keymap.set("n", "[q", "<cmd>cprev<cr>", { desc = "Prev Quickfix", silent = true })
+vim.keymap.set("n", "]q", "<cmd>cnext<cr>", { desc = "Next Quickfix", silent = true })
+
+vim.keymap.set("n", "<leader>sv", "<C-w>v", { desc = "Split Vertical" })
+vim.keymap.set("n", "<leader>sh", "<C-w>s", { desc = "Split Horizontal" })
+vim.keymap.set("n", "<leader>se", "<C-w>=", { desc = "Equalize Splits" })
+vim.keymap.set("n", "<leader>sx", "<cmd>close<cr>", { desc = "Close Split" })
+vim.keymap.set("n", "<leader>sj", "<C-w>-", { desc = "Decrease Height" })
+vim.keymap.set("n", "<leader>sk", "<C-w>+", { desc = "Increase Height" })
+vim.keymap.set("n", "<leader>s>", "<C-w>>10", { desc = "Increase Width" })
+vim.keymap.set("n", "<leader>s<", "<C-w><10", { desc = "Decrease Width" })
+
 vim.keymap.set("n", "<leader>rj", function()
   local ok, jdtls = pcall(require, "jdtls")
   if not ok then
-    vim.notify("JDTLS não disponível neste buffer", vim.log.levels.WARN)
+    vim.notify("JDTLS not available in this buffer", vim.log.levels.WARN)
     return
   end
 
@@ -51,34 +66,25 @@ vim.keymap.set("n", "<leader>rj", function()
   local workspace_dir = home .. "/jdtls-workspace/" .. project_name
 
   if vim.fn.isdirectory(workspace_dir) == 1 then
-    vim.notify("Removendo workspace JDTLS: " .. workspace_dir, vim.log.levels.WARN)
+    vim.notify("Removing JDTLS workspace: " .. workspace_dir, vim.log.levels.WARN)
     vim.fn.delete(workspace_dir, "rf")
   else
-    vim.notify("Workspace JDTLS não encontrado, pulando remoção", vim.log.levels.INFO)
+    vim.notify("JDTLS workspace not found, skipping removal", vim.log.levels.INFO)
   end
 
   vim.cmd("wall")
   vim.defer_fn(function()
-    pcall(function()
-      jdtls.update_project_config()
-    end)
+    pcall(function() jdtls.update_project_config() end)
     vim.cmd("JdtRestart")
-    vim.notify("JDTLS reiniciado com workspace limpo", vim.log.levels.INFO)
+    vim.notify("JDTLS restarted with clean workspace", vim.log.levels.INFO)
   end, 500)
-end, { noremap = true, silent = true, desc = "Hard reset JDTLS (workspace clean)" })
+end, { noremap = true, silent = true, desc = "Hard reset JDTLS" })
 
--- Restart LSPs
 vim.keymap.set("n", "<leader>rl", function()
   vim.cmd("LspRestart")
   vim.notify("Reloading LSPs...", vim.log.levels.INFO)
 end, { noremap = true, silent = true, desc = "Restart all LSP servers" })
 
--- Recent Projects
-vim.keymap.set("n", "<leader>fp", function()
-  require("telescope").extensions.projects.projects()
-end, { noremap = true, silent = true, desc = "Telescope: Projects" })
-
--- Toggle explorer
 local function toggle_netrw()
   for _, bufnr in ipairs(vim.api.nvim_list_bufs()) do
     if vim.api.nvim_buf_is_loaded(bufnr) then
@@ -88,8 +94,9 @@ local function toggle_netrw()
       end
     end
   end
-
   vim.cmd("Explore")
 end
 
-vim.keymap.set("n", "<leader>e", toggle_netrw, { silent = true })
+vim.keymap.set("n", "<leader>e", toggle_netrw, { silent = true, desc = "Toggle Explorer" })
+vim.keymap.set("n", "<leader>l", "<cmd>Lazy<cr>", { desc = "Lazy" })
+vim.keymap.set("n", "<leader>qq", "<cmd>qa<cr>", { desc = "Quit All" })

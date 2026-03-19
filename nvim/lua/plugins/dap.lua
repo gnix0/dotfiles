@@ -48,49 +48,11 @@ return {
 
     require("mason-nvim-dap").setup({
       automatic_installation = true,
-      ensure_installed = { "netcoredbg", "codelldb", "python", "delve" },
+      ensure_installed = { "codelldb", "delve" },
     })
 
-    -- Go
     require("dap-go").setup()
 
-    -- C# (.NET)
-    dap.adapters.coreclr = {
-      type = "executable",
-      command = vim.fn.stdpath("data") .. "/mason/bin/netcoredbg",
-      args = { "--interpreter=vscode" },
-    }
-    dap.configurations.cs = {
-      {
-        type = "coreclr",
-        name = "Launch - netcoredbg",
-        request = "launch",
-        program = function()
-          return vim.fn.input("Path to dll: ", vim.fn.getcwd() .. "/bin/Debug/", "file")
-        end,
-      },
-    }
-
-    -- Python
-    dap.adapters.python = {
-      type = "executable",
-      command = "/usr/bin/python3",
-      args = { "-m", "debugpy.adapter" },
-    }
-    dap.configurations.python = {
-      {
-        type = "python",
-        request = "launch",
-        name = "Launch file",
-        program = "${file}",
-        pythonPath = function()
-          local venv = vim.fn.getcwd() .. "/.venv/bin/python"
-          return vim.fn.filereadable(venv) == 1 and venv or "/usr/bin/python3"
-        end,
-      },
-    }
-
-    -- C/C++/Rust
     dap.configurations.cpp = {
       {
         name = "Launch file",
