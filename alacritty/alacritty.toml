@@ -1,12 +1,12 @@
 [general]
-import = ["./themes/rose-pine.toml"]
+import = ["./themes/oxocarbon.toml"]
 
 [font]
 normal = { family = "JetBrainsMono Nerd Font", style = "Regular" }
 size = 16
 
 [window]
-opacity = 0.85
+opacity = 1
 dynamic_title = true
 
 [[keyboard.bindings]]
