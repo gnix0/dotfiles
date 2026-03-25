@@ -6,9 +6,7 @@ return {
     ft = "java",
     config = function()
       local ok, jdtls = pcall(require, "jdtls")
-      if not ok then
-        return
-      end
+      if not ok then return end
 
       local mason_path = vim.fn.stdpath("data") .. "/mason"
       local jdtls_path = mason_path .. "/packages/jdtls"
@@ -22,22 +20,51 @@ return {
 
       local function get_bundles()
         local bundles = {}
-        local java_debug_path = mason_path .. "/packages/java-debug-adapter/extension/server"
-        local java_debug_jar = vim.fn.glob(java_debug_path .. "/com.microsoft.java.debug.plugin-*.jar", true)
+        local debug_path = mason_path .. "/packages/java-debug-adapter/extension/server"
+        local debug_jar = vim.fn.glob(debug_path .. "/com.microsoft.java.debug.plugin-*.jar", true)
+        if debug_jar ~= "" then table.insert(bundles, debug_jar) end
 
-        if java_debug_jar and java_debug_jar ~= "" then
-          table.insert(bundles, java_debug_jar)
-        end
-
-        local java_test_path = mason_path .. "/packages/java-test/extension/server"
-        local java_test_jars = vim.split(vim.fn.glob(java_test_path .. "/*.jar", true), "\n")
-
-        for _, j in ipairs(java_test_jars) do
-          if j ~= "" then
-            table.insert(bundles, j)
-          end
+        local test_path = mason_path .. "/packages/java-test/extension/server"
+        for _, j in ipairs(vim.split(vim.fn.glob(test_path .. "/*.jar", true), "\n")) do
+          if j ~= "" then table.insert(bundles, j) end
         end
         return bundles
+      end
+
+      -- Discovers JDKs from SDKMAN candidates directory, falls back to Arch system JDKs.
+      -- jdtls uses these runtimes to compile projects targeting different source levels,
+      -- independently of which JDK runs the jdtls server itself.
+      local function get_runtimes()
+        local runtimes = {}
+        local version_map = { ["17"] = "JavaSE-17", ["21"] = "JavaSE-21", ["25"] = "JavaSE-25" }
+        local sdkman_dir = home .. "/.sdkman/candidates/java"
+
+        if vim.fn.isdirectory(sdkman_dir) == 1 then
+          local seen = {}
+          for _, path in ipairs(vim.fn.globpath(sdkman_dir, "*", false, true)) do
+            local name = vim.fn.fnamemodify(path, ":t")
+            if name ~= "current" and vim.fn.isdirectory(path) == 1 then
+              local major = name:match("^(%d+)")
+              if major and version_map[major] and not seen[major] then
+                seen[major] = true
+                table.insert(runtimes, { name = version_map[major], path = path })
+              end
+            end
+          end
+        end
+
+        if #runtimes == 0 then
+          for _, rt in ipairs({
+            { name = "JavaSE-11", path = "/usr/lib/jvm/java-11-openjdk" },
+            { name = "JavaSE-17", path = "/usr/lib/jvm/java-17-openjdk" },
+            { name = "JavaSE-21", path = "/usr/lib/jvm/java-21-openjdk" },
+            { name = "JavaSE-25", path = "/usr/lib/jvm/java-25-openjdk" },
+          }) do
+            if vim.fn.isdirectory(rt.path) == 1 then table.insert(runtimes, rt) end
+          end
+        end
+
+        return runtimes
       end
 
       local capabilities = require("blink.cmp").get_lsp_capabilities()
@@ -45,18 +72,19 @@ return {
       extendedClientCapabilities.resolveAdditionalTextEditsSupport = true
 
       local function start_jdtls()
-        local root_dir = require("jdtls.setup").find_root({ ".git", "mvnw", "pom.xml" })
-        if not root_dir then
-          return
-        end
+        local root_dir = require("jdtls.setup").find_root({
+          ".git", "mvnw", "gradlew", "pom.xml", "build.gradle", "settings.gradle",
+        })
+        if not root_dir then return end
+        if vim.fn.filereadable(launcher_jar) == 0 then return end
 
-        if vim.fn.filereadable(launcher_jar) == 0 then
-          return
-        end
+        -- Prefer SDKMAN-managed java (current symlink = sdk default), fallback to PATH
+        local sdkman_java = home .. "/.sdkman/candidates/java/current/bin/java"
+        local java_bin = vim.fn.executable(sdkman_java) == 1 and sdkman_java or "java"
 
         local config = {
           cmd = {
-            "java",
+            java_bin,
             "-Declipse.application=org.eclipse.jdt.ls.core.id1",
             "-Dosgi.bundles.defaultStartLevel=4",
             "-Declipse.product=org.eclipse.jdt.ls.core.product",
@@ -72,7 +100,7 @@ return {
           root_dir = root_dir,
           settings = {
             java = {
-              home = "/usr/lib/jvm/java-21-openjdk",
+              home = vim.env.JAVA_HOME or "/usr/lib/jvm/java-21-openjdk",
               eclipse = { downloadSources = true },
               maven = { downloadSources = true },
               referencesCodeLens = { enabled = true },
@@ -80,16 +108,11 @@ return {
               format = { enabled = false },
               configuration = {
                 updateBuildConfiguration = "automatic",
-                runtimes = {
-                  { name = "JavaSE-8", path = "/usr/lib/jvm/java-8-openjdk" },
-                  { name = "JavaSE-11", path = "/usr/lib/jvm/java-11-openjdk" },
-                  { name = "JavaSE-17", path = "/usr/lib/jvm/java-17-openjdk" },
-                  { name = "JavaSE-21", path = "/usr/lib/jvm/java-21-openjdk" },
-                  { name = "JavaSE-25", path = "/usr/lib/jvm/java-25-openjdk" },
-                },
+                runtimes = get_runtimes(),
               },
               import = {
                 maven = { enabled = true },
+                gradle = { enabled = true },
               },
             },
           },
@@ -104,9 +127,12 @@ return {
           vim.keymap.set("n", "<leader>co", jdtls.organize_imports, { desc = "Organize Imports", buffer = bufnr })
           vim.keymap.set("n", "<leader>ct", jdtls.test_class, { desc = "Test Class", buffer = bufnr })
           vim.keymap.set("n", "<leader>tm", jdtls.test_nearest_method, { desc = "Test Method", buffer = bufnr })
+          vim.keymap.set("n", "<leader>ju", jdtls.update_project_config, { desc = "Update Project Config", buffer = bufnr })
         end
 
-        local debug_jar = vim.fn.glob(mason_path .. "/packages/java-debug-adapter/extension/server/com.microsoft.java.debug.plugin-*.jar", true)
+        local debug_jar = vim.fn.glob(
+          mason_path .. "/packages/java-debug-adapter/extension/server/com.microsoft.java.debug.plugin-*.jar", true
+        )
         if debug_jar ~= "" then
           config.handlers = {
             ["language/status"] = function(_, result)

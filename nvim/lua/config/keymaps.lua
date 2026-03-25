@@ -54,6 +54,16 @@ vim.keymap.set("n", "<leader>sk", "<C-w>+", { desc = "Increase Height" })
 vim.keymap.set("n", "<leader>s>", "<C-w>>10", { desc = "Increase Width" })
 vim.keymap.set("n", "<leader>s<", "<C-w><10", { desc = "Decrease Width" })
 
+vim.keymap.set("n", "<leader>ju", function()
+  local ok, jdtls = pcall(require, "jdtls")
+  if not ok then
+    vim.notify("JDTLS not available in this buffer", vim.log.levels.WARN)
+    return
+  end
+  jdtls.update_project_config()
+  vim.notify("JDTLS project config updated", vim.log.levels.INFO)
+end, { noremap = true, silent = true, desc = "Update JDTLS project config" })
+
 vim.keymap.set("n", "<leader>rj", function()
   local ok, jdtls = pcall(require, "jdtls")
   if not ok then

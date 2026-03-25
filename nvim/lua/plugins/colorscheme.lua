@@ -1,7 +1,9 @@
 return {
-    "nyoom-engineering/oxocarbon.nvim",
+    "thesimonho/kanagawa-paper.nvim",
+    lazy = false,
     priority = 1000,
-    config = function()
-        vim.cmd.colorscheme("oxocarbon")
+    init = function()
+        vim.cmd.colorscheme("kanagawa-paper-ink")
     end,
+    opts = { ... },
 }

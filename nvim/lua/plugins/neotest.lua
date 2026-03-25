@@ -5,6 +5,7 @@ return {
     "nvim-treesitter/nvim-treesitter",
     "antoinemadec/FixCursorHold.nvim",
     "nvim-neotest/neotest-go",
+    "rcasia/neotest-java",
   },
   keys = {
     { "<leader>tt", function() require("neotest").run.run() end, desc = "Run Nearest Test" },
@@ -18,6 +19,9 @@ return {
       adapters = {
         require("neotest-go")({
           experimental = { test_table = true },
+        }),
+        require("neotest-java")({
+          ignore_wrapper = false, -- use mvnw/gradlew wrappers when present
         }),
       },
       output = { open_on_run = true },
