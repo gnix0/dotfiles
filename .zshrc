@@ -121,3 +121,8 @@ export PATH="$HOME/.local/bin:$PATH"
 export DOTNET_ROOT="/usr/share/dotnet"
 export PATH="$HOME/.dotnet/tools:$PATH"
 export PATH="$HOME/.npm-global/bin:$PATH"
+
+#THIS MUST BE AT THE END OF THE FILE FOR SDKMAN TO WORK!!!
+export SDKMAN_DIR="$HOME/.sdkman"
+[[ -s "$HOME/.sdkman/bin/sdkman-init.sh" ]] && source "$HOME/.sdkman/bin/sdkman-init.sh"
+export JAVA_HOME="$SDKMAN_DIR/candidates/java/current"

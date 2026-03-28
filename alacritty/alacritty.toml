@@ -1,5 +1,5 @@
 [general]
-import = ["./themes/oxocarbon.toml"]
+import = ["./themes/kanagawa-paper.toml"]
 
 [font]
 normal = { family = "JetBrainsMono Nerd Font", style = "Regular" }
