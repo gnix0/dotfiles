@@ -2,7 +2,7 @@
 import = ["./themes/kanagawa-paper.toml"]
 
 [font]
-normal = { family = "JetBrainsMono Nerd Font", style = "Regular" }
+normal = { family = "Terminess Nerd Font", style = "Regular" }
 size = 16
 
 [window]

@@ -76,11 +76,9 @@
     autoPrune.enable = true;
   };
 
-  # Zsh
-  programs.zsh = {
-    enable = true;
-  };
-  users.defaultUserShell = pkgs.zsh;
+  # Fish:
+  programs.fish.enable = true;
+  users.defaultUserShell = pkgs.fish;
 
   # File Manager
   programs.thunar.enable = true;
@@ -96,7 +94,7 @@
 	"video"
 	"audio"
     ];
-    shell = pkgs.zsh;
+    shell = pkgs.fish;
   };
 
   # Unfree
@@ -116,10 +114,8 @@
 	mupdf
 	alacritty
 	tmux
-	zsh
 	pay-respects
 	tree-sitter
-	neovim
 	git
 	clang
 	gcc
@@ -154,11 +150,26 @@
 	ruby
 	bundler
 	nodejs
+	emacs-gtk
+	sqlite
+	libtool
+	shellcheck
+	pandoc
+	gopls
+	gotools
+	delve
+	golangci-lint
+	fish
+	gum
+	timer
+	lolcat
+	libnotify
   ];
 
   # Fonts
   fonts.packages = with pkgs; [
 	nerd-fonts.jetbrains-mono
+	nerd-fonts.terminess-ttf
   ];
 
   # Default JAVA_HOME
