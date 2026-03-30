@@ -14,6 +14,11 @@ return {
     {
       "nvim-telescope/telescope-ui-select.nvim",
       config = function()
+        require("telescope").setup({
+          extensions = {
+            ["ui-select"] = require("telescope.themes").get_dropdown({}),
+          },
+        })
         require("telescope").load_extension("ui-select")
       end,
     },
@@ -26,8 +31,8 @@ return {
   },
   opts = {
     defaults = {
-      prompt_prefix = " ",
-      selection_caret = " ",
+      prompt_prefix = " ",
+      selection_caret = " ",
       path_display = { "filename_first" },
       file_ignore_patterns = {
         "node_modules",
@@ -36,7 +41,6 @@ return {
         "obj/",
         "%.lock",
       },
-
       sorting_strategy = "ascending",
       layout_config = {
         horizontal = { prompt_position = "top", preview_width = 0.55 },
@@ -58,9 +62,7 @@ return {
       },
     },
     extensions = {
-      ["ui-select"] = {
-        require("telescope.themes").get_dropdown({}),
-      },
+      ["ui-select"] = {},
       fzf = {
         fuzzy = true,
         override_generic_sorter = true,
