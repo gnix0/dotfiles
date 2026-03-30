@@ -22,6 +22,7 @@ return {
                 "yamlls",
                 "dockerls",
                 "docker_compose_language_service",
+                "eslint",
             },
         },
     },
@@ -140,6 +141,10 @@ return {
                 },
             })
 
+            vim.lsp.config("eslint", {
+                settings = { workingDirectories = { mode = "auto" } },
+            })
+
             vim.lsp.enable({
                 "clangd",
                 "gopls",
@@ -152,6 +157,7 @@ return {
                 "yamlls",
                 "dockerls",
                 "docker_compose_language_service",
+                "eslint",
             })
         end,
     },

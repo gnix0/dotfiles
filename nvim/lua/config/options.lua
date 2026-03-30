@@ -9,7 +9,7 @@ vim.opt.mouse = ""
 
 vim.opt.relativenumber = true
 vim.opt.number = true
-vim.opt.numberwidth = 4
+vim.opt.numberwidth = 2
 
 vim.opt.expandtab = true
 vim.opt.tabstop = 4
@@ -40,14 +40,14 @@ vim.opt.undodir = vim.fn.stdpath("data") .. "/undodir"
 vim.opt.clipboard = "unnamedplus"
 
 local function start_treesitter(buf)
-  if vim.api.nvim_buf_is_valid(buf) and vim.bo[buf].buftype == "" and vim.bo[buf].filetype ~= "" then
-    pcall(vim.treesitter.start, buf)
-  end
+    if vim.api.nvim_buf_is_valid(buf) and vim.bo[buf].buftype == "" and vim.bo[buf].filetype ~= "" then
+        pcall(vim.treesitter.start, buf)
+    end
 end
 
 vim.api.nvim_create_autocmd("FileType", {
-  group = vim.api.nvim_create_augroup("treesitter_start", { clear = true }),
-  callback = function(ev)
-    start_treesitter(ev.buf)
-  end,
+    group = vim.api.nvim_create_augroup("treesitter_start", { clear = true }),
+    callback = function(ev)
+        start_treesitter(ev.buf)
+    end,
 })

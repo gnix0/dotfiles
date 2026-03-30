@@ -45,6 +45,7 @@
   programs.sway = {
     enable = true;
     wrapperFeatures.gtk = true;
+    extraPackages = [];
   };
   xdg.portal = {
     enable = true;
@@ -111,8 +112,6 @@
 	wl-clipboard
 	mako
 	rofi
-	swaylock
-	swayidle
 	brightnessctl
 	mupdf
 	alacritty
