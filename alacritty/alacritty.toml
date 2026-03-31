@@ -3,7 +3,7 @@ import = ["./themes/kanagawa-paper.toml"]
 
 [font]
 normal = { family = "Terminess Nerd Font", style = "Regular" }
-size = 16
+size = 18
 
 [window]
 opacity = 1

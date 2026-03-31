@@ -8,18 +8,16 @@
   programs.fish = {
     enable = true;
     shellAliases = {
-      vim = "nvim";
-      dev = "tmux-sessionizer";
       rebuild = "sudo nixos-rebuild switch --flake /etc/nixos#nixos";
     };
     interactiveShellInit = ''
-      # Doom Emacs on PATH
+      set -g fish_greeting
       fish_add_path ~/.config/emacs/bin
     '';
   };
 
   home.sessionVariables = {
-    EDITOR = "nvim";
+    EDITOR = "emacs";
   };
   home.sessionPath = [
     "$HOME/.local/bin"

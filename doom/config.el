@@ -9,8 +9,8 @@
       user-mail-address "gustavo@exemplo.com")
 
 ;; Doom exposes five (optional) variables for controlling fonts in Doom:
-(setq doom-font (font-spec :family "Terminess Nerd Font" :size 25 :weight 'medium)
-      doom-variable-pitch-font (font-spec :family "Terminess Nerd Font" :size 25))
+(setq doom-font (font-spec :family "Terminess Nerd Font" :size 24 :weight 'medium)
+      doom-variable-pitch-font (font-spec :family "Terminess Nerd Font" :size 24))
 
 ;; There are two ways to load a theme. Both assume the theme is installed and
 ;; available. You can either set `doom-theme' or manually load a theme with the
@@ -19,8 +19,8 @@
 (setq catppuccin-flavor 'macchiato) ; or 'frappe 'latte, 'macchiato, or 'mocha
 (load-theme 'catppuccin t)
 ;; set transparency... I don't think this works so TODO
-(set-frame-parameter (selected-frame) 'alpha '(85 85))
-(add-to-list 'default-frame-alist '(alpha 85 85))
+(set-frame-parameter nil 'alpha-background 85)
+(add-to-list 'default-frame-alist '(alpha-background . 85))
 
 ;; This determines the style of line numbers in effect. If set to `nil', line
 ;; numbers are disabled. For relative line numbers, set this to `relative'.
@@ -41,7 +41,7 @@
 ;; Make sure you don't have other goimports hooks enabled.
 (defun lsp-go-install-save-hooks ()
   (add-hook 'before-save-hook #'lsp-organize-imports t t))
-(add-hook 'go-hook #'lsp-go-install-save-hooks)
+(add-hook 'go-mode-hook #'lsp-go-install-save-hooks)
 
 ;; enable all analyzers; not done by default
 (after! lsp-mode
@@ -56,10 +56,6 @@
 
 (after! lsp-java
   (setq lsp-java-save-action-organize-imports t))
-
-;; use system clipboard
-(require 'pbcopy)
-(turn-on-pbcopy)
 
 ;; use fish shell by default
 (setq explicit-shell-file-name "/run/current-system/sw/bin/fish")
@@ -91,10 +87,12 @@
 (after! flycheck (setq flycheck-idle-change-delay 0.1))
 (after! lsp-mode
   (setq lsp-idle-delay 0.1)
-  :custom
   (setq lsp-completion-enable-additional-text-edit t)
-  (setq lsp-modeline-code-actions-enable t)
-  )
+  (setq lsp-modeline-code-actions-enable t))
 
 ;; Better debugging
 (use-package! dape)
+
+;; No backup/temp files
+(setq make-backup-files nil)
+(setq create-lockfiles nil)
