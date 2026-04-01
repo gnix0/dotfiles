@@ -18,13 +18,12 @@
 (setq doom-theme 'catppuccin)
 (setq catppuccin-flavor 'macchiato) ; or 'frappe 'latte, 'macchiato, or 'mocha
 (load-theme 'catppuccin t)
-;; set transparency... I don't think this works so TODO
-(set-frame-parameter nil 'alpha-background 85)
-(add-to-list 'default-frame-alist '(alpha-background . 85))
+(set-frame-parameter nil 'alpha-background 90)
+(add-to-list 'default-frame-alist '(alpha-background . 90))
 
 ;; This determines the style of line numbers in effect. If set to `nil', line
 ;; numbers are disabled. For relative line numbers, set this to `relative'.
-(setq display-line-numbers-type t)
+(setq display-line-numbers-type 'relative)
 
 ;; If you use `org' and don't want your org files in the default location below,
 ;; change `org-directory'. It must be set before org loads!
@@ -57,8 +56,9 @@
 (after! lsp-java
   (setq lsp-java-save-action-organize-imports t))
 
-;; use fish shell by default
-(setq explicit-shell-file-name "/run/current-system/sw/bin/fish")
+(setq shell-file-name (executable-find "bash"))
+(setq-default vterm-shell (executable-find "zsh"))
+(setq-default explicit-shell-file-name (executable-find "zsh"))
 
 ;; use wayland copy (I found this online, hopefully it works :D)
 (when (string-equal (getenv "XDG_SESSION_TYPE") "wayland")

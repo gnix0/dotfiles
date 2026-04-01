@@ -4,26 +4,25 @@
   home.homeDirectory = "/home/gnix0";
   programs.git.enable = true;
 
-  # Fish shell config
-  programs.fish = {
+  # Zsh shell config
+  programs.zsh = {
     enable = true;
+    enableCompletion = true;
     shellAliases = {
       rebuild = "sudo nixos-rebuild switch --flake /etc/nixos#nixos";
     };
-    interactiveShellInit = ''
-      set -g fish_greeting
-      fish_add_path ~/.config/emacs/bin
-    '';
   };
 
   home.sessionVariables = {
     EDITOR = "emacs";
   };
+  
   home.sessionPath = [
     "$HOME/.local/bin"
     "$HOME/go/bin"
     "$HOME/.dotnet/tools"
     "$HOME/.npm-global/bin"
+    "$HOME/.config/emacs/bin"
   ];
 
   programs.pay-respects.enable = true;

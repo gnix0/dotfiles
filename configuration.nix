@@ -76,9 +76,9 @@
     autoPrune.enable = true;
   };
 
-  # Fish:
-  programs.fish.enable = true;
-  users.defaultUserShell = pkgs.fish;
+  # Zsh:
+  programs.zsh.enable = true;
+  users.defaultUserShell = pkgs.zsh;
 
   # File Manager
   programs.thunar.enable = true;
@@ -94,7 +94,7 @@
 	"video"
 	"audio"
     ];
-    shell = pkgs.fish;
+    shell = pkgs.zsh;
   };
 
   # Unfree
@@ -102,6 +102,7 @@
 
   # System Packages
   environment.systemPackages = with pkgs; [
+	zsh
 	waybar
 	grim
 	slurp
@@ -159,11 +160,26 @@
 	gotools
 	delve
 	golangci-lint
-	fish
 	gum
 	timer
 	lolcat
 	libnotify
+	ansible
+	terraform
+	clang-tools
+	gomodifytags
+	gotests
+	gore
+	gofumpt
+	haskell-language-server
+	haskellPackages.hoogle
+	cabal-install
+	ktlint
+	nixfmt-rfc-style
+	shfmt
+	zig
+	zls
+	glslang
   ];
 
   # Fonts
