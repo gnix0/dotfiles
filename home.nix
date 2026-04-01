@@ -30,6 +30,8 @@
 
   programs.alacritty.enable = true;
 
+  services.emacs.enable = true;
+
   programs.tmux = {
     enable = true;
     terminal = "tmux-256color";

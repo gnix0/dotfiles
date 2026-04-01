@@ -150,7 +150,7 @@
 	ruby
 	bundler
 	nodejs
-	emacs-gtk
+	emacs
 	sqlite
 	libtool
 	shellcheck
