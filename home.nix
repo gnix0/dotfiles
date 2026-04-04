@@ -15,6 +15,12 @@
       rebuild = "sudo nixos-rebuild switch --flake /etc/nixos#nixos";
       ec = "emacsclient -c -a ''";
     };
+
+    oh-my-zsh = {
+	enable = true;
+	plugins = [ "git" "sudo" ];
+	theme = "robbyrussell";
+    };
   };
 
   home.sessionVariables = {
