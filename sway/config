@@ -8,7 +8,7 @@ set $term alacritty
 set $menu rofi -show drun
 set $browser brave
 set $filemanager thunar
-set $editor emacsclient -c -a ''
+set $editor emacsclient -c -n
 set $shot /home/gnix0/.local/bin/screenshot-region
 
 # Keys
@@ -56,7 +56,7 @@ bindsym $mod+f fullscreen
 bindsym $mod+w exec pkill -USR1 waybar
 floating_modifier $mod normal
 bindsym $mod+Shift+c reload
-bindsym $mod+Shift+e exec swaynag -t warning -m 'Exit sway?' -B 'Yes' 'swaymsg exit'
+bindsym $mod+Shift+e exec swaynag
 
 # Focus
 bindsym $mod+$left focus left

@@ -9,6 +9,10 @@
   boot.loader.systemd-boot.enable = true;
   boot.loader.efi.canTouchEfiVariables = true;
   boot.initrd.kernelModules = [ "i915" ];
+  boot.kernelParams = [
+    "i915.enable_psr=0"
+    "i915.enable_fbc=0"
+  ];
 
   # Host
   networking.hostName = "nixos";
@@ -147,7 +151,7 @@
     mupdf
 
     # Editors and docs
-    emacs-pgtk
+    emacs
     pandoc
     sqlite
     libtool

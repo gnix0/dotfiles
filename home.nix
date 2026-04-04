@@ -13,7 +13,7 @@
     enableCompletion = true;
     shellAliases = {
       rebuild = "sudo nixos-rebuild switch --flake /etc/nixos#nixos";
-      ec = "emacsclient -c -a ''";
+      ec = "emacsclient -c -n";
     };
 
     oh-my-zsh = {
@@ -42,9 +42,10 @@
   # Emacs daemon
   services.emacs = {
     enable = true;
-    package = pkgs.emacs-pgtk;
+    package = pkgs.emacs-gtk;
     client.enable = true;
     defaultEditor = false;
+    startWithUserSession = "graphical";
   };
 
   # Terminal
