@@ -1,32 +1,32 @@
-{ config, lib, pkgs, ... }:
+{ pkgs, ... }:
 
 {
-  imports =
-    [ # Include the results of the hardware scan.
-      ./hardware-configuration.nix
-    ];
-
-  # For saving myself from headaches related to mason (nvim)
-  programs.nix-ld.enable = true;
+  imports = [
+    ./hardware-configuration.nix
+  ];
 
   # Boot
   boot.loader.systemd-boot.enable = true;
   boot.loader.efi.canTouchEfiVariables = true;
   boot.initrd.kernelModules = [ "i915" ];
 
-  # Networking
+  # Host
   networking.hostName = "nixos";
   networking.networkmanager.enable = true;
 
-  # Time / Locale
+  # Locale
   time.timeZone = "America/Sao_Paulo";
   i18n.defaultLocale = "en_US.UTF-8";
-  console = {
-    keyMap = "us";
-  };
+  console.keyMap = "us";
 
-  # Intel Graphics
+  # Nix
+  nix.settings.experimental-features = [ "nix-command" "flakes" ];
+  nixpkgs.config.allowUnfree = true;
+  programs.nix-ld.enable = true;
+
+  # Intel graphics
   services.xserver.videoDrivers = [ "modesetting" ];
+  hardware.enableRedistributableFirmware = true;
   hardware.graphics = {
     enable = true;
     extraPackages = with pkgs; [
@@ -36,28 +36,35 @@
       vpl-gpu-rt
     ];
   };
-  hardware.enableRedistributableFirmware = true;
+
+  # Wayland session
   environment.sessionVariables = {
     LIBVA_DRIVER_NAME = "iHD";
+    MOZ_ENABLE_WAYLAND = "1";
+    NIXOS_OZONE_WL = "1";
   };
 
-  # Sway
   programs.sway = {
     enable = true;
     wrapperFeatures.gtk = true;
-    extraPackages = [];
   };
+
   xdg.portal = {
     enable = true;
     wlr.enable = true;
+    extraPortals = with pkgs; [
+      xdg-desktop-portal-gtk
+    ];
   };
 
   # Audio
+  security.rtkit.enable = true;
   services.pipewire = {
     enable = true;
     alsa.enable = true;
     alsa.support32Bit = true;
     pulse.enable = true;
+    jack.enable = true;
   };
 
   # Bluetooth
@@ -67,136 +74,169 @@
   };
   services.blueman.enable = true;
 
-  # Input
+  # Desktop services
   services.libinput.enable = true;
+  programs.thunar.enable = true;
+  programs.dconf.enable = true;
+  services.gvfs.enable = true;
+  services.tumbler.enable = true;
+  services.udisks2.enable = true;
 
-  # Docker
+  # Containers
   virtualisation.docker = {
     enable = true;
     autoPrune.enable = true;
   };
 
-  # Zsh:
+  # Shell
   programs.zsh.enable = true;
   users.defaultUserShell = pkgs.zsh;
 
-  # File Manager
-  programs.thunar.enable = true;
-  services.gvfs.enable = true;
-  services.tumbler.enable = true;
-
+  # User
   users.users.gnix0 = {
     isNormalUser = true;
-    extraGroups = [ 
-	"wheel"
-	"networkmanager"
-	"docker"
-	"video"
-	"audio"
-    ];
     shell = pkgs.zsh;
+    extraGroups = [
+      "wheel"
+      "networkmanager"
+      "docker"
+      "video"
+      "audio"
+    ];
   };
 
-  # Unfree
-  nixpkgs.config.allowUnfree = true;
-
-  # System Packages
+  # Packages
   environment.systemPackages = with pkgs; [
-	zsh
-	waybar
-	grim
-	slurp
-	pavucontrol
-	sway-contrib.grimshot
-	wl-clipboard
-	mako
-	rofi
-	brightnessctl
-	mupdf
-	alacritty
-	tmux
-	pay-respects
-	tree-sitter
-	git
-	clang
-	gcc
-	gnumake
-	cmake
-	ripgrep
-	fd
-	fzf
-	wget
-	curl
-	unzip
-	tree
-	btop
-	jq
-	brave
-	vlc
-	obs-studio
-	imv
-	docker-compose
-	kubectl
-	minikube
-	kind
-	go
-	rustup
-	jdk17
-	jdk21
-	jdk25
-	maven
-	gradle
-	elixir
-	erlang
-	ruby
-	bundler
-	nodejs
-	emacs
-	sqlite
-	libtool
-	shellcheck
-	pandoc
-	gopls
-	gotools
-	delve
-	golangci-lint
-	gum
-	timer
-	lolcat
-	libnotify
-	ansible
-	terraform
-	clang-tools
-	gomodifytags
-	gotests
-	gore
-	gofumpt
-	haskell-language-server
-	haskellPackages.hoogle
-	cabal-install
-	ktlint
-	nixfmt-rfc-style
-	shfmt
-	zig
-	zls
-	glslang
+    # Shell
+    zsh
+    tmux
+    git
+    wget
+    curl
+    unzip
+    tree
+    btop
+    jq
+    fd
+    fzf
+    ripgrep
+
+    # Wayland desktop
+    alacritty
+    waybar
+    rofi
+    mako
+    wl-clipboard
+    grim
+    slurp
+    satty
+    sway-contrib.grimshot
+    brightnessctl
+    pavucontrol
+    qdirstat
+    iwgtk
+    wttrbar
+    xdg-desktop-portal-gtk
+    alsa-utils
+
+    # Browsing and media
+    brave
+    vlc
+    obs-studio
+    imv
+    mupdf
+
+    # Editors and docs
+    emacs-pgtk
+    pandoc
+    sqlite
+    libtool
+    shellcheck
+    aspell
+    aspellDicts.en
+
+    # C and build tools
+    clang
+    clang-tools
+    gcc
+    gnumake
+    cmake
+    glslang
+
+    # Go
+    go
+    gopls
+    gotools
+    delve
+    golangci-lint
+    gomodifytags
+    gotests
+    gore
+    gofumpt
+
+    # Rust
+    rustup
+
+    # JVM
+    jdk17
+    jdk21
+    jdk25
+    maven
+    gradle
+    ktlint
+
+    # Elixir and Erlang
+    elixir
+    erlang
+
+    # Ruby
+    ruby
+    bundler
+
+    # JavaScript
+    nodejs
+
+    # Haskell
+    haskell-language-server
+    haskellPackages.hoogle
+    cabal-install
+
+    # Zig
+    zig
+    zls
+
+    # Infra
+    docker-compose
+    kubectl
+    minikube
+    kind
+    ansible
+    terraform
+
+    # Nix
+    nixfmt-rfc-style
+    shfmt
+
+    # Small tools
+    gum
+    timer
+    lolcat
+    libnotify
+    pay-respects
+    tree-sitter
   ];
 
   # Fonts
   fonts.packages = with pkgs; [
-	nerd-fonts.jetbrains-mono
-	nerd-fonts.terminess-ttf
+    nerd-fonts.jetbrains-mono
+    nerd-fonts.terminess-ttf
   ];
 
-  # Default JAVA_HOME
+  # Java
   programs.java = {
     enable = true;
     package = pkgs.jdk21;
   };
 
-  # NixOS
-  nix.settings.experimental-features = [ "nix-command" "flakes" ];
   system.stateVersion = "25.11";
-
 }
-
