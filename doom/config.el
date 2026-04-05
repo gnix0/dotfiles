@@ -11,10 +11,6 @@
 (setq doom-theme 'catppuccin)
 (setq catppuccin-flavor 'macchiato)
 
-;; Frames
-(set-frame-parameter nil 'alpha-background 100)
-(add-to-list 'default-frame-alist '(alpha-background . 100))
-
 ;; Editing
 (setq display-line-numbers-type 'relative
       org-directory "~/org/"
@@ -29,9 +25,6 @@
       explicit-shell-file-name (or (executable-find "zsh") shell-file-name))
 
 ;; Emacs server
-(require 'server)
-(unless (server-running-p)
-  (server-start))
 (setq server-client-instructions nil)
 
 ;; Wayland clipboard

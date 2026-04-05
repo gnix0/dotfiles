@@ -42,7 +42,7 @@
   # Emacs daemon
   services.emacs = {
     enable = true;
-    package = pkgs.emacs-gtk;
+    package = pkgs.emacs;
     client.enable = true;
     defaultEditor = false;
     startWithUserSession = "graphical";

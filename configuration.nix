@@ -106,6 +106,7 @@
       "docker"
       "video"
       "audio"
+      "dialout"
     ];
   };
 
@@ -141,6 +142,7 @@
     iwgtk
     wttrbar
     xdg-desktop-portal-gtk
+    discord
     alsa-utils
 
     # Browsing and media
@@ -181,10 +183,7 @@
     # Rust
     rustup
 
-    # JVM
-    jdk17
-    jdk21
-    jdk25
+    # Java
     maven
     gradle
     ktlint
@@ -208,6 +207,9 @@
     # Zig
     zig
     zls
+
+    # Python
+    python3
 
     # Infra
     docker-compose
