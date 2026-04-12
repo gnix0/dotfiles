@@ -26,7 +26,6 @@
   # Nix
   nix.settings.experimental-features = [ "nix-command" "flakes" ];
   nixpkgs.config.allowUnfree = true;
-  programs.nix-ld.enable = true;
 
   # Intel graphics
   services.xserver.videoDrivers = [ "modesetting" ];
@@ -46,6 +45,9 @@
     LIBVA_DRIVER_NAME = "iHD";
     MOZ_ENABLE_WAYLAND = "1";
     NIXOS_OZONE_WL = "1";
+    SDL_VIDEODRIVER = "wayland";
+    QT_QPA_PLATFORM = "wayland";
+    XDG_SESSION_TYPE = "wayland";
   };
 
   programs.sway = {
@@ -109,6 +111,16 @@
       "dialout"
     ];
   };
+
+  # Use emacs overlay. Required for Emacs 28+.
+  # Use a commit SHA for a specific commit to prevent overlay rebuild every time (can be very long).
+  nixpkgs.overlays = [
+    (import (builtins.fetchTarball {
+      url = "https://github.com/nix-community/emacs-overlay/archive/master.tar.gz";
+      # Provide a hash to satisfy pure evaluation
+      sha256 = "1ibzdrax5gki5vadj1l6ivza7b4l91y49v0f9f2xli9gpdgh0x8n";
+    }))
+  ];
 
   # Packages
   environment.systemPackages = with pkgs; [
@@ -179,14 +191,17 @@
     gotests
     gore
     gofumpt
+    jetbrains.goland
 
     # Rust
     rustup
+    jetbrains.rust-rover
 
     # Java
     maven
     gradle
     ktlint
+    jetbrains.idea
 
     # Elixir and Erlang
     elixir
