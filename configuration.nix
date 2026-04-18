@@ -8,6 +8,14 @@
   # Boot
   boot.loader.systemd-boot.enable = true;
   boot.loader.efi.canTouchEfiVariables = true;
+
+#  boot.kernelPackages = pkgs.linuxPackages_testing;
+#  boot.kernelPatches = [
+#    {
+#      name = "r8169-qstats";
+#      patch = ./r8169-qstats.patch;
+#    }
+#  ];
   boot.initrd.kernelModules = [ "i915" ];
   boot.kernelParams = [
     "i915.enable_psr=0"
@@ -26,6 +34,25 @@
   # Nix
   nix.settings.experimental-features = [ "nix-command" "flakes" ];
   nixpkgs.config.allowUnfree = true;
+
+  programs.nix-ld = {
+    enable = true;
+    libraries = with pkgs; [
+      stdenv.cc.cc
+      zlib
+      zstd
+      openssl
+      curl
+      libxml2
+      xz
+      bzip2
+      ncurses
+      libffi
+      readline
+      sqlite
+      icu
+    ];
+  };  
 
   # Intel graphics
   services.xserver.videoDrivers = [ "modesetting" ];
@@ -112,22 +139,19 @@
     ];
   };
 
-  # Use emacs overlay. Required for Emacs 28+.
-  # Use a commit SHA for a specific commit to prevent overlay rebuild every time (can be very long).
-  nixpkgs.overlays = [
-    (import (builtins.fetchTarball {
-      url = "https://github.com/nix-community/emacs-overlay/archive/master.tar.gz";
-      # Provide a hash to satisfy pure evaluation
-      sha256 = "1ibzdrax5gki5vadj1l6ivza7b4l91y49v0f9f2xli9gpdgh0x8n";
-    }))
-  ];
+  # Neovim
+  programs.neovim = {
+	enable = true;
+	defaultEditor = true;
+	vimAlias = true;
+  };
 
   # Packages
   environment.systemPackages = with pkgs; [
     # Shell
     zsh
     tmux
-    git
+    gitFull
     wget
     curl
     unzip
@@ -165,7 +189,7 @@
     mupdf
 
     # Editors and docs
-    emacs
+    neovim
     pandoc
     sqlite
     libtool
@@ -195,24 +219,38 @@
 
     # Rust
     rustup
+    rust-analyzer
     jetbrains.rust-rover
 
     # Java
     maven
     gradle
     ktlint
+    jdt-language-server
+    google-java-format
     jetbrains.idea
 
     # Elixir and Erlang
     elixir
     erlang
+    elixir-ls
 
     # Ruby
     ruby
+    ruby-lsp
+    rubyPackages.rubocop
     bundler
 
     # JavaScript
     nodejs
+    nodePackages_latest.typescript-language-server
+    nodePackages_latest.bash-language-server
+    nodePackages_latest.vscode-langservers-extracted
+    nodePackages_latest.yaml-language-server
+    dockerfile-language-server
+    docker-compose-language-service
+    prettierd
+    eslint_d
 
     # Haskell
     haskell-language-server
@@ -237,6 +275,11 @@
     # Nix
     nixfmt-rfc-style
     shfmt
+    nil
+    nixd
+
+    # Lua
+    stylua
 
     # Small tools
     gum
@@ -245,6 +288,43 @@
     libnotify
     pay-respects
     tree-sitter
+
+    # Networking / NIC testing
+    ethtool
+    iproute2
+    pciutils
+    usbutils
+    iperf3
+    tcpdump
+    kmod
+
+    # Kernel build dependencies
+    llvm
+    lld
+    bc
+    bison
+    flex
+    perl
+    rsync
+    cpio
+    ncurses
+    pkg-config
+    openssl
+    elfutils
+    pahole
+
+    # Kernel/networking workflw
+    b4
+    trace-cmd
+
+    # OS development
+    qemu
+    OVMF
+    limine
+    xorriso
+    mtools
+    nasm
+    gdb
   ];
 
   # Fonts

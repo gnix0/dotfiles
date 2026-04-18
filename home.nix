@@ -13,7 +13,7 @@
     enableCompletion = true;
     shellAliases = {
       rebuild = "sudo nixos-rebuild switch --flake /etc/nixos#nixos";
-      ec = "emacsclient -c -n";
+      dev = "tmux-sessionizer";
     };
 
     oh-my-zsh = {
@@ -24,8 +24,7 @@
   };
 
   home.sessionVariables = {
-    EDITOR = "emacsclient";
-    VISUAL = "emacsclient";
+    EDITOR = "nvim";
   };
 
   home.sessionPath = [
@@ -33,20 +32,10 @@
     "$HOME/go/bin"
     "$HOME/.dotnet/tools"
     "$HOME/.npm-global/bin"
-    "$HOME/.config/emacs/bin"
   ];
 
   # Desktop apps
   programs.alacritty.enable = true;
-
-  # Emacs daemon
-  services.emacs = {
-    enable = true;
-    package = pkgs.emacs;
-    client.enable = true;
-    defaultEditor = false;
-    startWithUserSession = "graphical";
-  };
 
   # Terminal
   programs.tmux = {
