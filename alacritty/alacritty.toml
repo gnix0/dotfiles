@@ -1,12 +1,12 @@
 [general]
-import = ["./themes/catppuccin-mocha.toml"]
+import = ["./themes/catppuccin-dark.toml"]
 
 [font]
 normal = { family = "JetBrains Mono Nerd Font", style = "Regular" }
-size = 14
+size = 15
 
 [window]
-opacity = 0.85
+opacity = 1
 dynamic_title = true
 
 [[keyboard.bindings]]
