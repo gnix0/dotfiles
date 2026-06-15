@@ -17,6 +17,7 @@ return {
             "markdown", "markdown_inline", "query", "regex",
             "ruby", "rust", "toml", "vim", "vimdoc", "xml", "yaml",
             "typescript", "javascript", "tsx", "html", "css",
+            "scss", "vue", "angular",
         }
 
         local installed = TS.get_installed and TS.get_installed() or {}

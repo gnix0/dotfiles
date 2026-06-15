@@ -3,10 +3,32 @@ return {
         "mason-org/mason.nvim",
         cmd = "Mason",
         opts = {},
+        config = function(_, opts)
+            require("mason").setup(opts)
+
+            local registry = require("mason-registry")
+            local ensure_installed = {
+                "prettierd",
+            }
+
+            local function install_missing()
+                for _, name in ipairs(ensure_installed) do
+                    local ok, package = pcall(registry.get_package, name)
+                    if ok and not package:is_installed() then
+                        package:install()
+                    end
+                end
+            end
+
+            if registry.refresh then
+                registry.refresh(install_missing)
+            else
+                install_missing()
+            end
+        end,
     },
     {
         "mason-org/mason-lspconfig.nvim",
-        enabled = false,
         dependencies = { "mason-org/mason.nvim" },
         opts = {
             ensure_installed = {
@@ -21,6 +43,11 @@ return {
                 "bashls",
                 "jsonls",
                 "yamlls",
+                "html",
+                "cssls",
+                "emmet_language_server",
+                "angularls",
+                "vue_ls",
                 "dockerls",
                 "docker_compose_language_service",
                 "eslint",
@@ -38,6 +65,7 @@ return {
             "mason-org/mason.nvim",
             "mason-org/mason-lspconfig.nvim",
             "saghen/blink.cmp",
+            "b0o/schemastore.nvim",
         },
         config = function()
             vim.diagnostic.config({
@@ -146,20 +174,43 @@ return {
                 settings = { workingDirectories = { mode = "auto" } },
             })
 
-            vim.lsp.enable({
-                "clangd",
-                "gopls",
-                "ruby_lsp",
-                "elixirls",
-                "lua_ls",
-                "ts_ls",
-                "bashls",
-                "jsonls",
-                "yamlls",
-                "dockerls",
-                "docker_compose_language_service",
-                "eslint",
+            vim.lsp.config("jsonls", {
+                settings = {
+                    json = {
+                        schemas = require("schemastore").json.schemas(),
+                        validate = { enable = true },
+                    },
+                },
             })
+
+            vim.lsp.config("yamlls", {
+                settings = {
+                    yaml = {
+                        schemaStore = {
+                            enable = false,
+                            url = "",
+                        },
+                        schemas = require("schemastore").yaml.schemas(),
+                        validate = true,
+                    },
+                },
+            })
+
+            vim.lsp.config("html", {
+                filetypes = { "html", "htmlangular" },
+            })
+
+            vim.lsp.config("cssls", {
+                settings = {
+                    css = { validate = true },
+                    less = { validate = true },
+                    scss = { validate = true },
+                },
+            })
+
+            -- mason-lspconfig automatically enables installed servers. Avoid
+            -- enabling every configured server here, because many of them may
+            -- not be installed yet on a fresh machine.
         end,
     },
 }

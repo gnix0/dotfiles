@@ -32,8 +32,8 @@ return {
   opts = {
     defaults = {
       prompt_prefix = " ",
-      selection_caret = " ",
-      path_display = { "filename_first" },
+      path_display = { "smart" },
+      sorting_strategy = "ascending",
       file_ignore_patterns = {
         "node_modules",
         ".git/",
@@ -41,7 +41,6 @@ return {
         "obj/",
         "%.lock",
       },
-      sorting_strategy = "ascending",
       layout_config = {
         horizontal = { prompt_position = "top", preview_width = 0.55 },
         vertical = { mirror = false },

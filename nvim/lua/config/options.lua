@@ -25,7 +25,7 @@ vim.opt.guicursor = "a:block"
 
 vim.opt.foldmethod = "manual"
 vim.opt.foldenable = true
-vim.opt.foldlevelstart = 99
+vim.opt.foldlevelstart = 119
 
 vim.opt.ignorecase = true
 vim.opt.smartcase = true
@@ -33,7 +33,7 @@ vim.opt.incsearch = true
 vim.opt.signcolumn = "yes"
 vim.opt.updatetime = 200
 vim.opt.wrap = false
-vim.opt.colorcolumn = "80"
+vim.opt.colorcolumn = "120"
 
 vim.opt.undofile = true
 vim.opt.undodir = vim.fn.stdpath("data") .. "/undodir"
