@@ -1,33 +1,57 @@
 return {
-    "catppuccin/nvim",
-    name = "catppuccin",
+    "rose-pine/neovim",
+    name = "rose-pine",
     lazy = false,
     priority = 1000,
     config = function()
-        require("catppuccin").setup({
-            transparent_background = true,
-            integrations = {
-                alpha = true,
-                cmp = true,
-                gitsigns = true,
-                nvimtree = true,
-                treesitter = true,
-                notify = true,
-                mini = {
-                    enabled = true,
-                    indentscope = true,
-                },
+        require("rose-pine").setup({
+            variant = "main",
+            dark_variant = "main",
+            disable_background = true,
+            disable_float_background = true,
+            disable_italics = false,
+            styles = {
+                bold = true,
+                italic = true,
+                transparency = true,
+            },
+            highlight_groups = {
+                Normal = { bg = "NONE" },
+                NormalNC = { bg = "NONE" },
+                NormalFloat = { bg = "NONE" },
+                FloatBorder = { bg = "NONE" },
+                FloatTitle = { bg = "NONE" },
+                SignColumn = { bg = "NONE" },
+                FoldColumn = { bg = "NONE" },
+                LineNr = { bg = "NONE" },
+                CursorLine = { bg = "NONE" },
+                CursorLineNr = { bg = "NONE" },
+                ColorColumn = { bg = "NONE" },
+                StatusLine = { bg = "NONE" },
+                StatusLineNC = { bg = "NONE" },
+                TabLine = { bg = "NONE" },
+                TabLineFill = { bg = "NONE" },
+                TabLineSel = { bg = "NONE" },
+                WinSeparator = { bg = "NONE" },
+                VertSplit = { bg = "NONE" },
+                Pmenu = { bg = "NONE" },
+                PmenuSel = { bg = "NONE" },
+                PmenuSbar = { bg = "NONE" },
+                PmenuThumb = { bg = "NONE" },
+                TelescopeNormal = { bg = "NONE" },
+                TelescopeBorder = { bg = "NONE" },
+                TelescopePromptNormal = { bg = "NONE" },
+                TelescopePromptBorder = { bg = "NONE" },
+                TelescopeResultsNormal = { bg = "NONE" },
+                TelescopeResultsBorder = { bg = "NONE" },
+                TelescopePreviewNormal = { bg = "NONE" },
+                TelescopePreviewBorder = { bg = "NONE" },
+                LazyNormal = { bg = "NONE" },
+                MasonNormal = { bg = "NONE" },
+                WhichKeyNormal = { bg = "NONE" },
             },
         })
 
-        vim.cmd.colorscheme("catppuccin")
-
-        local hl_groups = {
-            "Normal", "NormalFloat", "FloatBorder", "TelescopeNormal",
-            "TelescopeBorder", "NvimTreeNormal", "NvimTreeNormalNC"
-        }
-        for _, group in ipairs(hl_groups) do
-            vim.api.nvim_set_hl(0, group, { bg = "NONE", ctermbg = "NONE" })
-        end
+        vim.cmd.colorscheme("rose-pine-moon")
     end,
 }
