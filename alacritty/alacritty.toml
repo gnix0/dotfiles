@@ -1,12 +1,12 @@
 [general]
-import = ["./themes/catppuccin-dark.toml"]
+import = ["./themes/rose-pine-dark.toml"]
 
 [font]
-normal = { family = "Terminess Nerd Font Mono", style = "Normal" }
-size = 18
+normal = { family = "JetBrainsMono Nerd Font", style = "Medium" }
+size = 14
 
 [window]
-opacity = 1
+opacity = 0.8
 dynamic_title = true
 
 [[keyboard.bindings]]
