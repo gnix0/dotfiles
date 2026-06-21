@@ -26,7 +26,6 @@ return {
                 LineNr = { bg = "NONE" },
                 CursorLine = { bg = "NONE" },
                 CursorLineNr = { bg = "NONE" },
-                ColorColumn = { bg = "NONE" },
                 StatusLine = { bg = "NONE" },
                 StatusLineNC = { bg = "NONE" },
                 TabLine = { bg = "NONE" },
