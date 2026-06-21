@@ -1,83 +1,88 @@
 ;;; $DOOMDIR/config.el -*- lexical-binding: t; -*-
 
-(setq user-full-name "Gustavo"
+;; Place your private configuration here! Remember, you do not need to run 'doom
+;; sync' after modifying this file!
+
+
+;; Some functionality uses this to identify you, e.g. GPG configuration, email
+;; clients, file templates and snippets. It is optional.
+(setq user-full-name "Gustavo Arantes"
       user-mail-address "dev.gustavoa@gmail.com")
 
-;; Fonts
-(setq doom-font (font-spec :family "Terminess Nerd Font" :size 24 :weight 'medium)
-      doom-variable-pitch-font (font-spec :family "Terminess Nerd Font" :size 24))
+;; Doom exposes five (optional) variables for controlling fonts in Doom:
+;;
+;; - `doom-font' -- the primary font to use
+;; - `doom-variable-pitch-font' -- a non-monospace font (where applicable)
+;; - `doom-big-font' -- used for `doom-big-font-mode'; use this for
+;;   presentations or streaming.
+;; - `doom-symbol-font' -- for symbols
+;; - `doom-serif-font' -- for the `fixed-pitch-serif' face
+;;
+;; See 'C-h v doom-font' for documentation and more examples of what they
+;; accept. For example:
+;;
+(setq doom-font (font-spec :family "Terminess Nerd Font" :size 25 :weight 'medium)
+      doom-variable-pitch-font (font-spec :family "Terminess Nerd Font" :size 25))
+;;
+;; If you or Emacs can't find your font, use 'M-x describe-font' to look them
+;; up, `M-x eval-region' to execute elisp code, and 'M-x doom/reload-font' to
+;; refresh your font settings. If Emacs still can't find your font, it likely
+;; wasn't installed correctly. Font issues are rarely Doom issues!
 
-;; Theme
+;; There are two ways to load a theme. Both assume the theme is installed and
+;; available. You can either set `doom-theme' or manually load a theme with the
+;; `load-theme' function. This is the default:
 (setq doom-theme 'catppuccin)
-(setq catppuccin-flavor 'macchiato)
+(setq catppuccin-flavor 'macchiato) ; or 'frappe 'latte, 'macchiato, or 'mocha
+(load-theme 'catppuccin t)
 
-;; Editing
-(setq display-line-numbers-type 'relative
-      org-directory "~/org/"
-      make-backup-files nil
-      create-lockfiles nil
-      ispell-program-name "aspell"
-      ispell-dictionary "en_US")
+;; This determines the style of line numbers in effect. If set to `nil', line
+;; numbers are disabled. For relative line numbers, set this to `relative'.
+(setq display-line-numbers-type 'relative)
 
-;; Shells
-(setq shell-file-name (executable-find "bash")
-      vterm-shell (or (executable-find "zsh") shell-file-name)
-      explicit-shell-file-name (or (executable-find "zsh") shell-file-name))
+;; If you use `org' and don't want your org files in the default location below,
+;; change `org-directory'. It must be set before org loads!
+(setq org-directory "~/org/")
 
-;; Emacs server
-(setq server-client-instructions nil)
 
-;; Wayland clipboard
-(when (and (string-equal (getenv "XDG_SESSION_TYPE") "wayland")
-           (executable-find "wl-copy")
-           (executable-find "wl-paste"))
-  (defun my-wl-copy (text)
-    "Copy TEXT with wl-copy."
-    (if (display-graphic-p)
-        (gui-select-text text)
-      (let ((proc (make-process :name "wl-copy"
-                                :buffer nil
-                                :command '("wl-copy")
-                                :connection-type 'pipe)))
-        (process-send-string proc text)
-        (process-send-eof proc))))
-  (defun my-wl-paste ()
-    "Paste with wl-paste."
-    (if (display-graphic-p)
-        (gui-selection-value)
-      (shell-command-to-string "wl-paste --no-newline")))
-  (setq interprogram-cut-function #'my-wl-copy
-        interprogram-paste-function #'my-wl-paste))
+;; Whenever you reconfigure a package, make sure to wrap your config in an
+;; `with-eval-after-load' block, otherwise Doom's defaults may override your
+;; settings. E.g.
+;;
+;;   (with-eval-after-load 'PACKAGE
+;;     (setq x y))
+;;
+;; The exceptions to this rule:
+;;
+;;   - Setting file/directory variables (like `org-directory')
+;;   - Setting variables which explicitly tell you to set them before their
+;;     package is loaded (see 'C-h v VARIABLE' to look them up).
+;;   - Setting doom variables (which start with 'doom-' or '+').
+;;
+;; Here are some additional functions/macros that will help you configure Doom.
+;;
+;; - `load!' for loading external *.el files relative to this one
+;; - `add-load-path!' for adding directories to the `load-path', relative to
+;;   this file. Emacs searches the `load-path' when you load packages with
+;;   `require' or `use-package'.
+;; - `map!' for binding new keys
+;;
+;; To get information about any of these functions/macros, move the cursor over
+;; the highlighted symbol at press 'K' (non-evil users must press 'C-c c k').
+;; This will open documentation for it, including demos of how they are used.
+;; Alternatively, use `C-h o' to look up a symbol (functions, variables, faces,
+;; etc).
+;;
+;; You can also try 'gd' (or 'C-c c d') to jump to their definition and see how
+;; they are implemented.
 
-;; Shared LSP
+;; remove LSP delays
+(after! flycheck (setq flycheck-idle-change-delay 0.1))
 (after! lsp-mode
-  (setq lsp-idle-delay 0.1
-        lsp-completion-enable-additional-text-edit t
-        lsp-modeline-code-actions-enable t))
+  (setq lsp-idle-delay 0.1)
+  (setq lsp-completion-enable-additional-text-edit t)
+  (setq lsp-modeline-code-actions-enable t))
 
-;; Go
-(after! lsp-mode
-  (setq lsp-go-use-gofumpt t
-        lsp-go-analyses '((fieldalignment . t)
-                          (nilness . t)
-                          (shadow . t)
-                          (unusedparams . t)
-                          (unusedwrite . t)
-                          (useany . t)
-                          (unusedvariable . t))))
-
-(after! go-mode
-  (add-hook 'before-save-hook #'lsp-organize-imports nil t))
-
-(add-hook 'go-mode-hook #'lsp-deferred)
-
-;; Java
-(after! lsp-java
-  (setq lsp-java-save-action-organize-imports t))
-
-;; Diagnostics
-(after! flycheck
-  (setq flycheck-idle-change-delay 0.1))
-
-;; Debugging
-(use-package! dape)
+(after! projectile
+  (setq projectile-project-root-files-bottom-up
+        (remove ".git" projectile-project-root-files-bottom-up)))

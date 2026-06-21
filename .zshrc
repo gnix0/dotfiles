@@ -125,6 +125,8 @@ export NVM_DIR="$HOME/.nvm"
 [ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"  # This loads nvm bash_completion
 eval "$(rbenv init -)"
 
-
 # Load Angular CLI autocompletion.
 source <(ng completion script)
+
+# Emacs
+export PATH="$HOME/.config/emacs/bin:$PATH"
