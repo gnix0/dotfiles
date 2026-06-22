@@ -1,5 +1,5 @@
 [general]
-import = ["./themes/rose-pine-dark.toml"]
+import = ["./themes/catppuccin-macchiato.toml"]
 
 [font]
 normal = { family = "JetBrainsMono Nerd Font", style = "Medium" }
