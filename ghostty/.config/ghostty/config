@@ -1,0 +1,11 @@
+# Terminal compatibility
+term = xterm-256color
+
+# Nuke ugly top bar and borders
+window-decoration = false
+
+# Make it nice looking
+theme = Catppuccin Macchiato
+font-family = "Terminess Nerd Font"
+font-size = 18
+background-opacity = 0.75
