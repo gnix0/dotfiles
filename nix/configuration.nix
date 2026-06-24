@@ -144,6 +144,9 @@
 	aspell
 	aspellDicts.en
 	sqlite
+	bash
+	libxml2
+	go-tools
 	gopls
 	rustup
 	go
@@ -177,6 +180,7 @@
 	htop
 	btop
 	fastfetch
+	nerd-fonts.symbols-only
   ];
 
   virtualisation.docker.enable = true;

@@ -6,6 +6,7 @@
 	home.stateVersion = "25.11";
 
 	home.sessionVariables = {
+		EMACSDIR = "$HOME/.config/emacs";
 		EDITOR = "emacsclient";
 		VISUAL = "emacsclient";
 		TERMINAL = "ghostty";
@@ -38,5 +39,6 @@
 	programs.emacs.enable = true;
 	services.emacs = {
 		enable = true;
+		package = pkgs.emacs;
 	};
 }

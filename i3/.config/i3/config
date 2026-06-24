@@ -47,7 +47,7 @@ bindsym $mod+Return exec ghostty
 bindsym $mod+b      exec firefox
 bindsym $mod+t      exec pcmanfm
 bindsym $mod+d      exec "rofi -modi drun,run -show drun"
-bindsym $mod+e      exec "emacsclient -c -a 'emacs'"
+bindsym $mod+e exec emacsclient -c -a 'emacs'
 bindsym $mod+p      exec flameshot gui
 
 # System Controls
