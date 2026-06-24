@@ -114,7 +114,6 @@
 	lxappearance
 	adwaita-icon-theme
 	discord
-	google-chrome
 	flameshot
 	stow
 	fish
@@ -199,6 +198,29 @@
       };
     };
   };
+
+  programs.firefox = {
+    enable = true;
+    policies = {
+      ExtensionSettings = {
+        # Force-installs the DuckDuckGo Privacy Essentials extension
+        "jid1-Zgo7gNsOww7HBw@jetpack" = {
+          installation_mode = "force_installed";
+          install_url = "https://mozilla.org";
+        };
+      };
+
+    SearchEngines = {
+      Default = "DuckDuckGo";
+      PreventInstalls = false;
+    };
+
+      Preferences = {
+	"browser.search.update" = false;
+      };
+    };
+  };
+
 
   # Limit the number of generations kept in the boot menu
   boot.loader.systemd-boot.configurationLimit = 5;
