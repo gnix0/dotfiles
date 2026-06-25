@@ -6,9 +6,6 @@
 	home.stateVersion = "25.11";
 
 	home.sessionVariables = {
-		EMACSDIR = "$HOME/.config/emacs";
-		EDITOR = "emacsclient";
-		VISUAL = "emacsclient";
 		TERMINAL = "ghostty";
 		BROWSER = "google-chrome-stable";
 	};
@@ -32,13 +29,6 @@
 
 		extraConfig = {
 			init.defaultBranch = "main";
-			core.editor = "emacsclient";
 		};
-	};
-
-	programs.emacs.enable = true;
-	services.emacs = {
-		enable = true;
-		package = pkgs.emacs;
 	};
 }

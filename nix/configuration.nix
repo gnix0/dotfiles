@@ -86,7 +86,7 @@
   # Define a user account.
   users.users.gnix = {
     isNormalUser = true;
-    extraGroups = [ "wheel" "networkmanager" "docker" ];
+    extraGroups = [ "wheel" "networkmanager" "docker" "uucp" "video" "audio" "dialout" "libvirtd" "input" ];
     packages = with pkgs; [
       tree
     ];
@@ -100,9 +100,16 @@
   nixpkgs.config.allowUnfree = true;
   nixpkgs.config.permittedInsecurePackages = [ "docker-28.5.2" ];
 
+  # Enable Emacs daemon
+  services.emacs = {
+    enable = true;
+    defaultEditor = true;
+  };
+
   # List packages installed in system profile.
   # You can use https://search.nixos.org/ to find more packages (and options).
   environment.systemPackages = with pkgs; [
+	emacs
 	wget
 	git
 	vim
@@ -119,13 +126,10 @@
 	fish
 	ghostty
 	starship
-	emacs
 	rofi
 	pavucontrol
 	xclip
 	coreutils
-	emacsPackages.pbcopy
-	emacsPackages.vterm
 	libvterm
 	libtool
 	gcc
@@ -181,6 +185,8 @@
 	btop
 	fastfetch
 	nerd-fonts.symbols-only
+	mgba
+	simple64
   ];
 
   virtualisation.docker.enable = true;
