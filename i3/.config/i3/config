@@ -78,10 +78,10 @@ bindsym $mod+Shift+l move right
 # 5. ON-THE-FLY RESIZING (Alt + hjkl)
 ################################################################################
 # Emulating your Hyprland Mod+Alt+hjkl resize directly without a submode
-bindsym $mod+Mod1+h resize shrink width 20 px or 20 ppt
-bindsym $mod+Mod1+l resize grow width 20 px or 20 ppt
-bindsym $mod+Mod1+k resize shrink height 20 px or 20 ppt
-bindsym $mod+Mod1+j resize grow height 20 px or 20 ppt
+bindsym $mod+Mod1+l resize shrink width 5 px or 5 ppt
+bindsym $mod+Mod1+h resize grow width 5 px or 5 ppt
+bindsym $mod+Mod1+k resize shrink height 5 px or 5 ppt
+bindsym $mod+Mod1+j resize grow height 5 px or 5 ppt
 
 ################################################################################
 # 6. WORKSPACES (Home Row Mapping)
