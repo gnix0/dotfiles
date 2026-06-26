@@ -32,7 +32,7 @@ exec_always --no-startup-id ~/.config/polybar/launch.sh
 gaps top 28
 
 # Wallpaper (Requires 'feh' or 'nitrogen' since hyprpaper is Wayland)
-exec_always --no-startup-id feh --bg-fill ~/smoking.jpg
+exec_always --no-startup-id feh --bg-fill ~/wpp.png
 
 # Disable X11 screen blanking and power saving
 exec --no-startup-id xset s off -dpms
