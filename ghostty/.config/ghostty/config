@@ -8,5 +8,5 @@ window-decoration = false
 theme = Monokai Classic
 background = #000000
 font-family = "Terminess Nerd Font"
-font-size = 18
+font-size = 19
 background-opacity = 0.9
