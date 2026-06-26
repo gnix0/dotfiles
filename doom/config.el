@@ -32,11 +32,22 @@
 ;; There are two ways to load a theme. Both assume the theme is installed and
 ;; available. You can either set `doom-theme' or manually load a theme with the
 ;; `load-theme' function. This is the default:
+
+;; Catppuccin theme (for when I want to rice)
 ;; (setq doom-theme 'catppuccin)
 ;; (setq catppuccin-flavor 'macchiato) ; or 'frappe 'latte, 'macchiato, or 'mocha
 ;; (load-theme 'catppuccin t)
-(setq doom-theme 'doom-monokai-classic)
 
+;; (set-frame-parameter (selected-frame) 'alpha '(80 . 80))
+;; (add-to-list 'default-frame-alist '(alpha . (80 . 80)))
+
+;; Color column
+(setq-default fill-column 100)
+(add-hook 'prog-mode-hook #'display-fill-column-indicator-mode)
+(add-hook 'text-mode-hook #'display-fill-column-indicator-mode)
+(add-hook 'conf-mode-hook #'display-fill-column-indicator-mode)
+
+(setq doom-theme 'doom-monokai-classic)
 (custom-theme-set-faces! 'doom-monokai-classic
   '(default :background "#000000")
   '(solaire-default-face :background "#000000"))
@@ -96,3 +107,6 @@
   :config
   (when (daemonp)
     (exec-path-from-shell-initialize)))
+
+(after! lsp-java
+  (setq lsp-java-server-install-dir (expand-file-name "~/.config/emacs/.local/etc/lsp/eclipse.jdt.ls/")))
