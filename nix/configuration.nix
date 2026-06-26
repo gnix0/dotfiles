@@ -37,18 +37,10 @@
     windowManager.i3 = {
       enable = true;
       extraPackages = with pkgs; [
-	polybar
+	polybarFull
 	i3status
 	rofi
       ];
-    };
-  };
-
-  nixpkgs.config = {
-    packageOverrides = pkgs: rec {
-      polybar = pkgs.polybar.override {
-	i3Support = true;
-      };
     };
   };
 

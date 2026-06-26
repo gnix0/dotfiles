@@ -29,7 +29,6 @@ exec --no-startup-id xss-lock --transfer-sleep-lock -- i3lock --nofork
 
 # Start Polybar (assuming your polybar script is at ~/.config/polybar/launch.sh)
 exec_always --no-startup-id ~/.config/polybar/launch.sh
-gaps top 28
 
 # Wallpaper (Requires 'feh' or 'nitrogen' since hyprpaper is Wayland)
 exec_always --no-startup-id feh --bg-fill ~/wpp.png
