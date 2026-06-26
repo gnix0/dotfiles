@@ -36,6 +36,9 @@ exec_always --no-startup-id feh --bg-fill ~/wpp.png
 # Disable X11 screen blanking and power saving
 exec --no-startup-id xset s off -dpms
 
+# Set mouse cursor idle timeout
+exec_always --no-startup-id unclutter --timeout 2 --ignore-scrolling --start-hidden
+
 # Start picom for background opacity on Ghostty
 exec_always --no-startup-id picom
 

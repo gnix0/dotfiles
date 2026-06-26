@@ -133,6 +133,7 @@
 	adwaita-icon-theme
 	discord
 	flameshot
+	unclutter-xfixes
 	stow
 	zsh
 	ghostty
