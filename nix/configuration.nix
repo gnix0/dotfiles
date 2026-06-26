@@ -90,11 +90,11 @@
     packages = with pkgs; [
       tree
     ];
-    shell = pkgs.fish;
+    shell = pkgs.zsh;
   };
 
   # programs.firefox.enable = true;
-  programs.fish.enable = true;
+  programs.zsh.enable = true;
 
   # Allow unfree packages
   nixpkgs.config.allowUnfree = true;
@@ -106,13 +106,32 @@
     defaultEditor = true;
   };
 
+  # JDKs
+  environment.etc = {
+    "jdks/java-8".source = pkgs.jdk8;
+    "jdks/java-11".source = pkgs.jdk11;
+    "jdks/java-17".source = pkgs.jdk17;
+    "jdks/java-21".source = pkgs.jdk21;
+    "jdks/java-25".source = pkgs.jdk25;
+  };
+
+  programs.nix-ld.enable = true;
+    programs.nix-ld.libraries = with pkgs; [
+      stdenv.cc.cc
+      glibc
+      zlib
+      openssl
+      icu
+      curl
+      util-linux
+  ];
+
   # List packages installed in system profile.
   # You can use https://search.nixos.org/ to find more packages (and options).
   environment.systemPackages = with pkgs; [
 	emacs
 	wget
 	git
-	vim
 	ripgrep
 	fd
 	tree-sitter
@@ -123,9 +142,8 @@
 	discord
 	flameshot
 	stow
-	fish
+	zsh
 	ghostty
-	starship
 	rofi
 	pavucontrol
 	xclip
@@ -153,13 +171,17 @@
 	go-tools
 	gopls
 	rustup
+	rust-analyzer
 	go
 	lightdm
 	fwupd
 	obs-studio
-	jdk21
+	jdt-language-server
+	lua-language-server
+	nil
 	maven
 	gradle
+	python3
 	nodejs_22
 	pnpm
 	ruby
@@ -167,6 +189,7 @@
 	openssl
 	zlib
 	elixir
+	elixir-ls
 	erlang
 	docker-compose
 	kubectl

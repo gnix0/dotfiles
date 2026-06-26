@@ -5,9 +5,39 @@
 	home.homeDirectory = "/home/gnix";
 	home.stateVersion = "25.11";
 
+	home.sessionPath = [
+		"${config.home.homeDirectory}/.config/emacs/bin"
+	];
+
 	home.sessionVariables = {
 		TERMINAL = "ghostty";
-		BROWSER = "google-chrome-stable";
+		JAVA_HOME = "${pkgs.jdk25}/lib/openjdk";
+	};
+
+	programs.zsh = {
+		enable = true;
+		autosuggestion.enable = true;
+
+		shellAliases = {
+			rebuild = "sudo nixos-rebuild switch --flake /etc/nixos#nixos";
+		};
+
+		oh-my-zsh = {
+			enable = true;
+			theme = "robbyrussell";
+			plugins = [ "git" "sudo" "docker" "docker-compose" ];
+		};
+	};
+
+	programs.neovim = {
+		enable = true;
+		defaultEditor = true;
+		vimAlias = true;
+	};
+
+	programs.java = {
+		enable = true;
+		package = pkgs.jdk25;
 	};
 
 	gtk = {
