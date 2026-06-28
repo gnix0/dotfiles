@@ -29,12 +29,6 @@
 		};
 	};
 
-	programs.neovim = {
-		enable = true;
-		defaultEditor = true;
-		vimAlias = true;
-	};
-
 	programs.java = {
 		enable = true;
 		package = pkgs.jdk25;
@@ -42,6 +36,7 @@
 
 	gtk = {
 	  enable = true;
+	  gtk4.theme = null;
 	  theme = {
 	    name = "Adwaita-dark";
 	    package = pkgs.gnome-themes-extra;
@@ -54,11 +49,14 @@
 
 	programs.git = {
 		enable = true;
-		userName = "Gustavo Arantes";
-		userEmail = "dev.gustavoa@gmail.com";
-
-		extraConfig = {
-			init.defaultBranch = "main";
+		settings = {
+			user = {
+				name = "Gustavo Arantes";
+				email = "dev.gustavoa@gmail.com";
+			};
+			init = {
+				defaultBranch = "main";
+			};
 		};
 	};
 }

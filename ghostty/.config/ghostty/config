@@ -5,8 +5,8 @@ term = xterm-256color
 window-decoration = false
 
 # Make it nice looking
-theme = Monokai Classic
+theme = Monokai Remastered
 background = #000000
 font-family = "Terminess Nerd Font"
 font-size = 19
-background-opacity = 0.9
+background-opacity = 1

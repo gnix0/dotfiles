@@ -28,11 +28,9 @@
 	enable = true;
 	greeters.gtk.enable = true;
       };
-      defaultSession = "none+i3";
     };
     desktopManager = {
       xterm.enable = false;
-      gnome.enable = true;
     };
     windowManager.i3 = {
       enable = true;
@@ -44,7 +42,10 @@
     };
   };
 
-  services.xserver.displayManager.gdm.enable = false;
+  services.displayManager.gdm.enable = false;
+  services.desktopManager.gnome.enable = true;
+  services.displayManager.defaultSession = "none+i3";
+
   services.picom = {
     enable = true;
     backend = "xrender";
@@ -96,6 +97,11 @@
   services.emacs = {
     enable = true;
     defaultEditor = true;
+  };
+
+  programs.neovim = {
+  	enable = true;
+	vimAlias = true;
   };
 
   # JDKs
