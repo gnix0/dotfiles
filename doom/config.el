@@ -48,9 +48,6 @@
 (add-hook 'conf-mode-hook #'display-fill-column-indicator-mode)
 
 (setq doom-theme 'doom-monokai-classic)
-(custom-theme-set-faces! 'doom-monokai-classic
-  '(default :background "#000000")
-  '(solaire-default-face :background "#000000"))
 
 ;; This determines the style of line numbers in effect. If set to `nil', line
 ;; numbers are disabled. For relative line numbers, set this to `relative'.
@@ -92,10 +89,14 @@
 ;; You can also try 'gd' (or 'C-c c d') to jump to their definition and see how
 ;; they are implemented.
 
+(after! lsp-java
+  (setq lsp-java-server-install-dir
+        (expand-file-name "~/.local/share/jdtls-server/")))
+
 ;; remove LSP delays
-(after! flycheck (setq flycheck-idle-change-delay 0.1))
+(after! flycheck (setq flycheck-idle-change-delay 0.3))
 (after! lsp-mode
-  (setq lsp-idle-delay 0.1)
+  (setq lsp-idle-delay 0.4)
   (setq lsp-completion-enable-additional-text-edit t)
   (setq lsp-modeline-code-actions-enable t))
 
@@ -107,6 +108,3 @@
   :config
   (when (daemonp)
     (exec-path-from-shell-initialize)))
-
-(after! lsp-java
-  (setq lsp-java-server-install-dir (expand-file-name "~/.config/emacs/.local/etc/lsp/eclipse.jdt.ls/")))

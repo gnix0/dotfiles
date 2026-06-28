@@ -54,7 +54,4 @@
 ;; Catppuccin
 (package! catppuccin-theme)
 
-;; Better debugging
-(package! dape)
-
 (package! exec-path-from-shell)
