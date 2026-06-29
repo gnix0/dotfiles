@@ -6,8 +6,8 @@
 
 ;; Some functionality uses this to identify you, e.g. GPG configuration, email
 ;; clients, file templates and snippets. It is optional.
-(setq user-full-name "Gustavo Arantes"
-      user-mail-address "dev.gustavoa@gmail.com")
+;; (setq user-full-name "John Doe"
+;;       user-mail-address "john@doe.com")
 
 ;; Doom exposes five (optional) variables for controlling fonts in Doom:
 ;;
@@ -21,8 +21,8 @@
 ;; See 'C-h v doom-font' for documentation and more examples of what they
 ;; accept. For example:
 ;;
-(setq doom-font (font-spec :family "Terminess Nerd Font" :size 25 :weight 'medium)
-      doom-variable-pitch-font (font-spec :family "Terminess Nerd Font" :size 25))
+(setq doom-font (font-spec :family "JetBrainsMono NFM" :size 18 :weight 'medium)
+      doom-variable-pitch-font (font-spec :family "JetBrainsMono NFM" :size 18))
 ;;
 ;; If you or Emacs can't find your font, use 'M-x describe-font' to look them
 ;; up, `M-x eval-region' to execute elisp code, and 'M-x doom/reload-font' to
@@ -32,22 +32,8 @@
 ;; There are two ways to load a theme. Both assume the theme is installed and
 ;; available. You can either set `doom-theme' or manually load a theme with the
 ;; `load-theme' function. This is the default:
-
-;; Catppuccin theme (for when I want to rice)
-;; (setq doom-theme 'catppuccin)
-;; (setq catppuccin-flavor 'macchiato) ; or 'frappe 'latte, 'macchiato, or 'mocha
-;; (load-theme 'catppuccin t)
-
-;; (set-frame-parameter (selected-frame) 'alpha '(80 . 80))
-;; (add-to-list 'default-frame-alist '(alpha . (80 . 80)))
-
-;; Color column
-(setq-default fill-column 100)
-(add-hook 'prog-mode-hook #'display-fill-column-indicator-mode)
-(add-hook 'text-mode-hook #'display-fill-column-indicator-mode)
-(add-hook 'conf-mode-hook #'display-fill-column-indicator-mode)
-
-(setq doom-theme 'doom-monokai-classic)
+(setq catppuccin-flavor 'mocha)
+(setq doom-theme 'catppuccin)
 
 ;; This determines the style of line numbers in effect. If set to `nil', line
 ;; numbers are disabled. For relative line numbers, set this to `relative'.
@@ -89,22 +75,30 @@
 ;; You can also try 'gd' (or 'C-c c d') to jump to their definition and see how
 ;; they are implemented.
 
-(after! lsp-java
-  (setq lsp-java-server-install-dir
-        (expand-file-name "~/.local/share/jdtls-server/")))
+(setenv "PATH" (concat (getenv "PATH")
+                       ":/home/gnix/.nvm/versions/node/v22.23.1/bin"
+                       ":/home/gnix/.local/share/gem/ruby/3.4.0/bin"))
 
-;; remove LSP delays
-(after! flycheck (setq flycheck-idle-change-delay 0.3))
-(after! lsp-mode
-  (setq lsp-idle-delay 0.4)
-  (setq lsp-completion-enable-additional-text-edit t)
-  (setq lsp-modeline-code-actions-enable t))
+(setq exec-path (append exec-path
+                        '("/home/gnix/.nvm/versions/node/v22.23.1/bin"
+                          "/home/gnix/.local/share/gem/ruby/3.4.0/bin")))
 
-(after! projectile
-  (setq projectile-project-root-files-bottom-up
-        (remove ".git" projectile-project-root-files-bottom-up)))
+(with-eval-after-load 'eglot
+  (add-to-list 'eglot-server-programs
+               '(graphql-mode . ("graphql-lsp" "server" "--stdio"))))
 
-(use-package! exec-path-from-shell
-  :config
-  (when (daemonp)
-    (exec-path-from-shell-initialize)))
+(dolist (hook '(c-mode-hook
+                c++-mode-hook
+                elixir-mode-hook
+                go-mode-hook
+                graphql-mode-hook
+                java-mode-hook
+                js-mode-hook
+                typescript-mode-hook
+                kotlin-mode-hook
+                lua-mode-hook
+                python-mode-hook
+                ruby-mode-hook
+                rust-mode-hook
+                sh-mode-hook))
+  (add-hook hook 'eglot-ensure))

@@ -51,7 +51,5 @@
 ;; (unpin! pinned-package another-pinned-package)
 ;; ...Or *all* packages (NOT RECOMMENDED; will likely break things)
 ;; (unpin! t)
-;; Catppuccin
-(package! catppuccin-theme)
 
-(package! exec-path-from-shell)
+(package! catppuccin-theme)
