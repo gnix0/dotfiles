@@ -20,12 +20,11 @@ tiling_drag modifier titlebar
 exec --no-startup-id xrandr --output eDP-1 --auto --output HDMI-1 --primary --auto --right-of eDP-1
 
 # Core Daemons
-exec --no-startup-id /usr/lib/polkit-kde-authentication-agent-1
+exec --no-startup-id /usr/lib/polkit-gnome/polkit-gnome-authentication-agent-1
 exec --no-startup-id nm-applet
-exec --no-startup-id xss-lock --transfer-sleep-lock -- i3lock --nofork
 
-# Start Emacs daemon -- commented out since home.nix already starts it
-# exec --no-startup-id emacs --daemon
+# Start Emacs daemon
+exec --no-startup-id emacs --daemon
 
 # Start Polybar (assuming your polybar script is at ~/.config/polybar/launch.sh)
 exec_always --no-startup-id ~/.config/polybar/launch.sh
@@ -42,15 +41,18 @@ exec_always --no-startup-id unclutter --timeout 2 --ignore-scrolling --start-hid
 # Start picom for background opacity on Ghostty
 exec_always --no-startup-id picom
 
+# Start dunst
+exec_always --no-startup-id dunst
+
 ################################################################################
 # 3. CORE APPLICATION BINDINGS
 ################################################################################
 bindsym $mod+Return exec ghostty
 bindsym $mod+b      exec firefox
 bindsym $mod+t      exec pcmanfm
-bindsym $mod+d      exec --no-startup-id ~/.config/rofi/launchers/type-3/launcher.sh
+bindsym $mod+d      exec --no-startup-id ~/.config/rofi/launchers/type-2/launcher.sh
 bindsym $mod+e exec emacsclient -c -a 'emacs'
-bindsym $mod+p      exec flameshot gui
+bindsym $mod+p exec --no-startup-id maim -s | satty --filename - --output-filename ~/Pictures/print_$(date +%Y%m%d_%H%M%S).png
 
 # System Controls
 bindsym $mod+q      kill
