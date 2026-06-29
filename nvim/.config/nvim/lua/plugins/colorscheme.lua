@@ -1,20 +1,18 @@
 return {
-    "tanvirtin/monokai.nvim",
-    name = "monokai",
+    "catppuccin/nvim",
+    name = "catppuccin",
     lazy = false,
     priority = 1000,
-    config = function ()
-        require("monokai").setup({})
+    config = function()
+        require("catppuccin").setup({
+            flavour = "mocha",
+            transparent_background = true,
+            integrations = {
+                telescope = true,
+                nvimtree = true,
+            },
+        })
 
-        vim.cmd.colorscheme("monokai")
-
-        local hl_groups = {
-            "Normal", "NormalFloat", "FloatBorder", "TelescopeNormal", "TelescopeBorder", "NvimTreeNormal",
-            "NvimTreeNormalNC", "SignColumn", "LineNr", "CursorLineNr"
-        }
-
-        for _, group in ipairs(hl_groups) do
-            vim.api.nvim_set_hl(0, group, { bg = "NONE", ctermbg = "NONE" })
-        end
+        vim.cmd.colorscheme("catppuccin")
     end
 }
