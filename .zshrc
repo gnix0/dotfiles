@@ -114,6 +114,9 @@ export NVM_DIR="$HOME/.nvm"
 # Doom Emacs
 export PATH="$HOME/.config/emacs/bin:$PATH"
 
+# Default global editor to Neovim for quick edits
+export EDITOR="vim"
+
 # Bazel
 alias basel='bazelisk'
 
@@ -126,8 +129,9 @@ source <(ng completion script)
 # The Fuck alias
 eval $(thefuck --alias)
 
-# Go
+# Go and Rust
 export PATH="$HOME/go/bin:$HOME/.local/bin:$PATH"
+export PATH="$HOME/.cargo/bin:$PATH"
 
 # Ruby gems
 export PATH="$HOME/.local/share/gem/ruby/3.4.0/bin:$PATH"

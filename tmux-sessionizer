@@ -7,64 +7,67 @@ CONFIG_FILE="$CONFIG_DIR/$CONFIG_FILE_NAME"
 [[ -f $CONFIG_FILE_NAME ]] && source "$CONFIG_FILE_NAME"
 
 log() {
-	[[ $TS_LOG == "echo" ]] && echo "$*"
-	[[ $TS_LOG == "file" ]] && echo "$*" >>"$TS_LOG_FILE"
+    [[ $TS_LOG == "echo" ]] && echo "$*"
+    [[ $TS_LOG == "file" ]] && echo "$*" >>"$TS_LOG_FILE"
 }
 
 sanity_check() {
-	for cmd in tmux fzf fd; do
-		if ! command -v $cmd &>/dev/null; then
-			echo "Error: $cmd is not installed."
-			exit 1
-		fi
-	done
+    for cmd in tmux fzf fd; do
+        if ! command -v $cmd &>/dev/null; then
+            echo "Error: $cmd is not installed."
+            exit 1
+        fi
+    done
 }
 
 switch_to() {
-	if [[ -z $TMUX ]]; then
-		tmux attach-session -t "$1"
-	else
-		tmux switch-client -t "$1"
-	fi
+    if [[ -z $TMUX ]]; then
+        tmux attach-session -t "$1"
+    else
+        tmux switch-client -t "$1"
+    fi
 }
 
 has_session() {
-	tmux list-sessions | grep -q "^$1:"
+    tmux list-sessions | grep -q "^$1:"
 }
 
 is_tmux_running() {
-	pgrep tmux >/dev/null
+    pgrep tmux >/dev/null
 }
 
 find_dirs() {
-	tmux list-sessions -F "[TMUX] #{session_name}" 2>/dev/null | grep -vFx "[TMUX] $(tmux display-message -p '#S' 2>/dev/null)"
-	fd --type d --hidden --exclude .git --exclude .cache --max-depth 4 . "$HOME"
+    tmux list-sessions -F "[TMUX] #{session_name}" 2>/dev/null | grep -vFx "[TMUX] $(tmux display-message -p '#S' 2>/dev/null)"
+    fd --type d --hidden --exclude .git --exclude .cache --max-depth 4 . "$HOME"
 }
 
 create_custom_session() {
-	local s_name="$1"
-	local s_dir="$2"
+    local s_name="$1"
+    local s_dir="$2"
 
-	# Panel 1: Shell
-	tmux new-session -ds "$s_name" -c "$s_dir" -n zsh
-	# Panel 2: Lazydocker
-	tmux new-window -t "$s_name:2" -n docker -c "$s_dir" "lazydocker"
-	# Panel 3: K9s
-	tmux new-window -t "$s_name:3" -n kubernetes -c "$s_dir" "k9s"
-	# Panel 4: Btop
-	tmux new-window -t "$s_name:4" -n monitoring -c "$s_dir" "btop"
-	# Focus on the first panel upon session startup
-	tmux select-window -t "$s_name:1"
+    # Panel 1: Zsh
+    tmux new-session -ds "$s_name" -c "$s_dir" -n zsh "fastfetch; zsh"
+    # Panel 2: Yazi
+    tmux new-window -t "$s_name:2" -n yazi -c "$s_dir" "yazi"
+    # Panel 3: Lazydocker
+    tmux new-window -t "$s_name:3" -n docker -c "$s_dir" "lazydocker"
+    # Panel 4: K9s
+    tmux new-window -t "$s_name:4" -n kubernetes -c "$s_dir" "k9s"
+    # Panel 5: Btop
+    tmux new-window -t "$s_name:5" -n monitoring -c "$s_dir" "btop"
+
+    # Focus on the first panel upon session startup
+    tmux select-window -t "$s_name:1"
 }
 
 sanity_check
 
 if [[ -n $user_selected ]]; then
-	selected="$user_selected"
+    selected="$user_selected"
 elif [[ $# -eq 1 ]]; then
-	selected="$1"
+    selected="$1"
 else
-	selected=$(find_dirs | fzf --prompt="📂 Project: " --preview "ls -F {}")
+    selected=$(find_dirs | fzf --prompt="📂 Project: " --preview "ls -F {}")
 fi
 
 [[ -z $selected ]] && exit 0
@@ -76,7 +79,7 @@ selected=$(realpath "$selected")
 selected_name=$(basename "$selected" | tr . _)
 
 if ! is_tmux_running || ! has_session "$selected_name"; then
-	create_custom_session "$selected_name" "$selected"
+    create_custom_session "$selected_name" "$selected"
 fi
 
 switch_to "$selected_name"
