@@ -120,9 +120,6 @@ export EDITOR="vim"
 # Bazel
 alias basel='bazelisk'
 
-# DEV terminal setup
-alias dev='tmux-sessionizer'
-
 # Angular CLI completion
 source <(ng completion script)
 

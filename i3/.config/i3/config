@@ -48,6 +48,7 @@ exec_always --no-startup-id dunst
 # 3. CORE APPLICATION BINDINGS
 ################################################################################
 bindsym $mod+Return exec ghostty
+bindsym $mod+Shift+Return exec ghostty -e dev
 bindsym $mod+b      exec firefox
 bindsym $mod+t      exec pcmanfm
 bindsym $mod+d      exec --no-startup-id ~/.config/rofi/launchers/type-2/launcher.sh
@@ -81,11 +82,10 @@ bindsym $mod+Shift+l move right
 ################################################################################
 # 5. ON-THE-FLY RESIZING (Alt + hjkl)
 ################################################################################
-# Emulating your Hyprland Mod+Alt+hjkl resize directly without a submode
-bindsym $mod+Mod1+l resize shrink width 5 px or 5 ppt
-bindsym $mod+Mod1+h resize grow width 5 px or 5 ppt
-bindsym $mod+Mod1+k resize shrink height 5 px or 5 ppt
-bindsym $mod+Mod1+j resize grow height 5 px or 5 ppt
+bindsym $mod+Mod1+h resize shrink width 5 px or 5 ppt
+bindsym $mod+Mod1+l resize grow width 5 px or 5 ppt
+bindsym $mod+Mod1+j resize shrink height 5 px or 5 ppt
+bindsym $mod+Mod1+k resize grow height 5 px or 5 ppt
 
 ################################################################################
 # 6. WORKSPACES (Home Row Mapping)
