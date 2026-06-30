@@ -102,3 +102,5 @@
                 rust-mode-hook
                 sh-mode-hook))
   (add-hook hook 'eglot-ensure))
+
+(setq auth-sources '("~/.authinfo"))
