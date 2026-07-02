@@ -12,20 +12,20 @@ vim.opt.number = true
 vim.opt.numberwidth = 2
 
 vim.opt.expandtab = true
-vim.opt.tabstop = 4
-vim.opt.softtabstop = 4
-vim.opt.shiftwidth = 4
+vim.opt.tabstop = 2
+vim.opt.softtabstop = 2
+vim.opt.shiftwidth = 2
 vim.opt.smartindent = true
 
 vim.opt.splitright = true
 vim.opt.splitbelow = true
 vim.opt.scrolloff = 10
-vim.opt.cursorline = true
+vim.opt.cursorline = ture
 vim.opt.guicursor = "a:block"
 
 vim.opt.foldmethod = "manual"
 vim.opt.foldenable = true
-vim.opt.foldlevelstart = 119
+vim.opt.foldlevelstart = 109
 
 vim.opt.ignorecase = true
 vim.opt.smartcase = true
@@ -33,21 +33,8 @@ vim.opt.incsearch = true
 vim.opt.signcolumn = "yes"
 vim.opt.updatetime = 200
 vim.opt.wrap = false
-vim.opt.colorcolumn = "120"
+vim.opt.colorcolumn = "110"
 
 vim.opt.undofile = true
 vim.opt.undodir = vim.fn.stdpath("data") .. "/undodir"
 vim.opt.clipboard = "unnamedplus"
-
-local function start_treesitter(buf)
-    if vim.api.nvim_buf_is_valid(buf) and vim.bo[buf].buftype == "" and vim.bo[buf].filetype ~= "" then
-        pcall(vim.treesitter.start, buf)
-    end
-end
-
-vim.api.nvim_create_autocmd("FileType", {
-    group = vim.api.nvim_create_augroup("treesitter_start", { clear = true }),
-    callback = function(ev)
-        start_treesitter(ev.buf)
-    end,
-})

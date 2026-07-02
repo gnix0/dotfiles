@@ -15,7 +15,7 @@ return {
             "java", "sql", "go", "bash", "c", "cpp", "diff",
             "elixir", "heex", "json", "lua", "luadoc",
             "markdown", "markdown_inline", "query", "regex",
-            "ruby", "rust", "toml", "vim", "vimdoc", "xml", "yaml",
+            "rust", "toml", "vim", "vimdoc", "xml", "yaml",
             "typescript", "javascript", "tsx", "html", "css",
             "scss", "vue", "angular",
         }

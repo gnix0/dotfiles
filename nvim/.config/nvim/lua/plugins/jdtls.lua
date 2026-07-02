@@ -9,6 +9,9 @@ return {
       if not ok then return end
 
       local mason_path = vim.fn.stdpath("data") .. "/mason"
+      local jdtls_path = mason_path .. "/packages/jdtls"
+      local lombok_path = jdtls_path .. "/lombok.jar"
+      local launcher_jar = vim.fn.glob(jdtls_path .. "/plugins/org.eclipse.equinox.launcher_*.jar")
 
       local function get_workspace()
         local project_name = vim.fn.fnamemodify(vim.fn.getcwd(), ":p:h:t")
@@ -28,19 +31,39 @@ return {
         return bundles
       end
 
+      -- Discovers JDKs from SDKMAN candidates directory, falls back to Arch system JDKs.
+      -- jdtls uses these runtimes to compile projects targeting different source levels,
+      -- independently of which JDK runs the jdtls server itself.
       local function get_runtimes()
         local runtimes = {}
-        for _, rt in ipairs({
-          { name = "JavaSE-1.8", path = "/etc/jdks/java-8" },
-          { name = "JavaSE-11", path = "/etc/jdks/java-11" },
-          { name = "JavaSE-17", path = "/etc/jdks/java-17" },
-          { name = "JavaSE-21", path = "/etc/jdks/java-21" },
-          { name = "JavaSE-25", path = "/etc/jdks/java-25" },
-        }) do
-          if vim.fn.isdirectory(rt.path) == 1 then 
-            table.insert(runtimes, rt) 
+        local version_map = { ["17"] = "JavaSE-17", ["21"] = "JavaSE-21", ["25"] = "JavaSE-25" }
+        local sdkman_dir = home .. "/.sdkman/candidates/java"
+
+        if vim.fn.isdirectory(sdkman_dir) == 1 then
+          local seen = {}
+          for _, path in ipairs(vim.fn.globpath(sdkman_dir, "*", false, true)) do
+            local name = vim.fn.fnamemodify(path, ":t")
+            if name ~= "current" and vim.fn.isdirectory(path) == 1 then
+              local major = name:match("^(%d+)")
+              if major and version_map[major] and not seen[major] then
+                seen[major] = true
+                table.insert(runtimes, { name = version_map[major], path = path })
+              end
+            end
           end
         end
+
+        if #runtimes == 0 then
+          for _, rt in ipairs({
+            { name = "JavaSE-11", path = "/usr/lib/jvm/java-11-openjdk" },
+            { name = "JavaSE-17", path = "/usr/lib/jvm/java-17-openjdk" },
+            { name = "JavaSE-21", path = "/usr/lib/jvm/java-21-openjdk" },
+            { name = "JavaSE-25", path = "/usr/lib/jvm/java-25-openjdk" },
+          }) do
+            if vim.fn.isdirectory(rt.path) == 1 then table.insert(runtimes, rt) end
+          end
+        end
+
         return runtimes
       end
 
@@ -53,17 +76,31 @@ return {
           ".git", "mvnw", "gradlew", "pom.xml", "build.gradle", "settings.gradle",
         })
         if not root_dir then return end
+        if vim.fn.filereadable(launcher_jar) == 0 then return end
+
+        -- Prefer SDKMAN-managed java (current symlink = sdk default), fallback to PATH
+        local sdkman_java = home .. "/.sdkman/candidates/java/current/bin/java"
+        local java_bin = vim.fn.executable(sdkman_java) == 1 and sdkman_java or "java"
 
         local config = {
           cmd = {
-            "jdtls",
+            java_bin,
+            "-Declipse.application=org.eclipse.jdt.ls.core.id1",
+            "-Dosgi.bundles.defaultStartLevel=4",
+            "-Declipse.product=org.eclipse.jdt.ls.core.product",
+            "-Xmx4g",
+            "--add-modules=ALL-SYSTEM",
+            "--add-opens", "java.base/java.util=ALL-UNNAMED",
+            "--add-opens", "java.base/java.lang=ALL-UNNAMED",
+            "-javaagent:" .. lombok_path,
+            "-jar", launcher_jar,
+            "-configuration", jdtls_path .. "/config_linux",
             "-data", get_workspace(),
-            "--jvm-arg=-Xmx4g",
           },
           root_dir = root_dir,
           settings = {
             java = {
-              home = vim.env.JAVA_HOME, 
+              home = vim.env.JAVA_HOME or "/usr/lib/jvm/java-21-openjdk",
               eclipse = { downloadSources = true },
               maven = { downloadSources = true },
               referencesCodeLens = { enabled = true },

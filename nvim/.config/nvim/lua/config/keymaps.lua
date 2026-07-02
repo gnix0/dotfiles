@@ -1,3 +1,19 @@
+local function toggle_netrw()
+    for _, bufnr in ipairs(vim.api.nvim_list_bufs()) do
+        if vim.api.nvim_buf_is_loaded(bufnr) then
+            if vim.bo[bufnr].filetype == "netrw" then
+                vim.api.nvim_buf_delete(bufnr, { force = true })
+                return
+            end
+        end
+    end
+    vim.cmd("Explore")
+end
+
+vim.keymap.set("n", "<leader>e", toggle_netrw, { silent = true, desc = "Toggle Explorer" })
+vim.keymap.set("n", "<leader>l", "<cmd>Lazy<cr>", { desc = "Lazy" })
+vim.keymap.set("n", "<leader>qq", "<cmd>qa<cr>", { desc = "Quit All" })
+
 vim.keymap.set("n", "<Up>", "<Nop>", { noremap = true, silent = true })
 vim.keymap.set("n", "<Down>", "<Nop>", { noremap = true, silent = true })
 vim.keymap.set("n", "<Left>", "<Nop>", { noremap = true, silent = true })
@@ -58,60 +74,3 @@ vim.keymap.set("n", "<leader>sj", "<C-w>-", { desc = "Decrease Height" })
 vim.keymap.set("n", "<leader>sk", "<C-w>+", { desc = "Increase Height" })
 vim.keymap.set("n", "<leader>s>", "<C-w>>10", { desc = "Increase Width" })
 vim.keymap.set("n", "<leader>s<", "<C-w><10", { desc = "Decrease Width" })
-
-vim.keymap.set("n", "<leader>ju", function()
-    local ok, jdtls = pcall(require, "jdtls")
-    if not ok then
-        vim.notify("JDTLS not available in this buffer", vim.log.levels.WARN)
-        return
-    end
-    jdtls.update_project_config()
-    vim.notify("JDTLS project config updated", vim.log.levels.INFO)
-end, { noremap = true, silent = true, desc = "Update JDTLS project config" })
-
-vim.keymap.set("n", "<leader>rj", function()
-    local ok, jdtls = pcall(require, "jdtls")
-    if not ok then
-        vim.notify("JDTLS not available in this buffer", vim.log.levels.WARN)
-        return
-    end
-
-    local home = vim.env.HOME
-    local project_name = vim.fn.fnamemodify(vim.fn.getcwd(), ":p:h:t")
-    local workspace_dir = home .. "/jdtls-workspace/" .. project_name
-
-    if vim.fn.isdirectory(workspace_dir) == 1 then
-        vim.notify("Removing JDTLS workspace: " .. workspace_dir, vim.log.levels.WARN)
-        vim.fn.delete(workspace_dir, "rf")
-    else
-        vim.notify("JDTLS workspace not found, skipping removal", vim.log.levels.INFO)
-    end
-
-    vim.cmd("wall")
-    vim.defer_fn(function()
-        pcall(function() jdtls.update_project_config() end)
-        vim.cmd("JdtRestart")
-        vim.notify("JDTLS restarted with clean workspace", vim.log.levels.INFO)
-    end, 500)
-end, { noremap = true, silent = true, desc = "Hard reset JDTLS" })
-
-vim.keymap.set("n", "<leader>rl", function()
-    vim.cmd("LspRestart")
-    vim.notify("Reloading LSPs...", vim.log.levels.INFO)
-end, { noremap = true, silent = true, desc = "Restart all LSP servers" })
-
-local function toggle_netrw()
-    for _, bufnr in ipairs(vim.api.nvim_list_bufs()) do
-        if vim.api.nvim_buf_is_loaded(bufnr) then
-            if vim.bo[bufnr].filetype == "netrw" then
-                vim.api.nvim_buf_delete(bufnr, { force = true })
-                return
-            end
-        end
-    end
-    vim.cmd("Explore")
-end
-
-vim.keymap.set("n", "<leader>e", toggle_netrw, { silent = true, desc = "Toggle Explorer" })
-vim.keymap.set("n", "<leader>l", "<cmd>Lazy<cr>", { desc = "Lazy" })
-vim.keymap.set("n", "<leader>qq", "<cmd>qa<cr>", { desc = "Quit All" })

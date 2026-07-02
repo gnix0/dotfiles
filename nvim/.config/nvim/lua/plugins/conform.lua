@@ -14,7 +14,6 @@ return {
             c = { "clang-format" },
             cpp = { "clang-format" },
             java = { "google-java-format" },
-            ruby = { "rubocop" },
             elixir = { "mix" },
             json = { "prettierd" },
             yaml = { "prettierd" },

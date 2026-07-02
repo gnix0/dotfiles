@@ -71,9 +71,10 @@ ZSH_THEME="robbyrussell"
 # Example format: plugins=(rails git textmate ruby lighthouse)
 # Add wisely, as too many plugins slow down shell startup.
 plugins=(
-    git
-    zsh-autosuggestions
-    zsh-syntax-highlighting
+	history
+	colored-man-pages
+	zsh-autosuggestions
+	zsh-syntax-highlighting
 )
 
 source $ZSH/oh-my-zsh.sh
@@ -106,29 +107,29 @@ source $ZSH/oh-my-zsh.sh
 # Example aliases
 # alias zshconfig="mate ~/.zshrc"
 # alias ohmyzsh="mate ~/.oh-my-zsh"
+alias vim="nvim"
+alias dev="~/.local/bin/tmux-sessionizer"
 
+#THIS MUST BE AT THE END OF THE FILE FOR SDKMAN TO WORK!!!
+export SDKMAN_DIR="$HOME/.sdkman"
+[[ -s "$HOME/.sdkman/bin/sdkman-init.sh" ]] && source "$HOME/.sdkman/bin/sdkman-init.sh"
+
+# Default global editor to Neovim for quick edits
+export EDITR="vim"
+
+# The Fuck
+eval $(thefuck --alias)
+
+# Node
 export NVM_DIR="$HOME/.nvm"
 [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"  # This loads nvm
 [ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"  # This loads nvm bash_completion
 
-# Doom Emacs
-export PATH="$HOME/.config/emacs/bin:$PATH"
+# Go
+export PATH="$HOME/go/bin:$HOME/.local/bin:$PATH"
 
-# Default global editor to Neovim for quick edits
-export EDITOR="vim"
-
-# Bazel
-alias basel='bazelisk'
+# Rust
+export PATH="$HOME/.cargo/bin:$PATH"
 
 # Angular CLI completion
 source <(ng completion script)
-
-# The Fuck alias
-eval $(thefuck --alias)
-
-# Go and Rust
-export PATH="$HOME/go/bin:$HOME/.local/bin:$PATH"
-export PATH="$HOME/.cargo/bin:$PATH"
-
-# Ruby gems
-export PATH="$HOME/.local/share/gem/ruby/3.4.0/bin:$PATH"

@@ -31,7 +31,6 @@ return {
         opts = {
             ensure_installed = {
                 "gopls",
-                "ruby_lsp",
                 "elixirls",
                 "rust_analyzer",
                 "ts_ls",
@@ -56,16 +55,11 @@ return {
         }
     },
     {
-        "saghen/blink.cmp",
-        lazy = true
-    },
-    {
         "neovim/nvim-lspconfig",
         event = { "BufReadPost", "BufNewFile", "VeryLazy" },
         dependencies = {
             "mason-org/mason.nvim",
             "mason-org/mason-lspconfig.nvim",
-            "saghen/blink.cmp",
             "b0o/schemastore.nvim"
         },
         config = function ()

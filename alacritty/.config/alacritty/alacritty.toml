@@ -1,0 +1,9 @@
+[general]
+import = ["~/.config/alacritty/themes/solarized_osaka.toml"]
+
+[font]
+normal = { family = "Lucida Sans Typewriter", style = "Regular" }
+size = 14
+
+# [colors.primary]
+# background = "#000000"
