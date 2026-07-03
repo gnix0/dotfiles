@@ -167,10 +167,6 @@
 
 (savehist-mode 1)
 
-(use-package corfu
-  :init
-  (global-corfu-mode))
-
 ;; Version control
 (use-package magit)
 
@@ -213,3 +209,8 @@
   (let ((inhibit-read-only t))
     (ansi-color-apply-on-region compilation-filter-start (point))))
 (add-hook 'compilation-filter-hook #'goa/colorize-compilation-buffer)
+
+;; Projects
+(use-package envrc
+  :init
+  (envrc-global-mode))
