@@ -1,4 +1,4 @@
-;;; init.el --- Personal Emacs Configuration -*- lexical-binding: t; -*-
+; init.el --- Personal Emacs Configuration -*- lexical-binding: t; -*-
 
 ;; Author: Gustavo Arantes (gnix)
 ;; Created: July 2026
@@ -129,17 +129,43 @@
 ;; Multiple cursors
 (use-package multiple-cursors)
 
-;; Search engine & Completion
+;; Minibuffer and Searching
 (use-package vertico
   :init
-  (vertico-mode))
+  (vertico-mode)
+  :config
+  (setq vertico-cycle t
+        vertico-count 15
+        vertico-resize nil))
+
+(use-package marginalia
+  :init
+  (marginalia-mode)
+  :custom
+  (marginalia-max-relative-age 0)
+  (marginalia-align 'right))
+(define-key minibuffer-local-map "\M-a" #'marginalia-cycle)
 
 (use-package orderless
-  :custom
-  (completion-styles '(orderless basic))
-  (completion-category-defaults nil)
-  (completion-category-overrides
-   '((file (styles basic partial-completion)))))
+  :config
+  (setq completion-styles '(orderless basic)
+        completion-category-defaults nil))
+
+(use-package consult
+  :bind(
+        ("M-s M-g" . consult-grep)
+        ("M-s M-f" . consult-find)
+        ("M-s M-o" . consult-outline)
+        ("M-s M-l" . consult-line)
+        ("M-s M-b" . consult-buffer)))
+
+(use-package wgrep
+  :bind ( :map grep-mode-map
+          ("e" . wgrep-change-to-wgrep-mode)
+          ("C-x C-q" . wgrep-change-to-wgrep-mode)
+          ("C-c C-c" . wgrep-finish-edit)))
+
+(savehist-mode 1)
 
 (use-package corfu
   :init
