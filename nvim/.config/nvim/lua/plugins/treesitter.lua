@@ -12,12 +12,9 @@ return {
         TS.setup({})
 
         local ensure_installed = {
-            "java", "sql", "go", "bash", "c", "cpp", "diff",
-            "elixir", "heex", "json", "lua", "luadoc",
-            "markdown", "markdown_inline", "query", "regex",
+            "sql", "go", "bash", "c", "cpp", "diff",
+            "elixir", "json", "lua", "luadoc",
             "rust", "toml", "vim", "vimdoc", "xml", "yaml",
-            "typescript", "javascript", "tsx", "html", "css",
-            "scss", "vue", "angular",
         }
 
         local installed = TS.get_installed and TS.get_installed() or {}

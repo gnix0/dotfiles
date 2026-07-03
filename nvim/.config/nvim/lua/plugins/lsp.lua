@@ -33,18 +33,11 @@ return {
                 "gopls",
                 "elixirls",
                 "rust_analyzer",
-                "ts_ls",
                 "bashls",
                 "jsonls",
                 "yamlls",
-                "html",
-                "cssls",
-                "emmet_language_server",
-                "angularls",
-                "vue_ls",
                 "dockerls",
                 "docker_compose_language_service",
-                "eslint",
                 "clangd"
             },
             handlers = {
@@ -167,10 +160,6 @@ return {
                 }
             })
 
-            vim.lsp.config("eslint", {
-                settings = { workingDirectories = { mode = "auto" } }
-            })
-
             vim.lsp.config("jsonls", {
                 settings = {
                     json = {
@@ -190,18 +179,6 @@ return {
                         schemas = require("schemastore").yaml.schemas(),
                         validate = true
                     }
-                }
-            })
-
-            vim.lsp.config("html", {
-                filetypes = { "html", "htmlangular" }
-            })
-
-            vim.lsp.config("cssls", {
-                settings = {
-                    css = { validate = true },
-                    less = { validate = true },
-                    scss = { validate = true }
                 }
             })
 

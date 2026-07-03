@@ -11,8 +11,6 @@ local function toggle_netrw()
 end
 
 vim.keymap.set("n", "<leader>e", toggle_netrw, { silent = true, desc = "Toggle Explorer" })
-vim.keymap.set("n", "<leader>l", "<cmd>Lazy<cr>", { desc = "Lazy" })
-vim.keymap.set("n", "<leader>qq", "<cmd>qa<cr>", { desc = "Quit All" })
 
 vim.keymap.set("n", "<Up>", "<Nop>", { noremap = true, silent = true })
 vim.keymap.set("n", "<Down>", "<Nop>", { noremap = true, silent = true })
@@ -51,20 +49,6 @@ vim.keymap.set('n', '<Esc>', '<cmd>nohlsearch<CR>')
 
 vim.keymap.set("v", "<", "<gv", { silent = true })
 vim.keymap.set("v", ">", ">gv", { silent = true })
-
-vim.keymap.set("n", "gl", vim.diagnostic.open_float, { desc = "Line Diagnostics", silent = true })
-vim.keymap.set("n", "[d", function() vim.diagnostic.jump({ count = -1 }) end, { desc = "Prev Diagnostic", silent = true })
-vim.keymap.set("n", "]d", function() vim.diagnostic.jump({ count = 1 }) end, { desc = "Next Diagnostic", silent = true })
-vim.keymap.set("n", "[e", function() vim.diagnostic.jump({ count = -1, severity = vim.diagnostic.severity.ERROR }) end,
-    { desc = "Prev Error", silent = true })
-vim.keymap.set("n", "]e", function() vim.diagnostic.jump({ count = 1, severity = vim.diagnostic.severity.ERROR }) end,
-    { desc = "Next Error", silent = true })
-vim.keymap.set("n", "[w", function() vim.diagnostic.jump({ count = -1, severity = vim.diagnostic.severity.WARN }) end,
-    { desc = "Prev Warning", silent = true })
-vim.keymap.set("n", "]w", function() vim.diagnostic.jump({ count = 1, severity = vim.diagnostic.severity.WARN }) end,
-    { desc = "Next Warning", silent = true })
-vim.keymap.set("n", "[q", "<cmd>cprev<cr>", { desc = "Prev Quickfix", silent = true })
-vim.keymap.set("n", "]q", "<cmd>cnext<cr>", { desc = "Next Quickfix", silent = true })
 
 vim.keymap.set("n", "<leader>sv", "<C-w>v", { desc = "Split Vertical" })
 vim.keymap.set("n", "<leader>sh", "<C-w>s", { desc = "Split Horizontal" })

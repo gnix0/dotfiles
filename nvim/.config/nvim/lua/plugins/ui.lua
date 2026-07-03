@@ -57,12 +57,6 @@ return {
       lsp = {
         auto_attach = true,
         preference = {
-          "typescript-tools",
-          "ts_ls",
-          "angularls",
-          "vue_ls",
-          "html",
-          "cssls",
           "lua_ls",
           "gopls",
           "rust_analyzer",
