@@ -90,10 +90,7 @@
 		      :font "Lucida Sans Typewriter"
 		      :height 140))
 
-(use-package doom-themes
-  :demand
-  :config
-  (load-theme 'doom-solarized-dark t))
+(load-theme 'modus-vivendi-deuteranopia)
 
 (use-package doom-modeline
   :init
