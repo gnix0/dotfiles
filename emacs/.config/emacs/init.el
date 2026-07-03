@@ -105,6 +105,23 @@
 
 (use-package nerd-icons)
 
+;; Scrolling
+(global-set-key "\C-l"
+                (lambda ()
+                  (interactive)
+                  (recenter)))
+
+(defun goa/scroll-up-and-recenter ()
+  (interactive)
+  (scroll-up-command)
+  (recenter))
+(defun goa/scroll-down-and-recenter ()
+  (interactive)
+  (scroll-down-command)
+  (recenter))
+(global-set-key "\C-v" #'goa/scroll-up-and-recenter)
+(global-set-key "\M-v" #'goa/scroll-down-and-recenter)
+
 ;; Navigate between visible buffers
 (defun other-window-backward (&optional n)
   (interactive "p")
