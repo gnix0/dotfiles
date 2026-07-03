@@ -3,6 +3,9 @@
 ;; Author: Gustavo Arantes (gnix)
 ;; Created: July 2026
 
+(setq user-full-name "Gustavo Oliveira Arantes"
+      user-mail-address "dev.gustavoa@gmail.com")
+
 ;; Basic UI settings
 (setq inhibit-startup-message t)
 (menu-bar-mode -1)
@@ -70,19 +73,19 @@
   (setq-default tab-width 2))
 
 ;; Evil Mode & Relative line numbers (because vim motions are just the best)
-(use-package evil
-  :demand ; No lazy loading
-  :config
-  (evil-mode 1))
+;; (use-package evil
+;;  :demand ; No lazy loading
+;;  :config
+;;  (evil-mode 1))
 
 (use-package emacs
   :init
-  (defun ab/enable-line-numbers ()
+  (defun goa/enable-line-numbers ()
     "Enable relative line numbers"
     (interactive)
     (display-line-numbers-mode)
     (setq display-line-numbers 'relative))
-  (add-hook 'prog-mode-hook #'ab/enable-line-numbers))
+  (add-hook 'prog-mode-hook #'goa/enable-line-numbers))
 
 ;; Font & Theme
 (use-package emacs
@@ -101,3 +104,93 @@
   (doom-modeline-mode 1))
 
 (use-package nerd-icons)
+
+;; Navigate between visible buffers
+(defun other-window-backward (&optional n)
+  (interactive "p")
+  (if n
+      (other-window (- n))
+    (other-frame -1)))
+(global-set-key "\C-x\C-n" 'other-window)
+(global-set-key "\C-x\C-p" 'other-window-backward)
+
+;; Pin current window so that no other buffer opens it.
+;; Useful for compilation buffers and shells.
+(defun goa/pin-window ()
+  (interactive)
+  (set-window-dedicated-p (get-buffer-window (current-buffer)) t))
+
+;; Revert
+(global-set-key "\C-z"
+                (lambda ()
+                  (interactive)
+                  (revert-buffer :ignore-auto :noconfirm)))
+
+;; Multiple cursors
+(use-package multiple-cursors
+  :ensure t)
+
+;; Better ido-mode
+(use-package ido-vertical-mode
+  :ensure t
+  :init
+  (setq ido-vertical-define-keys 'C-n-and-C-p-only)
+  (ido-mode 1)
+  (ido-vertical-mode 1))
+
+;; Search engine & Completion
+(use-package vertico
+  :ensure t
+  :init
+  (vertico-mode))
+
+(use-package orderless
+  :ensure t
+  :custom
+  (completion-styles '(orderless basic))
+  (completion-category-defaults nil)
+  (completion-category-overrides
+   '((file (styles basic partial-completion)))))
+
+(use-package corfu
+  :ensure t
+  :init
+  (global-corfu-mode))
+
+;; Version control
+(use-package magit
+  :ensure t)
+
+(use-package forge
+  :after magit)
+
+;; Clipboard & Terminal emulator
+(use-package xclip
+  :ensure t
+  :init
+  (xclip-mode 1))
+
+(use-package vterm
+  :ensure t
+  :init
+  (setq vterm-buffer-name-string "vterm: %s"
+        vterm-copy-exclude-prompt t
+        vterm-kill-buffer-on-exit t
+        vterm-max-scrollback 10000
+        vterm-timer-delay 0.01)
+  :hook
+  (vterm-mode .
+              (lambda ()
+                (corfu-mode -1)
+                (display-line-numbers-mode -1)
+                (visual-line-mode -1)
+                (setq-local global-hl-line-mode nil)
+                (setq-local mode-line-format '(" %b"))
+                (setq-local truncate-lines t))))
+
+;; Colours instead of ANSI escapes on compilation
+(require 'ansi-color)
+(defun goa/colorize-compilation-buffer ()
+  (let ((inhibit-read-only t))
+    (ansi-color-apply-on-region compilation-filter-start (point))))
+(add-hook 'compilation-filter-hook #'goa/colorize-compilation-buffer)
