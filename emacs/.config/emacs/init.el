@@ -83,7 +83,7 @@
   (defun goa/enable-line-numbers ()
     "Enable relative line numbers"
     (interactive)
-    (display-line-numbers-mode)
+    (display-line-numbers-mode 1)
     (setq display-line-numbers 'relative))
   (add-hook 'prog-mode-hook #'goa/enable-line-numbers))
 
@@ -127,25 +127,14 @@
                   (revert-buffer :ignore-auto :noconfirm)))
 
 ;; Multiple cursors
-(use-package multiple-cursors
-  :ensure t)
-
-;; Better ido-mode
-(use-package ido-vertical-mode
-  :ensure t
-  :init
-  (setq ido-vertical-define-keys 'C-n-and-C-p-only)
-  (ido-mode 1)
-  (ido-vertical-mode 1))
+(use-package multiple-cursors)
 
 ;; Search engine & Completion
 (use-package vertico
-  :ensure t
   :init
   (vertico-mode))
 
 (use-package orderless
-  :ensure t
   :custom
   (completion-styles '(orderless basic))
   (completion-category-defaults nil)
@@ -153,25 +142,29 @@
    '((file (styles basic partial-completion)))))
 
 (use-package corfu
-  :ensure t
   :init
   (global-corfu-mode))
 
 ;; Version control
-(use-package magit
-  :ensure t)
+(use-package magit)
 
 (use-package forge
   :after magit)
 
+(use-package diff-hl
+  :hook ((prog-mode . diff-hl-mode)
+         (text-mode . diff-hl-mode)
+         (dired-mode . diff-hl-dired-mode))
+  :config
+  (diff-hl-flydiff-mode)
+  (diff-hl-margin-mode))
+
 ;; Clipboard & Terminal emulator
 (use-package xclip
-  :ensure t
   :init
   (xclip-mode 1))
 
 (use-package vterm
-  :ensure t
   :init
   (setq vterm-buffer-name-string "vterm: %s"
         vterm-copy-exclude-prompt t
