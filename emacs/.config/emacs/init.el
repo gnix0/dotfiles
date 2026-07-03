@@ -14,10 +14,21 @@
 (global-hl-line-mode 1)
 (blink-cursor-mode 0)
 (setq use-file-dialog nil)
+(add-hook 'prog-mode-hook #'display-line-numbers-mode)
 
 ;; Disable auto-saving and backups
 (setq auto-save-default nil)
 (setq make-backup-files nil)
+
+;; Disable mouse
+(define-key global-map [mouse-1] 'ignore)
+(define-key global-map [mouse-2] 'ignore)
+(define-key global-map [mouse-3] 'ignore)
+(define-key global-map [down-mouse-1] 'ignore)
+(define-key global-map [drag-mouse-1] 'ignore)
+(define-key global-map [mouse-movement] 'ignore)
+(define-key global-map [wheel-up] 'ignore)
+(define-key global-map [wheel-down] 'ignore)
 
 ;; straight.el as the package manager
 (defvar bootstrap-version)
@@ -72,21 +83,6 @@
   (setq-default indent-tabs-mode nil)
   (setq-default tab-width 2))
 
-;; Evil Mode & Relative line numbers (because vim motions are just the best)
-;; (use-package evil
-;;  :demand ; No lazy loading
-;;  :config
-;;  (evil-mode 1))
-
-(use-package emacs
-  :init
-  (defun goa/enable-line-numbers ()
-    "Enable relative line numbers"
-    (interactive)
-    (display-line-numbers-mode 1)
-    (setq display-line-numbers 'relative))
-  (add-hook 'prog-mode-hook #'goa/enable-line-numbers))
-
 ;; Font & Theme
 (use-package emacs
   :init
@@ -106,42 +102,18 @@
 (use-package nerd-icons)
 
 ;; Scrolling
-(global-set-key "\C-l"
-                (lambda ()
-                  (interactive)
-                  (recenter)))
+(setq scroll-conservatively 101)
+(setq scroll-margin 10)
 
-(defun goa/scroll-up-and-recenter ()
-  (interactive)
-  (scroll-up-command)
-  (recenter))
-(defun goa/scroll-down-and-recenter ()
-  (interactive)
-  (scroll-down-command)
-  (recenter))
-(global-set-key "\C-v" #'goa/scroll-up-and-recenter)
-(global-set-key "\M-v" #'goa/scroll-down-and-recenter)
-
-;; Navigate between visible buffers
-(defun other-window-backward (&optional n)
-  (interactive "p")
-  (if n
-      (other-window (- n))
-    (other-frame -1)))
-(global-set-key "\C-x\C-n" 'other-window)
-(global-set-key "\C-x\C-p" 'other-window-backward)
+;; Switch windows
+(use-package ace-window)
+(global-set-key (kbd "M-o") #'ace-window)
 
 ;; Pin current window so that no other buffer opens it.
 ;; Useful for compilation buffers and shells.
 (defun goa/pin-window ()
   (interactive)
   (set-window-dedicated-p (get-buffer-window (current-buffer)) t))
-
-;; Revert
-(global-set-key "\C-z"
-                (lambda ()
-                  (interactive)
-                  (revert-buffer :ignore-auto :noconfirm)))
 
 ;; Multiple cursors
 (use-package multiple-cursors)
@@ -198,11 +170,7 @@
   (diff-hl-flydiff-mode)
   (diff-hl-margin-mode))
 
-;; Clipboard & Terminal emulator
-(use-package xclip
-  :init
-  (xclip-mode 1))
-
+;; Terminal emulator
 (use-package vterm
   :init
   (setq vterm-buffer-name-string "vterm: %s"
@@ -213,7 +181,6 @@
   :hook
   (vterm-mode .
               (lambda ()
-                (corfu-mode -1)
                 (display-line-numbers-mode -1)
                 (visual-line-mode -1)
                 (setq-local global-hl-line-mode nil)
