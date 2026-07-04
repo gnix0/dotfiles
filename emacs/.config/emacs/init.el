@@ -90,7 +90,14 @@
 		      :font "Lucida Sans Typewriter"
 		      :height 140))
 
-(load-theme 'modus-vivendi-deuteranopia)
+(use-package doric-themes
+  :demand t
+  :init
+  (setq doric-themes-to-toggle '(doric-light doric-dark))
+  (doric-themes-select 'doric-light)
+  :bind
+  (("<f5>" . doric-themes-toggle)
+   ("C-<f5>" . doric-themes-select)))
 
 (use-package doom-modeline
   :init
