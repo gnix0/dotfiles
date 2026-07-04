@@ -32,6 +32,10 @@
 (define-key global-map [wheel-up] 'ignore)
 (define-key global-map [wheel-down] 'ignore)
 
+;; Column bar
+(setq-default fill-column 100)
+(add-hook 'prog-mode-hook #'display-fill-column-indicator-mode)
+
 ;; straight.el as the package manager
 (defvar bootstrap-version)
 (let ((bootstrap-file
@@ -64,8 +68,7 @@
 (defalias 'yes-or-no-p 'y-or-n-p)
 
 ;; Tab config & Smart delimiters
-(setq-default indent-tabs-mode nil
-              tab-width 2)
+(setq-default indent-tabs-mode nil)
 (electric-pair-mode 1)
 
 ;; Font & Theme
