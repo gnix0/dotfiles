@@ -15,6 +15,8 @@
 (blink-cursor-mode 0)
 (setq use-file-dialog nil)
 (add-hook 'prog-mode-hook #'display-line-numbers-mode)
+(add-hook 'text-mode-hook #'visual-line-mode)
+(setq ring-bell-function #'ignore)
 
 ;; Disable auto-saving and backups
 (setq auto-save-default nil)
@@ -53,42 +55,24 @@
 (setq use-package-always-defer t)
 
 ;; Remove default scratch message and 'C-h C-a' on start
-(use-package emacs
-  :init
-  (setq initial-scratch-message nil)
-  (defun display-startup-echo-area-message ()
-    (message "")))
+(setq initial-scratch-message nil)
+(defun display-startup-echo-area-message ()
+  (message ""))
+
 
 ;; 'y' and 'n' for confirmation on dialogs
-(use-package emacs
-  :init
-  (defalias 'yes-or-no-p 'y-or-n-p))
+(defalias 'yes-or-no-p 'y-or-n-p)
 
-;; UTF-8
-(use-package emacs
-  :init
-  (set-charset-priority 'unicode)
-  (setq locale-coding-system 'utf-8
-	coding-system-for-read 'utf-8
-	coding-system-for-write 'utf-8)
-  (set-terminal-coding-system 'utf-8)
-  (set-keyboard-coding-system 'utf-8)
-  (set-selection-coding-system 'utf-8)
-  (prefer-coding-system 'utf-8)
-  (setq default-process-coding-system '(utf-8-unix . utf-8-unix)))
-
-;; Tab config
-(use-package emacs
-  :init
-  (setq-default indent-tabs-mode nil)
-  (setq-default tab-width 2))
+;; Tab config & Smart delimiters
+(setq-default indent-tabs-mode nil
+              tab-width 2)
+(electric-pair-mode 1)
 
 ;; Font & Theme
-(use-package emacs
-  :init
-  (set-face-attribute 'default nil
-		      :font "IosevkaTermSlab Nerd Font Mono"
-		      :height 160))
+(set-face-attribute 'default nil
+                    :font
+                    "IosevkaTermSlab Nerd Font Mono"
+                    :height 150)
 
 (setq modus-themes-to-toggle '(modus-operandi-tinted modus-vivendi))
 (load-theme 'modus-operandi-tinted)
@@ -103,10 +87,12 @@
 ;; Scrolling
 (setq scroll-conservatively 101)
 (setq scroll-margin 10)
+(setq scroll-preserve-screen-position t)
 
 ;; Switch windows
-(use-package ace-window)
-(global-set-key (kbd "M-o") #'ace-window)
+(use-package ace-window
+  :bind
+  (("M-o" . ace-window)))
 
 ;; Pin current window so that no other buffer opens it.
 ;; Useful for compilation buffers and shells.
@@ -129,10 +115,11 @@
 (use-package marginalia
   :init
   (marginalia-mode)
+  :bind (:map minibuffer-local-map
+              ("M-a" . marginalia-cycle))
   :custom
   (marginalia-max-relative-age 0)
   (marginalia-align 'right))
-(define-key minibuffer-local-map "\M-a" #'marginalia-cycle)
 
 (use-package orderless
   :config
@@ -153,8 +140,6 @@
           ("C-x C-q" . wgrep-change-to-wgrep-mode)
           ("C-c C-c" . wgrep-finish-edit)))
 
-(savehist-mode 1)
-
 ;; Version control
 (use-package magit)
 
@@ -169,6 +154,12 @@
   (diff-hl-flydiff-mode)
   (diff-hl-margin-mode))
 
+;; Built-in persistent state
+(global-auto-revert-mode 1)
+(recentf-mode 1)
+(savehist-mode 1)
+(setq recentf-max-saved-items 150)
+
 ;; Terminal emulator
 (use-package vterm
   :init
@@ -182,7 +173,7 @@
               (lambda ()
                 (display-line-numbers-mode -1)
                 (visual-line-mode -1)
-                (setq-local global-hl-line-mode nil)
+                (hl-line-mode -1)
                 (setq-local mode-line-format '(" %b"))
                 (setq-local truncate-lines t))))
 
@@ -197,3 +188,16 @@
 (use-package envrc
   :init
   (envrc-global-mode))
+
+(setq project-list-file "~/.config/emacs/emacs-projects-list"
+      project-vc-extra-root-markers
+      '("CMakeLists.txt"
+        ".clangd" ;; for smaller C/C++ projects
+        "GNUmakefile"
+        "Makefile"
+        "makefile"
+        "pom.xml"
+        "build.gradle"
+        "Cargo.toml"
+        "go.mod"
+        "mix.exs"))
