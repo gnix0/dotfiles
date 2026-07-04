@@ -87,17 +87,12 @@
 (use-package emacs
   :init
   (set-face-attribute 'default nil
-		      :font "Lucida Sans Typewriter"
-		      :height 140))
+		      :font "IosevkaTermSlab Nerd Font Mono"
+		      :height 160))
 
-(use-package doric-themes
-  :demand t
-  :init
-  (setq doric-themes-to-toggle '(doric-light doric-dark))
-  (doric-themes-select 'doric-light)
-  :bind
-  (("<f5>" . doric-themes-toggle)
-   ("C-<f5>" . doric-themes-select)))
+(setq modus-themes-to-toggle '(modus-operandi-tinted modus-vivendi))
+(load-theme 'modus-operandi-tinted)
+(define-key global-map (kbd "<f5>") #'modus-themes-toggle)
 
 (use-package doom-modeline
   :init
