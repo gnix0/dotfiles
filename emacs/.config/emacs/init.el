@@ -97,12 +97,6 @@
   :bind
   (("M-o" . ace-window)))
 
-;; Pin current window so that no other buffer opens it.
-;; Useful for compilation buffers and shells.
-(defun goa/pin-window ()
-  (interactive)
-  (set-window-dedicated-p (get-buffer-window (current-buffer)) t))
-
 ;; Multiple cursors
 (use-package multiple-cursors)
 
@@ -132,6 +126,7 @@
 (use-package consult
   :bind(
         ("M-s M-g" . consult-grep)
+        ("M-s M-r" . consult-ripgrep)
         ("M-s M-f" . consult-find)
         ("M-s M-o" . consult-outline)
         ("M-s M-l" . consult-line)
@@ -180,13 +175,6 @@
                 (setq-local mode-line-format '(" %b"))
                 (setq-local truncate-lines t))))
 
-;; Colours instead of ANSI escapes on compilation
-(require 'ansi-color)
-(defun goa/colorize-compilation-buffer ()
-  (let ((inhibit-read-only t))
-    (ansi-color-apply-on-region compilation-filter-start (point))))
-(add-hook 'compilation-filter-hook #'goa/colorize-compilation-buffer)
-
 ;; Projects
 (use-package envrc
   :init
@@ -204,3 +192,65 @@
         "Cargo.toml"
         "go.mod"
         "mix.exs"))
+
+;; Development
+
+;; Pin current window so that no other buffer opens it.
+;; Useful for compilation buffers and shells.
+(defun goa/pin-window ()
+  (interactive)
+  (set-window-dedicated-p (get-buffer-window (current-buffer)) t))
+
+;; Don't ask before killing the current compilation and scroll as buffer grows
+(setq compilation-always-kill t
+      compilation-scroll-output t)
+
+;; Colours instead of ANSI escapes on compilation
+(require 'ansi-color)
+(defun goa/colorize-compilation-buffer ()
+  (let ((inhibit-read-only t))
+    (ansi-color-apply-on-region compilation-filter-start (point))))
+(add-hook 'compilation-filter-hook #'goa/colorize-compilation-buffer)
+
+;; Languages
+(use-package eglot
+  :straight nil
+  :hook ((java-mode . eglot-ensure)
+         (c-mode . eglot-ensure)
+         (c++-mode . eglot-ensure)
+         (rust-mode . eglot-ensure)
+         (go-mode . eglot-ensure)
+         (elixir-mode . eglot-ensure))
+  :config
+  (add-to-list 'eglot-server-programs
+               '(elixir-mode "elixir-ls")))
+
+(use-package eglot-java
+  :after eglot
+  :hook ((java-mode . eglot-java-mode)))
+
+(use-package go-mode)
+
+(use-package rust-mode)
+
+(use-package elixir-mode)
+
+
+;; More relevant file-types
+(use-package markdown-mode
+  :config
+  (setq markdown-fontify-code-blocks-natively t))
+
+(use-package yaml-mode)
+
+(add-to-list 'auto-mode-alist '("CODEOWNERS\\'" . conf-mode))
+(add-to-list 'auto-mode-alist '("\\.env\\'" . conf-mode))
+
+;; Code Completion
+(use-package corfu
+  :init
+  (global-corfu-mode)
+  :custom
+  (corfu-auto t)
+  (corfu-cycle t)
+  (corfu-preview-current nil))
