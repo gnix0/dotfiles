@@ -144,6 +144,8 @@
 (use-package forge
   :after magit)
 
+(setq auth-sources '("~/.authinfo"))
+
 (use-package diff-hl
   :hook ((prog-mode . diff-hl-mode)
          (text-mode . diff-hl-mode)
