@@ -63,7 +63,6 @@
 (defun display-startup-echo-area-message ()
   (message ""))
 
-
 ;; 'y' and 'n' for confirmation on dialogs
 (defalias 'yes-or-no-p 'y-or-n-p)
 
@@ -99,6 +98,10 @@
 
 ;; Multiple cursors
 (use-package multiple-cursors)
+(global-set-key (kbd "C-S-c C-S-c") 'mc/edit-lines)
+(global-set-key (kbd "C->") 'mc/mark-next-like-this)
+(global-set-key (kbd "C-<") 'mc/mark-previous-like-this)
+(global-set-key (kbd "C-c C-<") 'mc/mark-all-like-this)
 
 ;; Minibuffer and Searching
 (use-package vertico
