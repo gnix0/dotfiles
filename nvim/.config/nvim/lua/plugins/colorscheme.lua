@@ -1,11 +1,11 @@
 return {
-  "craftzdog/solarized-osaka.nvim",
-  name = "solarized-osaka",
-  lazy = false,
-  priority = 1000,
-  opts = {},
-  config = function()
-	  require("solarized-osaka").setup({})
-	  vim.cmd.colorscheme("solarized-osaka")
-  end
+	"miikanissi/modus-themes.nvim",
+	name = "modus",
+	lazy = false,
+	priority = 1000,
+	opts = {},
+	config = function()
+		require("modus-themes").setup({})
+		vim.cmd.colorscheme("modus")
+	end,
 }
