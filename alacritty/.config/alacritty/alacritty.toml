@@ -1,5 +1,5 @@
 [general]
-import = ["~/.config/alacritty/themes/doric_dark.toml"]
+import = ["~/.config/alacritty/themes/modus_vivendi.toml"]
 
 [font]
 normal = { family = "IosevkaTermSlab Nerd Font Mono", style = "Regular" }
