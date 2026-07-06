@@ -18,3 +18,4 @@ export PATH="$HOME/go/bin:$HOME/.local/bin:$PATH"
 export PATH="$HOME/.cargo/bin:$PATH"
 source <(ng completion script)
 eval "$(direnv hook zsh)"
+export JAVA_HOME=/usr/lib/jvm/default

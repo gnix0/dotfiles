@@ -66,6 +66,9 @@
 ;; 'y' and 'n' for confirmation on dialogs
 (defalias 'yes-or-no-p 'y-or-n-p)
 
+;; Zaps up to the a char, not the char
+(global-set-key (kbd "M-z") 'zap-up-to-char)
+
 ;; Tab config & Smart delimiters
 (setq-default indent-tabs-mode nil)
 (electric-pair-mode 1)
@@ -76,8 +79,8 @@
                     "IosevkaTermSlab Nerd Font Mono"
                     :height 150)
 
-(setq modus-themes-to-toggle '(modus-operandi-tinted modus-vivendi))
-(load-theme 'modus-operandi-tinted)
+(setq modus-themes-to-toggle '(modus-vivendi modus-operandi-tinted))
+(load-theme 'modus-vivendi)
 (define-key global-map (kbd "<f5>") #'modus-themes-toggle)
 
 (use-package doom-modeline
@@ -110,7 +113,10 @@
   :config
   (setq vertico-cycle t
         vertico-count 15
-        vertico-resize nil))
+        vertico-resize nil
+        read-file-name-completion-ignore-case t
+        read-buffer-completion-ignore-case t
+        completion-ignore-case t))
 
 (use-package marginalia
   :init
@@ -140,6 +146,9 @@
           ("e" . wgrep-change-to-wgrep-mode)
           ("C-x C-q" . wgrep-change-to-wgrep-mode)
           ("C-c C-c" . wgrep-finish-edit)))
+
+;; (Better) Unique buffer naming
+(setq uniquify-buffer-name-style 'forward)
 
 ;; Version control
 (use-package magit)
@@ -218,25 +227,32 @@
 (add-hook 'compilation-filter-hook #'goa/colorize-compilation-buffer)
 
 ;; Languages
+(setq major-mode-remap-alist
+      '((java-mode       . java-ts-mode)
+        (c-mode          . c-ts-mode)
+        (c++-mode        . c++-ts-mode)
+        (rust-mode       . rust-ts-mode)
+        (elixir-mode     . elixir-ts-mode)
+        (go-mode         . go-ts-mode)
+        (bash-mode       . bash-ts-mode)
+        (json-mode       . json-ts-mode)
+        (yaml-mode       . yaml-ts-mode)))
+
 (use-package eglot
   :straight nil
-  :hook ((java-mode . eglot-ensure)
-         (c-mode . eglot-ensure)
-         (c++-mode . eglot-ensure)
-         (rust-mode . eglot-ensure)
-         (go-mode . eglot-ensure)
-         (elixir-mode . eglot-ensure))
+  :hook ((java-ts-mode . eglot-ensure)
+         (c-ts-mode . eglot-ensure)
+         (c++-ts-mode . eglot-ensure)
+         (rust-ts-mode . eglot-ensure)
+         (go-ts-mode . eglot-ensure)
+         (elixir-ts-mode . eglot-ensure))
   :config
   (add-to-list 'eglot-server-programs
-               '(elixir-mode "elixir-ls")))
+               '(elixir-ts-mode "elixir-ls")))
 
 (use-package eglot-java
   :after eglot
-  :hook ((java-mode . eglot-java-mode)))
-
-(use-package go-mode)
-
-(use-package rust-mode)
+  :hook ((java-ts-mode . eglot-java-mode)))
 
 (use-package elixir-mode)
 
@@ -258,4 +274,24 @@
   :custom
   (corfu-auto t)
   (corfu-cycle t)
-  (corfu-preview-current nil))
+  (corfu-preview-current nil)
+  (corfu-on-exact-match nil)
+  :bind
+  (:map corfu-map
+        ("C-y" . corfu-insert)
+        ("RET" . newline)
+        ("<return>" . newline)))
+
+;; Tree-sitter
+(setq treesit-language-source-alist
+        '((java       . ("https://github.com/tree-sitter/tree-sitter-java"))
+          (c          . ("https://github.com/tree-sitter/tree-sitter-c"))
+          (cpp        . ("https://github.com/tree-sitter/tree-sitter-cpp"))
+          (rust       . ("https://github.com/tree-sitter/tree-sitter-rust"))
+          (elixir       . ("https://github.com/elixir-lang/tree-sitter-elixir"))
+          (go         . ("https://github.com/tree-sitter/tree-sitter-go"))
+          (bash       . ("https://github.com/tree-sitter/tree-sitter-bash"))
+          (json       . ("https://github.com/tree-sitter/tree-sitter-json"))
+          (yaml       . ("https://github.com/ikatyang/tree-sitter-yaml"))
+          (toml       . ("https://github.com/tree-sitter-grammars/tree-sitter-toml"))
+          (markdown   . ("https://github.com/tree-sitter-grammars/tree-sitter-markdown"))))
