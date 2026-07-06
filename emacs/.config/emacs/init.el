@@ -311,6 +311,13 @@
           (toml       . ("https://github.com/tree-sitter-grammars/tree-sitter-toml"))
           (markdown   . ("https://github.com/tree-sitter-grammars/tree-sitter-markdown"))))
 
+(use-package combobulate
+  :custom
+  (combobulate-key-prefix "C-c C-o")
+  :hook ((prog-mode . combobulate-mode))
+  :load-path ("/home/gnix/.config/emacs/combobulate"))
+
+;; Debugger
 (use-package dape
   :bind (("<f5>" . dape)
          ("<f6>" . dape-continue)
