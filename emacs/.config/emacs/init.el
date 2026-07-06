@@ -66,7 +66,7 @@
 ;; 'y' and 'n' for confirmation on dialogs
 (defalias 'yes-or-no-p 'y-or-n-p)
 
-;; Zaps up to the a char, not the char
+;; Zaps up to the char, not the char itself
 (global-set-key (kbd "M-z") 'zap-up-to-char)
 
 ;; Tab config & Smart delimiters
@@ -79,9 +79,15 @@
                     "IosevkaTermSlab Nerd Font Mono"
                     :height 150)
 
-(setq modus-themes-to-toggle '(modus-vivendi modus-operandi-tinted))
-(load-theme 'modus-vivendi)
-(define-key global-map (kbd "<f5>") #'modus-themes-toggle)
+(use-package doric-themes
+  :demand t
+  :config
+  (setq doric-themes-to-toggle '(doric-dark doric-marble))
+  (setq doric-themes-to-rotate doric-themes-collection)
+
+  (doric-themes-select 'doric-dark)
+  :bind
+  (("<f5>" . doric-themes-toggle)))
 
 (use-package doom-modeline
   :init
