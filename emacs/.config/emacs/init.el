@@ -79,15 +79,9 @@
                     "IosevkaTermSlab Nerd Font Mono"
                     :height 150)
 
-(use-package doric-themes
-  :demand t
-  :config
-  (setq doric-themes-to-toggle '(doric-dark doric-marble))
-  (setq doric-themes-to-rotate doric-themes-collection)
-
-  (doric-themes-select 'doric-dark)
-  :bind
-  (("<f1>" . doric-themes-toggle)))
+(setq modus-themes-to-toggle '(modus-vivendi modus-operandi-tinted))
+(load-theme 'modus-vivendi)
+(define-key global-map (kbd "<f5>") #'modus-themes-toggle)
 
 (use-package doom-modeline
   :init
