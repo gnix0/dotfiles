@@ -87,7 +87,7 @@
 
   (doric-themes-select 'doric-dark)
   :bind
-  (("<f5>" . doric-themes-toggle)))
+  (("<f1>" . doric-themes-toggle)))
 
 (use-package doom-modeline
   :init
@@ -253,8 +253,17 @@
          (go-ts-mode . eglot-ensure)
          (elixir-ts-mode . eglot-ensure))
   :config
-  (add-to-list 'eglot-server-programs
-               '(elixir-ts-mode "elixir-ls")))
+  (let ((java-debug-jar
+         (car
+          (file-expand-wildcards
+           "~/.config/emacs/debug-adapters/java-debug/com.microsoft.java.debug.plugin/target/com.microsoft.java.debug.plugin-*.jar"))))
+    (add-to-list
+     'eglot-server-programs
+     `((java-mode java-ts-mode)
+       .
+       ("jdtls"
+        :initializationOptions
+        (:bundles [,java-debug-jar]))))))
 
 (use-package eglot-java
   :after eglot
@@ -301,3 +310,23 @@
           (yaml       . ("https://github.com/ikatyang/tree-sitter-yaml"))
           (toml       . ("https://github.com/tree-sitter-grammars/tree-sitter-toml"))
           (markdown   . ("https://github.com/tree-sitter-grammars/tree-sitter-markdown"))))
+
+(use-package dape
+  :bind (("<f5>" . dape)
+         ("<f6>" . dape-continue)
+         ("<f9>" . dape-breakpoint-toggle)
+         ("S-<f9>" . dape-breakpoint-remove-all)
+         ("<f10>" . dape-next)
+         ("<f11>" . dape-step-in)
+         ("S-<f11>" . dape-step-out))
+  :custom
+  (dape-buffer-window-arrangement 'right)
+  :config
+  ;; Save all modified buffers before debugging
+  (add-hook 'dape-start-hook
+            (lambda ()
+              (save-some-buffers t t))))
+
+(use-package repeat
+  :config
+  (repeat-mode))

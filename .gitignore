@@ -9,3 +9,4 @@
 /emacs/.config/emacs/forge-database.sqlite
 /emacs/.config/emacs/share/
 /emacs/.config/emacs/tree-sitter/
+/emacs/.config/emacs/debug-adapters/
