@@ -14,7 +14,6 @@
 (global-hl-line-mode 1)
 (blink-cursor-mode 0)
 (setq use-file-dialog nil)
-(add-hook 'prog-mode-hook #'display-line-numbers-mode)
 (add-hook 'text-mode-hook #'visual-line-mode)
 (setq ring-bell-function #'ignore)
 
@@ -66,12 +65,23 @@
 ;; 'y' and 'n' for confirmation on dialogs
 (defalias 'yes-or-no-p 'y-or-n-p)
 
-;; Zaps up to the char, not the char itself
-(global-set-key (kbd "M-z") 'zap-up-to-char)
+;; Becoming evil -- just for text editing
+(use-package evil
+  :demand
+  :init
+  (setq evil-undo-system 'undo-redo)
+  :config
+  (evil-mode 1))
+
+(defun goa/enable-line-numbers ()
+  "Enable relative line numbers"
+  (interactive)
+  (display-line-numbers-mode)
+  (setq display-line-numbers 'relative))
+(add-hook 'prog-mode-hook #'goa/enable-line-numbers)
 
 ;; Tab config & Smart delimiters
 (setq-default indent-tabs-mode nil)
-(electric-pair-mode 1)
 
 ;; Font & Theme
 (set-face-attribute 'default nil
@@ -92,7 +102,29 @@
 ;; Scrolling
 (setq scroll-conservatively 101)
 (setq scroll-margin 10)
-(setq scroll-preserve-screen-position t)
+
+(defun goa/evil-scroll-down-center ()
+  (interactive)
+  (evil-scroll-down nil)
+  (recenter))
+
+(defun goa/evil-scroll-up-center ()
+  (interactive)
+  (evil-scroll-up nil)
+  (recenter))
+
+;; Binds related to evil-mode
+(with-eval-after-load 'evil
+  (define-key evil-normal-state-map (kbd "C-d")
+              #'goa/evil-scroll-down-center)
+  (define-key evil-normal-state-map (kbd "C-u")
+              #'goa/evil-scroll-up-center))
+
+(with-eval-after-load 'evil
+  (define-key evil-insert-state-map (kbd "C-n") nil)
+  (define-key evil-insert-state-map (kbd "C-p") nil)
+  (define-key evil-insert-state-map (kbd "C-y") nil)
+  (define-key evil-insert-state-map (kbd "TAB") #'self-insert-command))
 
 ;; Switch windows
 (use-package ace-window
@@ -146,6 +178,14 @@
           ("e" . wgrep-change-to-wgrep-mode)
           ("C-x C-q" . wgrep-change-to-wgrep-mode)
           ("C-c C-c" . wgrep-finish-edit)))
+
+;; Which-key
+(use-package which-key
+  :demand
+  :init
+  (setq which-key-idle-delay 0.5)
+  :config
+  (which-key-mode))
 
 ;; (Better) Unique buffer naming
 (setq uniquify-buffer-name-style 'forward)
