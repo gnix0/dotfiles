@@ -10,3 +10,4 @@
 /emacs/.config/emacs/share/
 /emacs/.config/emacs/tree-sitter/
 /emacs/.config/emacs/debug-adapters/
+/emacs/.config/emacs/tramp

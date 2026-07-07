@@ -14,6 +14,7 @@
 (global-hl-line-mode 1)
 (blink-cursor-mode 0)
 (setq use-file-dialog nil)
+(add-hook 'prog-mode-hook #'display-line-numbers-mode)
 (add-hook 'text-mode-hook #'visual-line-mode)
 (setq ring-bell-function #'ignore)
 
@@ -65,20 +66,8 @@
 ;; 'y' and 'n' for confirmation on dialogs
 (defalias 'yes-or-no-p 'y-or-n-p)
 
-;; Becoming evil -- just for text editing
-(use-package evil
-  :demand
-  :init
-  (setq evil-undo-system 'undo-redo)
-  :config
-  (evil-mode 1))
-
-(defun goa/enable-line-numbers ()
-  "Enable relative line numbers"
-  (interactive)
-  (display-line-numbers-mode)
-  (setq display-line-numbers 'relative))
-(add-hook 'prog-mode-hook #'goa/enable-line-numbers)
+;; Zaps up to char, not the char itself
+(global-set-key (kbd "M-z") 'zap-up-to-char)
 
 ;; Tab config & Smart delimiters
 (setq-default indent-tabs-mode nil)
@@ -91,7 +80,7 @@
 
 (setq modus-themes-to-toggle '(modus-vivendi modus-operandi-tinted))
 (load-theme 'modus-vivendi)
-(define-key global-map (kbd "<f5>") #'modus-themes-toggle)
+(define-key global-map (kbd "<f1>") #'modus-themes-toggle)
 
 (use-package doom-modeline
   :init
@@ -102,29 +91,7 @@
 ;; Scrolling
 (setq scroll-conservatively 101)
 (setq scroll-margin 10)
-
-(defun goa/evil-scroll-down-center ()
-  (interactive)
-  (evil-scroll-down nil)
-  (recenter))
-
-(defun goa/evil-scroll-up-center ()
-  (interactive)
-  (evil-scroll-up nil)
-  (recenter))
-
-;; Binds related to evil-mode
-(with-eval-after-load 'evil
-  (define-key evil-normal-state-map (kbd "C-d")
-              #'goa/evil-scroll-down-center)
-  (define-key evil-normal-state-map (kbd "C-u")
-              #'goa/evil-scroll-up-center))
-
-(with-eval-after-load 'evil
-  (define-key evil-insert-state-map (kbd "C-n") nil)
-  (define-key evil-insert-state-map (kbd "C-p") nil)
-  (define-key evil-insert-state-map (kbd "C-y") nil)
-  (define-key evil-insert-state-map (kbd "TAB") #'self-insert-command))
+(setq scroll-preserve-screen-position t)
 
 ;; Switch windows
 (use-package ace-window
