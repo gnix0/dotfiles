@@ -136,4 +136,10 @@
 	"on-click-right": "waybar-module-pomodoro reset",
   },
 
+  "clock": {
+    "timezone": "America/Sao_Paulo",
+    "tooltip": false,
+    "format": "{:%H:%M:%S  -  %A, %d}",
+    "interval": 1
+  },
 }
