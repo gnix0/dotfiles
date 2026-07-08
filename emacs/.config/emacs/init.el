@@ -36,6 +36,9 @@
 (setq-default fill-column 100)
 (add-hook 'prog-mode-hook #'display-fill-column-indicator-mode)
 
+;; Decrease echo time
+(setq echo-keystrokes 0.01)
+
 ;; straight.el as the package manager
 (defvar bootstrap-version)
 (let ((bootstrap-file
