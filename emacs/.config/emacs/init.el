@@ -78,9 +78,24 @@
                     "IosevkaTermSlab Nerd Font Mono"
                     :height 150)
 
-(setq modus-themes-to-toggle '(modus-vivendi modus-operandi-tinted))
-(load-theme 'modus-vivendi)
-(define-key global-map (kbd "<f1>") #'modus-themes-toggle)
+(use-package doom-themes
+  :demand
+  :config
+  (defvar goa-themes-to-toggle
+    '(doom-homage-black doom-homage-white))
+
+  (load-theme (car goa-themes-to-toggle) t)
+
+  (defun goa-toggle-theme ()
+    (interactive)
+    (let* ((one (car goa-themes-to-toggle))
+           (two (cadr goa-themes-to-toggle))
+           (current (car custom-enabled-themes))
+           (next (if (eq current one) two one)))
+      (mapc #'disable-theme custom-enabled-themes)
+      (load-theme next t)))
+
+  (global-set-key (kbd "<f1>") #'goa-toggle-theme))
 
 (use-package doom-modeline
   :init
