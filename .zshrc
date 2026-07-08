@@ -7,7 +7,6 @@ plugins=(
 	zsh-syntax-highlighting
 )
 source $ZSH/oh-my-zsh.sh
-alias vim="nvim"
 alias dev="~/.local/bin/tmux-sessionizer"
 export EDITR="vim"
 eval $(thefuck --alias)
