@@ -8,7 +8,7 @@ The directories and files are organized to be managed with **GNU Stow**:
 ├── alacritty
 ├── emacs
 ├── fastfetch
-├── nvim
+├── hypr
 ├── tmux-sessionizer
 ├── .tmux.conf
 └── .zshrc
