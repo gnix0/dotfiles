@@ -14,7 +14,6 @@
 (global-hl-line-mode 1)
 (blink-cursor-mode 0)
 (setq use-file-dialog nil)
-(add-hook 'prog-mode-hook #'display-line-numbers-mode)
 (add-hook 'text-mode-hook #'visual-line-mode)
 (setq ring-bell-function #'ignore)
 
@@ -35,6 +34,14 @@
 ;; Column bar
 (setq-default fill-column 100)
 (add-hook 'prog-mode-hook #'display-fill-column-indicator-mode)
+
+;; Relative line numbers
+(defun goa/relative-line-numbers ()
+  "Enable relative line numbers."
+  (interactive)
+  (display-line-numbers-mode)
+  (setq display-line-numbers 'relative))
+(add-hook 'prog-mode-hook #'goa/relative-line-numbers)
 
 ;; Decrease echo time
 (setq echo-keystrokes 0.01)
@@ -177,6 +184,12 @@
 
 ;; Version control
 (use-package magit)
+
+(setq git-commit-summary-max-length 50)
+
+(add-hook 'git-commit-mode-hook
+          (lambda ()
+            (setq-local fill-column 72)))
 
 (use-package forge
   :after magit)
