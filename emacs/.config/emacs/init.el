@@ -199,7 +199,8 @@
 (use-package diff-hl
   :hook ((prog-mode . diff-hl-mode)
          (text-mode . diff-hl-mode)
-         (dired-mode . diff-hl-dired-mode))
+         (dired-mode . diff-hl-dired-mode)
+         (magit-post-refresh . diff-hl-magit-post-refresh))
   :config
   (diff-hl-flydiff-mode)
   (diff-hl-margin-mode))
