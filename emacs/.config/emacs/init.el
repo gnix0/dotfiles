@@ -286,6 +286,8 @@
          (go-ts-mode . eglot-ensure)
          (elixir-ts-mode . eglot-ensure))
   :config
+  (setq eglot-code-action-indications nil)
+  (setq eglot-code-action-indicator nil)
   (let ((java-debug-jar
          (car
           (file-expand-wildcards
@@ -370,3 +372,21 @@
 (use-package repeat
   :config
   (repeat-mode))
+
+;; Org-mode and Email
+(use-package org
+  :straight nil
+  :hook
+  (org-mode . org-indent-mode)
+  (org-mode . visual-line-mode)
+  :bind
+  (("C-c l" . org-store-link)
+   ("C-c a" . org-agenda)
+   ("C-c c" . org-capture))
+  :config
+  (setq org-agenda-files '("~/org")
+        org-log-done 'time
+        org-return-follows-link t
+        org-hide-emphasis-markers t)
+
+  (add-to-list 'auto-mode-alist '("\\.org\\'" . org-mode)))
