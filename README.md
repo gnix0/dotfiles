@@ -14,6 +14,10 @@ The directories and files are organized to be managed with **GNU Stow**:
 └── .zshrc
 ```
 
+## Kinesis Layout
+
+![kinesis layout](./assets/kinesis_layout.png)
+
 To apply the configurations on a Unix-like system that follows the **Filesystem Hierarchy Standard**,
 make sure **stow** is installed:
 
