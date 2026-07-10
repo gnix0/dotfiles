@@ -1,4 +1,10 @@
-# My dotfiles
+# Dotfiles
+
+## Keyboard Layout (Kinesis Advantage 360)
+
+![kinesis layout](./assets/kinesis_layout.png)
+
+## Dotfiles organization
 
 The directories and files are organized to be managed with **GNU Stow**:
 
@@ -13,10 +19,6 @@ The directories and files are organized to be managed with **GNU Stow**:
 ├── .tmux.conf
 └── .zshrc
 ```
-
-## Kinesis Layout
-
-![kinesis layout](./assets/kinesis_layout.png)
 
 To apply the configurations on a Unix-like system that follows the **Filesystem Hierarchy Standard**,
 make sure **stow** is installed:
