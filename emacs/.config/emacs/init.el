@@ -205,6 +205,17 @@
   (diff-hl-flydiff-mode)
   (diff-hl-margin-mode))
 
+(use-package ediff
+  :straight nil
+  :defer t
+  :config
+  (setq ediff-window-setup-function #'ediff-setup-windows-plain)
+  (setq ediff-split-window-function #'split-window-horizontally))
+
+(use-package smerge-mode
+  :straight nil
+  :bind ("C-c e" . smerge-ediff)) ;; Visual conflict resolution; use M-x smerge-mode for simple cases
+
 ;; Built-in persistent state
 (global-auto-revert-mode 1)
 (recentf-mode 1)
@@ -257,6 +268,10 @@
 ;; Don't ask before killing the current compilation and scroll as buffer grows
 (setq compilation-always-kill t
       compilation-scroll-output t)
+
+;; Compilation (not project-wise like project.el does)
+(global-set-key (kbd "C-x c") #'compile)
+(global-set-key (kbd "C-x C") #'recompile)
 
 ;; Colours instead of ANSI escapes on compilation
 (require 'ansi-color)

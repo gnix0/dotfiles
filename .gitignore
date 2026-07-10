@@ -11,3 +11,4 @@
 /emacs/.config/emacs/tree-sitter/
 /emacs/.config/emacs/debug-adapters/
 /emacs/.config/emacs/tramp
+/emacs/.config/emacs/.mc-lists.el
