@@ -88,24 +88,10 @@
                     "IosevkaTermSlab Nerd Font Mono"
                     :height 150)
 
-(use-package doom-themes
+(use-package gruber-darker-theme
   :demand
-  :config
-  (defvar goa-themes-to-toggle
-    '(doom-homage-black doom-homage-white))
-
-  (load-theme (car goa-themes-to-toggle) t)
-
-  (defun goa-toggle-theme ()
-    (interactive)
-    (let* ((one (car goa-themes-to-toggle))
-           (two (cadr goa-themes-to-toggle))
-           (current (car custom-enabled-themes))
-           (next (if (eq current one) two one)))
-      (mapc #'disable-theme custom-enabled-themes)
-      (load-theme next t)))
-
-  (global-set-key (kbd "<f1>") #'goa-toggle-theme))
+  :init
+  (load-theme 'gruber-darker t))
 
 (use-package doom-modeline
   :init
@@ -361,11 +347,8 @@
           (toml       . ("https://github.com/tree-sitter-grammars/tree-sitter-toml"))
           (markdown   . ("https://github.com/tree-sitter-grammars/tree-sitter-markdown"))))
 
-(use-package combobulate
-  :hook ((prog-mode . combobulate-mode))
-  :load-path ("/home/gnix/.config/emacs/combobulate"))
-
-(global-set-key (kbd "C-c C-o") 'combobulate)
+(setq eldoc-echo-area-use-multiline-p nil)
+(setq eldoc-echo-area-prefer-doc-buffer t)
 
 ;; Debugger
 (use-package dape
