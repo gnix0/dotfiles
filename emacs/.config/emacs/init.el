@@ -104,11 +104,6 @@
 (setq scroll-margin 10)
 (setq scroll-preserve-screen-position t)
 
-;; Switch windows
-(use-package ace-window
-  :bind
-  (("M-o" . ace-window)))
-
 ;; Multiple cursors
 (use-package multiple-cursors)
 (global-set-key (kbd "C-S-c C-S-c") 'mc/edit-lines)
@@ -157,14 +152,6 @@
           ("C-x C-q" . wgrep-change-to-wgrep-mode)
           ("C-c C-c" . wgrep-finish-edit)))
 
-;; Which-key
-(use-package which-key
-  :demand
-  :init
-  (setq which-key-idle-delay 0.5)
-  :config
-  (which-key-mode))
-
 ;; (Better) Unique buffer naming
 (setq uniquify-buffer-name-style 'forward)
 
@@ -176,11 +163,6 @@
 (add-hook 'git-commit-mode-hook
           (lambda ()
             (setq-local fill-column 72)))
-
-(use-package forge
-  :after magit)
-
-(setq auth-sources '("~/.authinfo"))
 
 (use-package diff-hl
   :hook ((prog-mode . diff-hl-mode)
