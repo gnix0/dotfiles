@@ -86,12 +86,16 @@
 (set-face-attribute 'default nil
                     :font
                     "IosevkaTermSlab Nerd Font Mono"
-                    :height 150)
+                    :height 160)
 
-(use-package gruber-darker-theme
+;; (use-package gruber-darker-theme
+;;   :demand
+;;   :init
+;;   (load-theme 'gruber-darker t))
+(use-package kaolin-themes
   :demand
-  :init
-  (load-theme 'gruber-darker t))
+  :config
+  (load-theme 'kaolin-ocean t))
 
 (use-package doom-modeline
   :init
@@ -249,25 +253,14 @@
 (add-hook 'compilation-filter-hook #'gnix/colorize-compilation-buffer)
 
 ;; Languages
-(setq major-mode-remap-alist
-      '((java-mode       . java-ts-mode)
-        (c-mode          . c-ts-mode)
-        (c++-mode        . c++-ts-mode)
-        (rust-mode       . rust-ts-mode)
-        (elixir-mode     . elixir-ts-mode)
-        (go-mode         . go-ts-mode)
-        (bash-mode       . bash-ts-mode)
-        (json-mode       . json-ts-mode)
-        (yaml-mode       . yaml-ts-mode)))
-
 (use-package eglot
   :straight nil
-  :hook ((java-ts-mode . eglot-ensure)
-         (c-ts-mode . eglot-ensure)
-         (c++-ts-mode . eglot-ensure)
-         (rust-ts-mode . eglot-ensure)
-         (go-ts-mode . eglot-ensure)
-         (elixir-ts-mode . eglot-ensure))
+  :hook ((java-mode . eglot-ensure)
+         (c-mode . eglot-ensure)
+         (c++-mode . eglot-ensure)
+         (rust-mode . eglot-ensure)
+         (go-mode . eglot-ensure)
+         (elixir-mode . eglot-ensure))
   :config
   (setq eglot-code-action-indications nil)
   (setq eglot-code-action-indicator nil)
@@ -277,18 +270,18 @@
            "~/.config/emacs/debug-adapters/java-debug/com.microsoft.java.debug.plugin/target/com.microsoft.java.debug.plugin-*.jar"))))
     (add-to-list
      'eglot-server-programs
-     `((java-mode java-ts-mode)
-       .
+     `((java-mode) .
        ("jdtls"
         :initializationOptions
         (:bundles [,java-debug-jar]))))))
 
 (use-package eglot-java
   :after eglot
-  :hook ((java-ts-mode . eglot-java-mode)))
+  :hook ((java-mode . eglot-java-mode)))
 
 (use-package elixir-mode)
-
+(use-package go-mode)
+(use-package rust-mode)
 
 ;; More relevant file-types
 (use-package markdown-mode
@@ -305,7 +298,7 @@
   :init
   (global-corfu-mode)
   :custom
-  (corfu-auto t)
+  (corfu-auto nil)
   (corfu-cycle t)
   (corfu-preview-current nil)
   (corfu-on-exact-match nil)
@@ -314,20 +307,6 @@
         ("C-y" . corfu-insert)
         ("RET" . newline)
         ("<return>" . newline)))
-
-;; Tree-sitter
-(setq treesit-language-source-alist
-        '((java       . ("https://github.com/tree-sitter/tree-sitter-java"))
-          (c          . ("https://github.com/tree-sitter/tree-sitter-c"))
-          (cpp        . ("https://github.com/tree-sitter/tree-sitter-cpp"))
-          (rust       . ("https://github.com/tree-sitter/tree-sitter-rust"))
-          (elixir       . ("https://github.com/elixir-lang/tree-sitter-elixir"))
-          (go         . ("https://github.com/tree-sitter/tree-sitter-go"))
-          (bash       . ("https://github.com/tree-sitter/tree-sitter-bash"))
-          (json       . ("https://github.com/tree-sitter/tree-sitter-json"))
-          (yaml       . ("https://github.com/ikatyang/tree-sitter-yaml"))
-          (toml       . ("https://github.com/tree-sitter-grammars/tree-sitter-toml"))
-          (markdown   . ("https://github.com/tree-sitter-grammars/tree-sitter-markdown"))))
 
 (setq eldoc-echo-area-use-multiline-p nil)
 (setq eldoc-echo-area-prefer-doc-buffer t)
