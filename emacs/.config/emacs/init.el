@@ -371,36 +371,6 @@
 
   (add-to-list 'auto-mode-alist '("\\.org\\'" . org-mode)))
 
-;; Descriptions for the workflows here covered are detailed now.
-
-;; Work log:
-;; The idea being to organize daily accomplishments and track them daily.
-
-;; Notes:
-;; The idea being to organize in one place things that I think throughout the day, things I wish to
-;; remember in a few days, things I saw or thought about and want to look into later so I don't have
-;; to interrupt my current daily schedule, and such.
-
-;; To-do:
-;; The idea being able to organize, in a standard format and with priorities and state-tracking,
-;; items related to tasks that need to be done. This will only be used for work-related stuff, my
-;; studies, etc. Other tasks are always one of the following: too important so I don't have to plan
-;; anything for it, or not relevant enough so tracking is necessary to begin with.
-
-;; The to-do items will follow such structure:
-;; * STATE [#PRIORITY] TITLE
-;;   - STATE CHANGE 2              TIMESTAMP
-;;   - STATE CHANGE 1              TIMESTAMP
-;;     NOTE ABOUT STAGE CHANGE 1
-;;   NOTE ABOUT TODO
-
-;; Code-specific TODO
-;; Should be executed on the line of code I want to link to. It creates a new TODO item, but also
-;; stays linked to that specific line of code so I can easily visit the link to see what exactly
-;; I was referencing. It may be used for tracking bugs, ideas that come randomly, optimization needs,
-;; or even to help with remembering somethings specific to that code in the future that would be
-;; very easy to otherwise be forgotten.
-
 (setq org-capture-templates
       '(("w" "Work Log Entry"
          entry (file+datetree "~/org/work-log.org")
@@ -426,6 +396,7 @@
 (setq org-todo-keywords
       '((sequence "TODO(t)" "PLANNING(p)" "IN-PROGRESS(i@/!)" "VERIFYING(v!)" "BLOCKED(b@)"  "|" "DONE(d!)" "OBE(o@!)" "WONT-DO(w@/!)" )))
 ;; Obs.: "OBE" = Overcome by Events
+
 ;; TODO colors
 (setq org-todo-keyword-faces
       '(("TODO" . (:foreground "GoldenRod" :weight bold))
