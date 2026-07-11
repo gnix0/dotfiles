@@ -36,12 +36,12 @@
 (add-hook 'prog-mode-hook #'display-fill-column-indicator-mode)
 
 ;; Relative line numbers
-(defun goa/relative-line-numbers ()
+(defun gnix/relative-line-numbers ()
   "Enable relative line numbers."
   (interactive)
   (display-line-numbers-mode)
   (setq display-line-numbers 'relative))
-(add-hook 'prog-mode-hook #'goa/relative-line-numbers)
+(add-hook 'prog-mode-hook #'gnix/relative-line-numbers)
 
 ;; Decrease echo time
 (setq echo-keystrokes 0.01)
@@ -229,7 +229,7 @@
 
 ;; Pin current window so that no other buffer opens it.
 ;; Useful for compilation buffers and shells.
-(defun goa/pin-window ()
+(defun gnix/pin-window ()
   (interactive)
   (set-window-dedicated-p (get-buffer-window (current-buffer)) t))
 
@@ -243,10 +243,10 @@
 
 ;; Colours instead of ANSI escapes on compilation
 (require 'ansi-color)
-(defun goa/colorize-compilation-buffer ()
+(defun gnix/colorize-compilation-buffer ()
   (let ((inhibit-read-only t))
     (ansi-color-apply-on-region compilation-filter-start (point))))
-(add-hook 'compilation-filter-hook #'goa/colorize-compilation-buffer)
+(add-hook 'compilation-filter-hook #'gnix/colorize-compilation-buffer)
 
 ;; Languages
 (setq major-mode-remap-alist
@@ -369,65 +369,69 @@
         org-return-follows-link t
         org-hide-emphasis-markers t)
 
-  (add-to-list 'auto-mode-alist '("\\.org\\'" . org-mode)))
+  (defun gnix/org-capture-schedule ()
+    (when (member (org-capture-get :key) '("t" "c"))
+      (let ((date (read-string "When (empty = unscheduled): ")))
+        (unless (string-empty-p date)
+          (org-schedule nil date)))))
 
-(setq org-capture-templates
-      '(("w" "Work Log Entry"
-         entry (file+datetree "~/org/work-log.org")
-         "* %?"
-         :empty-lines 0)
+  (add-hook 'org-capture-prepare-finalize-hook #'gnix/org-capture-schedule)
+    
+  (setq org-capture-templates
+        '(("w" "Work Log Entry"
+           entry (file+datetree "~/org/work-log.org")
+           "* %?"
+           :empty-lines 0)
 
-        ("n" "Note"
-         entry (file+headline "~/org/notes.org" "Random Notes")
-         "** %?"
-         :empty-lines 0)
+          ("n" "Note"
+           entry (file+headline "~/org/notes.org" "Random Notes")
+           "** %?"
+           :empty-lines 0)
 
-        ("t" "To-do"
-         entry (file+headline "~/org/todos.org" "Tasks")
-         "* TODO [#B] %?\n:Created: %T\n "
-         :empty-lines 0)
+          ("t" "To-do"
+           entry (file+headline "~/org/todos.org" "Tasks")
+           "* TODO [#B] %?\n:Created: %T\n "
+           :empty-lines 0)
 
-        ("c" "Code To-Do"
-         entry (file+headline "~/org/todos.org" "Code Related Tasks")
-         "* TODO [#B] %?\n:Created: %T\n%i\n%a\nProposed Solution: "
-         :empty-lines 0)))
+          ("c" "Code To-Do"
+           entry (file+headline "~/org/todos.org" "Code Related Tasks")
+           "* TODO [#B] %?\n:Created: %T\n%i\n%a\nProposed Solution: "
+           :empty-lines 0)))
 
-;; TODO states
-(setq org-todo-keywords
-      '((sequence "TODO(t)" "PLANNING(p)" "IN-PROGRESS(i@/!)" "VERIFYING(v!)" "BLOCKED(b@)"  "|" "DONE(d!)" "OBE(o@!)" "WONT-DO(w@/!)" )))
-;; Obs.: "OBE" = Overcome by Events
+  ;; TODO states
+  (setq org-todo-keywords
+        '((sequence "TODO(t)" "PLANNING(p)" "IN-PROGRESS(i@/!)" "VERIFYING(v!)" "BLOCKED(b@)"  "|" "DONE(d!)" "OBE(o@!)" "WONT-DO(w@/!)" )))
 
-;; TODO colors
-(setq org-todo-keyword-faces
-      '(("TODO" . (:foreground "GoldenRod" :weight bold))
-        ("PLANNING" . (:foreground "DeepPink" :weight bold))
-        ("IN-PROGRESS" . (:foreground "Cyan" :weight bold))
-        ("VERIFYING" . (:foreground "DarkOrange" :weight bold))
-        ("BLOCKED" . (:foreground "Red" :weight bold))
-        ("DONE" . (:foreground "LimeGreen" :weight bold))
-        ("OBE" . (:foreground "LimeGreen" :weight bold))
-        ("WONT-DO" . (:foreground "LimeGreen" :weight bold))))
+  ;; TODO colors
+  (setq org-todo-keyword-faces
+        '(("TODO" . (:foreground "GoldenRod" :weight bold))
+          ("PLANNING" . (:foreground "DeepPink" :weight bold))
+          ("IN-PROGRESS" . (:foreground "Cyan" :weight bold))
+          ("VERIFYING" . (:foreground "DarkOrange" :weight bold))
+          ("BLOCKED" . (:foreground "Red" :weight bold))
+          ("DONE" . (:foreground "LimeGreen" :weight bold))
+          ("OBE" . (:foreground "LimeGreen" :weight bold))
+          ("WONT-DO" . (:foreground "LimeGreen" :weight bold))))
 
-(setq org-tag-alist
-      '(
-        ;; Work type (choose one)
-        (:startgroup)
-        ("@bug"     . ?b)
-        ("@feature" . ?f)
-        ("@chore"   . ?c)
-        ("@research". ?r)
-        ("@refactor". ?R)
-        (:endgroup)
+  (setq org-tag-alist
+        '(;; Work type (choose one)
+          (:startgroup)
+          ("@bug"     . ?b)
+          ("@feature" . ?f)
+          ("@chore"   . ?c)
+          ("@research". ?r)
+          ("@refactor". ?R)
+          (:endgroup)
 
-        ;; Area
+          ;; Area
         
-        ("backend"  . ?k)
-        ("frontend" . ?F)
-        ("infra"    . ?i)
-        ("docs"     . ?d)
-        ("testing"  . ?t)
+          ("backend"  . ?k)
+          ("frontend" . ?F)
+          ("infra"    . ?i)
+          ("docs"     . ?d)
+          ("testing"  . ?t)
 
-        ;; Context
-        ("work"     . ?w)
-        ("studies"  . ?p)
-        ))
+          ;; Context
+          ("work"     . ?w)
+          ("studies"  . ?p)
+          )))
