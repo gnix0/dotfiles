@@ -86,20 +86,29 @@
 (set-face-attribute 'default nil
                     :font
                     "IosevkaTermSlab Nerd Font Mono"
-                    :height 160)
+                    :height 150)
 
-;; (use-package gruber-darker-theme
-;;   :demand
-;;   :init
-;;   (load-theme 'gruber-darker t))
-(use-package kaolin-themes
+(use-package solarized-theme
   :demand
   :config
-  (load-theme 'kaolin-ocean t))
+  (defvar gnix-themes-to-toggle
+    '(solarized-dark-high-contrast solarized-light-high-contrast))
+
+  (load-theme (car gnix-themes-to-toggle) t)
+
+  (defun gnix/toggle-theme ()
+    (interactive)
+    (let* ((one (car gnix-themes-to-toggle))
+           (two (cadr gnix-themes-to-toggle))
+           (current (car custom-enabled-themes))
+           (next (if (eq current one) two one)))
+      (mapc #'disable-theme custom-enabled-themes)
+      (load-theme next t)))
+
+  (global-set-key (kbd "<f1>") #'gnix/toggle-theme))
 
 (use-package doom-modeline
-  :init
-  (doom-modeline-mode 1))
+  :init (doom-modeline-mode 1))
 
 (use-package nerd-icons)
 
