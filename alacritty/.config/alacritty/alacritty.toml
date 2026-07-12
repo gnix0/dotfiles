@@ -1,9 +1,9 @@
-[general]
-import = ["~/.config/alacritty/themes/solarized_osaka.toml"]
-
 [font]
 normal = { family = "IosevkaTermSlab Nerd Font Mono", style = "Regular" }
 size = 15
 
 [window]
 opacity = 0.8
+
+[colors.primary]
+background = "#000000"
