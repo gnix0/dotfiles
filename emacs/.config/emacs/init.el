@@ -82,9 +82,6 @@
 ;; Zaps up to char, not the char itself
 (global-set-key (kbd "M-z") 'zap-up-to-char)
 
-;; Tab config & Smart delimiters
-(setq-default indent-tabs-mode nil)
-
 ;; Font & Theme
 (set-face-attribute 'default nil
                     :font
@@ -226,6 +223,11 @@
         "Cargo.toml"
         "go.mod"
         "mix.exs"))
+
+(use-package editorconfig
+  :demand t
+  :config
+  (editorconfig-mode 1))
 
 ;; Development
 
