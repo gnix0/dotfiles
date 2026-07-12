@@ -46,6 +46,9 @@
 ;; Decrease echo time
 (setq echo-keystrokes 0.01)
 
+;; Human-readable file sized in Dired
+(setq dired-listing-switches "-alh")
+
 ;; straight.el as the package manager
 (defvar bootstrap-version)
 (let ((bootstrap-file
@@ -88,24 +91,10 @@
                     "IosevkaTermSlab Nerd Font Mono"
                     :height 150)
 
-(use-package solarized-theme
-  :demand
+(use-package kaolin-themes
+  :demand t
   :config
-  (defvar gnix-themes-to-toggle
-    '(solarized-dark-high-contrast solarized-light-high-contrast))
-
-  (load-theme (car gnix-themes-to-toggle) t)
-
-  (defun gnix/toggle-theme ()
-    (interactive)
-    (let* ((one (car gnix-themes-to-toggle))
-           (two (cadr gnix-themes-to-toggle))
-           (current (car custom-enabled-themes))
-           (next (if (eq current one) two one)))
-      (mapc #'disable-theme custom-enabled-themes)
-      (load-theme next t)))
-
-  (global-set-key (kbd "<f1>") #'gnix/toggle-theme))
+  (load-theme 'kaolin-temple t))
 
 (use-package doom-modeline
   :init (doom-modeline-mode 1))
@@ -263,7 +252,6 @@
 
 ;; Languages
 (use-package eglot
-  :straight nil
   :hook ((java-mode . eglot-ensure)
          (c-mode . eglot-ensure)
          (c++-mode . eglot-ensure)
@@ -276,17 +264,14 @@
   (let ((java-debug-jar
          (car
           (file-expand-wildcards
-           "~/.config/emacs/debug-adapters/java-debug/com.microsoft.java.debug.plugin/target/com.microsoft.java.debug.plugin-*.jar"))))
+           (expand-file-name
+            "~/.config/emacs/debug-adapters/java-debug/com.microsoft.java.debug.plugin/target/com.microsoft.java.debug.plugin-*.jar")))))
     (add-to-list
      'eglot-server-programs
      `((java-mode) .
        ("jdtls"
         :initializationOptions
         (:bundles [,java-debug-jar]))))))
-
-(use-package eglot-java
-  :after eglot
-  :hook ((java-mode . eglot-java-mode)))
 
 (use-package elixir-mode)
 (use-package go-mode)
@@ -301,6 +286,9 @@
 
 (add-to-list 'auto-mode-alist '("CODEOWNERS\\'" . conf-mode))
 (add-to-list 'auto-mode-alist '("\\.env\\'" . conf-mode))
+
+;; Open diagnostics buffer
+(global-set-key (kbd "C-c d") #'flymake-show-buffer-diagnostics)
 
 ;; Code Completion
 (use-package corfu
@@ -317,8 +305,20 @@
         ("RET" . newline)
         ("<return>" . newline)))
 
-(setq eldoc-echo-area-use-multiline-p nil)
-(setq eldoc-echo-area-prefer-doc-buffer t)
+;; File-path completion
+(use-package cape
+  :init
+  (add-hook 'completion-at-point-functions #'cape-file))
+
+;; Display the completion menus
+(define-prefix-command 'my-completion-map)
+(global-set-key (kbd "C-c m") #'my-completion-map)
+
+(define-key my-completion-map (kbd "c") #'completion-at-point)
+(define-key my-completion-map (kbd "f") #'cape-file)
+
+;; Disable eldoc in the minibuffer
+(setq eldoc-display-functions '(eldoc-display-in-buffer))
 
 ;; Debugger
 (use-package dape
