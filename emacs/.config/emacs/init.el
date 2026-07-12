@@ -355,6 +355,8 @@
    ("C-c c" . org-capture))
   :config
   (setq org-agenda-files '("~/org")
+	org-agenda-start-on-weekday 0
+	calendar-week-start-day 0
         org-log-done 'time
         org-return-follows-link t
         org-hide-emphasis-markers t)
@@ -380,7 +382,7 @@
 
           ("t" "To-do"
            entry (file+headline "~/org/todos.org" "Tasks")
-           "* TODO [#B] %?\n:Created: %T\n "
+           "* TODO [#B] %?\n "
            :empty-lines 0)
 
           ("c" "Code To-Do"
