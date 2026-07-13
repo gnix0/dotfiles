@@ -1,9 +1,12 @@
+[general]
+import = ["~/.config/alacritty/themes/zenburn.toml"]
+
 [font]
 normal = { family = "IosevkaTermSlab Nerd Font Mono", style = "Regular" }
 size = 15
 
 [window]
-opacity = 0.8
+opacity = 1
 
-[colors.primary]
-background = "#000000"
+
+
