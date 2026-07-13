@@ -259,7 +259,8 @@
          (c++-mode . eglot-ensure)
          (rust-mode . eglot-ensure)
          (go-mode . eglot-ensure)
-         (elixir-mode . eglot-ensure))
+         (elixir-mode . eglot-ensure)
+	 (lua-mode . eglot-ensure))
   :config
   (setq eglot-code-action-indications nil)
   (setq eglot-code-action-indicator nil)
@@ -278,6 +279,7 @@
 (use-package elixir-mode)
 (use-package go-mode)
 (use-package rust-mode)
+(use-package lua-mode)
 
 ;; More relevant file-types
 (use-package markdown-mode
