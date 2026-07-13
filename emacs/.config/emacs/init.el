@@ -88,10 +88,14 @@
                     "IosevkaTermSlab Nerd Font Mono"
                     :height 150)
 
-(use-package kaolin-themes
+(use-package zenburn-theme
   :demand t
   :config
-  (load-theme 'kaolin-temple t))
+  (load-theme 'zenburn t))
+;; (use-package gruber-darker-theme
+;;   :demand t
+;;   :config
+;;   (load-theme 'gruber-darker t))
 
 (use-package doom-modeline
   :init (doom-modeline-mode 1))
