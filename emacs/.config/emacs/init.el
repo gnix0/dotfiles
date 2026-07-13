@@ -88,14 +88,10 @@
                     "IosevkaTermSlab Nerd Font Mono"
                     :height 150)
 
-(use-package zenburn-theme
+(use-package gruber-darker-theme
   :demand t
-  :config
-  (load-theme 'zenburn t))
-;; (use-package gruber-darker-theme
-;;   :demand t
-;;   :config
-;;   (load-theme 'gruber-darker t))
+  :init
+  (load-theme 'gruber-darker t))
 
 (use-package doom-modeline
   :init (doom-modeline-mode 1))
@@ -257,10 +253,25 @@
 (add-hook 'compilation-filter-hook #'gnix/colorize-compilation-buffer)
 
 ;; Languages
+(use-package simpc-mode
+  :straight nil
+  :demand t
+  :load-path "~/.config/emacs/lisp"
+  :config
+  (define-derived-mode simpc-c-mode simpc-mode "Simple C")
+  (define-derived-mode simpc-c++-mode simpc-mode "Simple C++")
+
+  (add-to-list 'auto-mode-alist '("\\.c\\'"   . simpc-c-mode))
+  (add-to-list 'auto-mode-alist '("\\.h\\'"   . simpc-c-mode))
+  (add-to-list 'auto-mode-alist '("\\.cc\\'"  . simpc-c++-mode))
+  (add-to-list 'auto-mode-alist '("\\.hh\\'"  . simpc-c++-mode))
+  (add-to-list 'auto-mode-alist '("\\.cpp\\'" . simpc-c++-mode))
+  (add-to-list 'auto-mode-alist '("\\.hpp\\'" . simpc-c++-mode))
+  (add-to-list 'auto-mode-alist '("\\.cxx\\'" . simpc-c++-mode))
+  (add-to-list 'auto-mode-alist '("\\.hxx\\'" . simpc-c++-mode)))
+
 (use-package eglot
   :hook ((java-mode . eglot-ensure)
-         (c-mode . eglot-ensure)
-         (c++-mode . eglot-ensure)
          (rust-mode . eglot-ensure)
          (go-mode . eglot-ensure)
          (elixir-mode . eglot-ensure)
