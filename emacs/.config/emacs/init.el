@@ -318,9 +318,6 @@
   :init
   (add-hook 'completion-at-point-functions #'cape-file))
 
-;; Man pages
-(global-set-key (kbd "C-c m") #'man)
-
 ;; Disable eldoc in the minibuffer
 (setq eldoc-display-functions '(eldoc-display-in-buffer))
 
