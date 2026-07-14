@@ -79,9 +79,6 @@
 ;; 'y' and 'n' for confirmation on dialogs
 (defalias 'yes-or-no-p 'y-or-n-p)
 
-;; Zaps up to char, not the char itself
-(global-set-key (kbd "M-z") 'zap-up-to-char)
-
 ;; Font & Theme
 (set-face-attribute 'default nil
                     :font
@@ -93,10 +90,12 @@
   :init
   (load-theme 'zenburn t))
 
-(use-package doom-modeline
-  :init (doom-modeline-mode 1))
-
-(use-package nerd-icons)
+(use-package keycast
+  :demand t
+  :config
+  (setq keycast-mode-line-remove-tail-elements nil
+	keycast-mode-line-format "%K  %C%R ")
+  (keycast-mode-line-mode 1))
 
 ;; Scrolling
 (setq scroll-conservatively 101)
@@ -132,6 +131,7 @@
   (marginalia-align 'right))
 
 (use-package orderless
+  :ensure t
   :config
   (setq completion-styles '(orderless basic)
         completion-category-defaults nil))
@@ -191,20 +191,12 @@
 
 ;; Terminal emulator
 (use-package vterm
-  :init
-  (setq vterm-buffer-name-string "vterm: %s"
-        vterm-copy-exclude-prompt t
-        vterm-kill-buffer-on-exit t
-        vterm-max-scrollback 10000
-        vterm-timer-delay 0.01)
-  :hook
-  (vterm-mode .
-              (lambda ()
-                (display-line-numbers-mode -1)
-                (visual-line-mode -1)
-                (hl-line-mode -1)
-                (setq-local mode-line-format '(" %b"))
-                (setq-local truncate-lines t))))
+  :demand t
+  :commands vterm
+  :config
+  (setq term-prompt-regexp "^[^#$%>\n]*[#$%>] *")
+  (setq vterm-shell "zsh")
+  (setq vterm-max-scrollback 10000))
 
 ;; Projects
 (use-package envrc
@@ -254,6 +246,8 @@
 
 ;; Languages
 (use-package eglot
+  :custom
+  (flymake-show-diagnostics-at-end-of-line nil)
   :hook ((java-mode . eglot-ensure)
 	 (c-mode . eglot-ensure)
 	 (c++-mode . eglot-ensure)
@@ -264,6 +258,11 @@
   :config
   (setq eglot-code-action-indications nil)
   (setq eglot-code-action-indicator nil)
+  (dolist (type '(eglot-error eglot-warning eglot-note))
+    (let ((control (get type 'flymake-overlay-control)))
+      (setf (alist-get 'face control) nil
+            (alist-get 'before-string control) "")
+      (put type 'flymake-overlay-control control)))
   (let ((java-debug-jar
          (car
           (file-expand-wildcards
@@ -291,8 +290,11 @@
 (add-to-list 'auto-mode-alist '("CODEOWNERS\\'" . conf-mode))
 (add-to-list 'auto-mode-alist '("\\.env\\'" . conf-mode))
 
-;; Open diagnostics buffer
+;; Diagnostics
 (global-set-key (kbd "C-c d") #'flymake-show-buffer-diagnostics)
+
+;; Re-bind to zap UP TO char, but not INCLUDING the char
+(global-set-key (kbd "M-z") 'zap-up-to-char)
 
 ;; Code Completion
 (use-package corfu
