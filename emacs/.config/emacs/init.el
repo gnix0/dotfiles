@@ -85,13 +85,13 @@
                     "IosevkaTermSlab Nerd Font Mono"
                     :height 150)
 
-(use-package gruber-darker-theme
-  :demand t
-  :init
-  (load-theme 'gruber-darker t))
+;; (use-package gruber-darker-theme
+;;   :demand t
+;;   :init
+;;   (load-theme 'gruber-darker t))
 
-;; (add-to-list 'custom-theme-load-path "~/.config/emacs/themes/")
-;; (load-theme 'gruber-black t)
+(add-to-list 'custom-theme-load-path "~/.config/emacs/themes/")
+(load-theme 'gruber-black t)
 
 (use-package keycast
   :demand t
