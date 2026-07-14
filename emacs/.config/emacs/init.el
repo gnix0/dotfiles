@@ -85,10 +85,13 @@
                     "IosevkaTermSlab Nerd Font Mono"
                     :height 150)
 
-(use-package zenburn-theme
+(use-package gruber-darker-theme
   :demand t
   :init
-  (load-theme 'zenburn t))
+  (load-theme 'gruber-darker t))
+
+;; (add-to-list 'custom-theme-load-path "~/.config/emacs/themes/")
+;; (load-theme 'gruber-black t)
 
 (use-package keycast
   :demand t
@@ -416,18 +419,25 @@
           ("@feature" . ?f)
           ("@chore"   . ?c)
           ("@research". ?r)
-          ("@refactor". ?R)
           (:endgroup)
-
           ;; Area
-        
           ("backend"  . ?k)
           ("frontend" . ?F)
           ("infra"    . ?i)
           ("docs"     . ?d)
           ("testing"  . ?t)
-
           ;; Context
           ("work"     . ?w)
           ("studies"  . ?s)
+	  ("personal" . ?p)
           )))
+
+;; PDF viewing with note-taking
+(use-package pdf-tools
+  :init
+  (pdf-loader-install)
+  :hook
+  (pdf-view-mode
+   . (lambda ()
+       (display-line-numbers-mode -1)
+       (hl-line-mode -1))))
