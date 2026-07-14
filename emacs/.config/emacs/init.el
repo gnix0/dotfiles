@@ -319,12 +319,8 @@
   :init
   (add-hook 'completion-at-point-functions #'cape-file))
 
-;; Display the completion menus
-(define-prefix-command 'my-completion-map)
-(global-set-key (kbd "C-c m") #'my-completion-map)
-
-(define-key my-completion-map (kbd "c") #'completion-at-point)
-(define-key my-completion-map (kbd "f") #'cape-file)
+;; Man pages
+(global-set-key (kbd "C-c m") #'man)
 
 ;; Disable eldoc in the minibuffer
 (setq eldoc-display-functions '(eldoc-display-in-buffer))
