@@ -429,5 +429,5 @@
 
           ;; Context
           ("work"     . ?w)
-          ("studies"  . ?p)
+          ("studies"  . ?s)
           )))
