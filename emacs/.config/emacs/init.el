@@ -253,22 +253,36 @@
   (defun gnix/newline-and-indent ()
     "Insert a newline and keep C-like scope indentation predictable."
     (interactive)
-    (let* ((indent (current-indentation))
+    (let* ((blank-line (save-excursion
+                         (beginning-of-line)
+                         (looking-at-p "[ \t]*$")))
+           (indent (current-indentation))
+           (control-line
+            (save-excursion
+              (back-to-indentation)
+              (looking-at-p
+               "\\(?:if\\|else\\|for\\|while\\|do\\|switch\\)\\b")))
            (opens-block
             (save-excursion
               (end-of-line)
               (skip-chars-backward " \t")
               (eq (char-before) ?{))))
+      (when blank-line
+        (delete-region (line-beginning-position) (line-end-position)))
       (newline)
-      (indent-to (+ indent (if opens-block c-basic-offset 0)))))
+      (if (looking-back "^[ \t]*" (line-beginning-position))
+          (indent-according-to-mode)
+        (indent-to (+ indent (if (or opens-block control-line)
+                                 c-basic-offset
+                               0))))))
 
-  (defun gnix/cc-electric-close-brace ()
-    "Insert a closing brace, then reindent only that line."
+  (defun gnix/cc-electric-brace ()
+    "Insert a brace, then reindent only that brace line."
     (interactive)
     (call-interactively #'c-electric-brace)
     (save-excursion
       (beginning-of-line)
-      (when (looking-at-p "[ \t]*}")
+      (when (looking-at-p "[ \t]*[{}]")
         (c-indent-line))))
 
   (defun gnix/cc-mode-setup ()
@@ -278,7 +292,8 @@
     (local-set-key (kbd "RET") #'gnix/newline-and-indent)
     (local-set-key (kbd "<return>") #'gnix/newline-and-indent)
     (local-set-key (kbd "C-m") #'gnix/newline-and-indent)
-    (local-set-key (kbd "}") #'gnix/cc-electric-close-brace))
+    (local-set-key (kbd "{") #'gnix/cc-electric-brace)
+    (local-set-key (kbd "}") #'gnix/cc-electric-brace))
 
   (add-hook 'c-mode-common-hook #'gnix/cc-mode-setup))
 
