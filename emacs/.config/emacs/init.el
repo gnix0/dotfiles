@@ -242,6 +242,46 @@
 (add-hook 'compilation-filter-hook #'gnix/colorize-compilation-buffer)
 
 ;; Languages
+(use-package cc-mode
+  :straight nil
+  :defer t
+  :init
+  (setq c-default-style '((java-mode . "java")
+                          (awk-mode . "awk")
+                          (other . "k&r")))
+
+  (defun gnix/newline-and-indent ()
+    "Insert a newline and keep C-like scope indentation predictable."
+    (interactive)
+    (let* ((indent (current-indentation))
+           (opens-block
+            (save-excursion
+              (end-of-line)
+              (skip-chars-backward " \t")
+              (eq (char-before) ?{))))
+      (newline)
+      (indent-to (+ indent (if opens-block c-basic-offset 0)))))
+
+  (defun gnix/cc-electric-close-brace ()
+    "Insert a closing brace, then reindent only that line."
+    (interactive)
+    (call-interactively #'c-electric-brace)
+    (save-excursion
+      (beginning-of-line)
+      (when (looking-at-p "[ \t]*}")
+        (c-indent-line))))
+
+  (defun gnix/cc-mode-setup ()
+    (electric-indent-local-mode -1)
+    (setq-local c-basic-offset 4)
+    (setq-local indent-tabs-mode nil)
+    (local-set-key (kbd "RET") #'gnix/newline-and-indent)
+    (local-set-key (kbd "<return>") #'gnix/newline-and-indent)
+    (local-set-key (kbd "C-m") #'gnix/newline-and-indent)
+    (local-set-key (kbd "}") #'gnix/cc-electric-close-brace))
+
+  (add-hook 'c-mode-common-hook #'gnix/cc-mode-setup))
+
 (use-package eglot
   :custom
   (flymake-show-diagnostics-at-end-of-line nil)
@@ -337,6 +377,15 @@
   :config
   (repeat-mode))
 
+(defun gnix/open-notes ()
+  "Open personal notes in Org overview."
+  (interactive)
+  (find-file "~/org/notes.org")
+  (org-mode)
+  (org-overview))
+
+(global-set-key (kbd "C-c n") #'gnix/open-notes)
+
 ;; Org-mode and Email
 (use-package org
   :straight nil
@@ -351,9 +400,59 @@
   (setq org-agenda-files '("~/org")
 	org-agenda-start-on-weekday 0
 	calendar-week-start-day 0
+        org-agenda-use-time-grid nil
         org-log-done 'time
         org-return-follows-link t
-        org-hide-emphasis-markers t)
+        org-hide-emphasis-markers t
+        org-agenda-prefix-format
+        '((agenda . " %i %-12:c% s")
+          (todo . " %i %-12:c")
+          (tags . " %i %-12:c")
+          (search . " %i %-12:c")))
+
+  (defun gnix/org-clock-sum-string (minutes)
+    (format "[%02d:%02d]" (/ minutes 60) (% minutes 60)))
+
+  (defun gnix/org-update-heading-clock-sum ()
+    (when (and (derived-mode-p 'org-mode)
+               (not org-clock-out-removed-last-clock))
+      (save-excursion
+        (save-restriction
+          (widen)
+          (org-back-to-heading t)
+          (let* ((components (org-heading-components))
+                 (todo-keyword (nth 2 components))
+                 (heading (nth 4 components)))
+            (when (and todo-keyword heading)
+              (let* ((minutes (org-clock-sum-current-item))
+                     (clean-heading
+                      (replace-regexp-in-string
+                       "[ \t]+\\[[0-9]+:[0-9][0-9]\\]\\'" "" heading))
+                     (updated-heading
+                      (format "%s %s"
+                              clean-heading
+                              (gnix/org-clock-sum-string minutes))))
+                (org-edit-headline updated-heading))))))))
+
+  (add-hook 'org-clock-out-hook #'gnix/org-update-heading-clock-sum)
+
+  (defun gnix/org-notes-date-heading ()
+    (let ((date-heading (format-time-string "%Y-%m-%d")))
+      (widen)
+      (goto-char (point-min))
+      (unless (re-search-forward "^\\* Random Notes[ \t]*$" nil t)
+        (goto-char (point-max))
+        (unless (bolp) (insert "\n"))
+        (insert "* Random Notes\n"))
+      (let ((notes-end (save-excursion (org-end-of-subtree t t))))
+        (if (re-search-forward
+             (format "^\\*\\* %s[ \t]*$" (regexp-quote date-heading))
+             notes-end t)
+            (forward-line 0)
+          (goto-char notes-end)
+          (unless (bolp) (insert "\n"))
+          (insert "** " date-heading "\n")
+          (forward-line -1)))))
 
   (defun gnix/org-capture-schedule ()
     (when (member (org-capture-get :key) '("t" "c"))
@@ -370,8 +469,8 @@
            :empty-lines 0)
 
           ("n" "Note"
-           entry (file+headline "~/org/notes.org" "Random Notes")
-           "** %?"
+           entry (file+function "~/org/notes.org" gnix/org-notes-date-heading)
+           "*** %?"
            :empty-lines 0)
 
           ("t" "To-do"
