@@ -204,7 +204,7 @@
 (setq project-list-file "~/.config/emacs/emacs-projects-list"
       project-vc-extra-root-markers
       '("CMakeLists.txt"
-        ".clangd" ;; for smaller C/C++ projects
+	".clangd"
         "GNUmakefile"
         "Makefile"
         "makefile"
@@ -242,26 +242,15 @@
 (add-hook 'compilation-filter-hook #'gnix/colorize-compilation-buffer)
 
 ;; Languages
-(setq major-mode-remap-alist
-      '((java-mode       . java-ts-mode)
-        (c-mode          . c-ts-mode)
-        (c++-mode        . c++-ts-mode)
-        (rust-mode       . rust-ts-mode)
-        (elixir-mode     . elixir-ts-mode)
-        (go-mode         . go-ts-mode)
-        (bash-mode       . bash-ts-mode)
-        (json-mode       . json-ts-mode)
-        (yaml-mode       . yaml-ts-mode)))
-
 (use-package eglot
   :custom
   (flymake-show-diagnostics-at-end-of-line nil)
-  :hook ((java-ts-mode . eglot-ensure)
-         (c-ts-mode . eglot-ensure)
-         (c++-ts-mode . eglot-ensure)
-         (rust-ts-mode . eglot-ensure)
-         (go-ts-mode . eglot-ensure)
-         (elixir-ts-mode . eglot-ensure)
+  :hook ((java-mode . eglot-ensure)
+	 (c-mode . eglot-ensure)
+	 (c++-mode . eglot-ensure)
+         (rust-mode . eglot-ensure)
+         (go-mode . eglot-ensure)
+         (elixir-mode . eglot-ensure)
 	 (lua-mode . eglot-ensure))
   :config
   (setq eglot-code-action-indications nil)
@@ -278,15 +267,15 @@
             "~/.config/emacs/debug-adapters/java-debug/com.microsoft.java.debug.plugin/target/com.microsoft.java.debug.plugin-*.jar")))))
     (add-to-list
      'eglot-server-programs
-     `((java-mode java-ts-mode) .
+     `((java-mode) .
        ("jdtls"
         :initializationOptions
         (:bundles [,java-debug-jar]))))))
 
 (use-package elixir-mode)
+(use-package go-mode)
+(use-package rust-mode)
 (use-package lua-mode)
-
-(add-hook 'c-mode-hook (lambda () (local-set-key (kbd "RET") #'newline)))
 
 ;; More relevant file-types
 (use-package markdown-mode
@@ -303,20 +292,6 @@
 
 ;; Re-bind to zap UP TO char, but not INCLUDING the char
 (global-set-key (kbd "M-z") 'zap-up-to-char)
-
-;; Tree-sitter
-(setq treesit-language-source-alist
-        '((java       . ("https://github.com/tree-sitter/tree-sitter-java"))
-          (c          . ("https://github.com/tree-sitter/tree-sitter-c"))
-          (cpp        . ("https://github.com/tree-sitter/tree-sitter-cpp"))
-          (rust       . ("https://github.com/tree-sitter/tree-sitter-rust"))
-          (elixir       . ("https://github.com/elixir-lang/tree-sitter-elixir"))
-          (go         . ("https://github.com/tree-sitter/tree-sitter-go"))
-          (bash       . ("https://github.com/tree-sitter/tree-sitter-bash"))
-          (json       . ("https://github.com/tree-sitter/tree-sitter-json"))
-          (yaml       . ("https://github.com/ikatyang/tree-sitter-yaml"))
-          (toml       . ("https://github.com/tree-sitter-grammars/tree-sitter-toml"))
-          (markdown   . ("https://github.com/tree-sitter-grammars/tree-sitter-markdown"))))
 
 ;; Code Completion
 (use-package corfu
