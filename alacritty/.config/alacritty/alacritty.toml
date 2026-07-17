@@ -4,3 +4,6 @@ size = 16
 
 [window]
 opacity = 1
+
+[colors.primary]
+background = "#2B2B2F"
