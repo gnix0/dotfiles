@@ -11,15 +11,15 @@
 The directories and files are organized to be managed with **GNU Stow**:
 
 ```bash
-➜  dotfiles git:(main)
 .
-├── alacritty
+├── assets
+│   └── kinesis_layout.png
 ├── emacs
 ├── fastfetch
-├── hypr
+├── i3
+├── README.md
 ├── tmux-sessionizer
-├── .tmux.conf
-└── .zshrc
+└── wpp.jpg
 ```
 
 To apply the configurations on a Unix-like system that follows the **Filesystem Hierarchy Standard**,
