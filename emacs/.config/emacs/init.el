@@ -215,7 +215,7 @@
   :commands vterm
   :config
   (setq term-prompt-regexp "^[^#$%>\n]*[#$%>] *")
-  (setq vterm-shell "zsh")
+  (setq vterm-shell "bash")
   (setq vterm-max-scrollback 10000))
 
 ;; Projects
