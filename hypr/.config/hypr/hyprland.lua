@@ -1,9 +1,16 @@
 ---- MONITORS ----
 hl.monitor({
-    output = "",
+    output = "eDP-1",
     mode = "preferred",
-    position = "auto",
-    scale = "auto",
+    position = "0x0",
+    scale = 1,
+})
+
+hl.monitor({
+    output = "HDMI-A-1",
+    mode = "2560x1440@60",
+    position = "1366x0",
+    scale = 1,
 })
 
 ---- MY PROGRAMS ----
