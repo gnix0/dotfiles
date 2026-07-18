@@ -1,9 +1,6 @@
 [font]
 normal = { family = "IosevkaTermSlab Nerd Font Mono", style = "Regular" }
-size = 16
+size = 15
 
 [window]
 opacity = 1
-
-[colors.primary]
-background = "#2B2B2F"
