@@ -82,7 +82,7 @@
 ;; Font & Theme
 (set-face-attribute 'default nil
                     :font
-                    "IosevkaTermSlab Nerd Font Mono"
+                    "Iosevka"
                     :height 150)
 
 ;; (use-package kaolin-themes
