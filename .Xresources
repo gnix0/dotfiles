@@ -1,12 +1,7 @@
-Xft.dpi:    96
-Xft.antialias:  1
-Xft.hinting:    1
-Xft.hintstyle:  hintmedium
-
 URxvt.termName: rxvt
 URxvt*depth: 32
 URxvt.transparent: false
-URxvt.font: xft:IosevkaTermSlab Nerd Font Mono:size=15
+URxvt.font: xft:Iosevka:size=15
 URxvt.scrollBar: false
 URxvt.geometry: 80x-1
 
@@ -29,10 +24,3 @@ URxvt*color12: #729FCF
 URxvt*color13: #AD7FA8
 URxvt*color14: #fcaf3e
 URxvt*color15: #EEEEEC
-
-URxvt.perl-ext-common:  resize-font,matcher
-URxvt.matcher.button: 1
-
-URxvt.keysym.C-minus:  resize-font:smaller
-URxvt.keysym.C-equal:  resize-font:bigger
-URxvt.keysym.C-0:      resize-font:reset
