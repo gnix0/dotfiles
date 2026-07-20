@@ -220,62 +220,177 @@
 
 (add-hook 'prog-mode-hook #'gnix/delete-trailing-whitespace-on-save)
 
-;; C/C++
-(use-package simpc-mode
-  :straight (:type git
-             :host github
-             :repo "rexim/simpc-mode")
-  :mode (("\\.[hc]\\(pp\\)?\\'" . simpc-mode)))
+;; Keycast
+(use-package keycast
+  :demand t
+  :config
+  (setq keycast-mode-line-remove-tail-elements nil
+	keycast-mode-line-format "%K  %C%R ")
+  (keycast-mode-line-mode 1))
 
-;; Tree-sitter
+;; Languages
 (use-package treesit
   :straight nil
   :demand t
   :init
   (setq treesit-language-source-alist
         '((bash . ("https://github.com/tree-sitter/tree-sitter-bash"))
+          (c . ("https://github.com/tree-sitter/tree-sitter-c"))
+          (cpp . ("https://github.com/tree-sitter/tree-sitter-cpp"))
           (elixir . ("https://github.com/elixir-lang/tree-sitter-elixir"))
           (go . ("https://github.com/tree-sitter/tree-sitter-go"))
+          (gomod . ("https://github.com/camdencheek/tree-sitter-go-mod"))
+          (heex . ("https://github.com/phoenixframework/tree-sitter-heex"))
           (java . ("https://github.com/tree-sitter/tree-sitter-java"))
           (json . ("https://github.com/tree-sitter/tree-sitter-json"))
-          (rust . ("https://github.com/tree-sitter/tree-sitter-rust"))))
-  :config
+          (lua . ("https://github.com/tree-sitter-grammars/tree-sitter-lua"))
+          (rust . ("https://github.com/tree-sitter/tree-sitter-rust"))
+          (toml . ("https://github.com/tree-sitter-grammars/tree-sitter-toml"))
+          (yaml . ("https://github.com/tree-sitter-grammars/tree-sitter-yaml")))
+        c-ts-mode-indent-style 'k&r)
+
   (dolist (entry '((bash sh-mode bash-ts-mode)
+                   (c c-mode c-ts-mode)
+                   (cpp c++-mode c++-ts-mode)
+                   (c c-or-c++-mode c-or-c++-ts-mode)
                    (elixir elixir-mode elixir-ts-mode)
                    (go go-mode go-ts-mode)
+                   (gomod go-dot-mod-mode go-mod-ts-mode)
                    (java java-mode java-ts-mode)
                    (json js-json-mode json-ts-mode)
-                   (rust rust-mode rust-ts-mode)))
-    (when (treesit-language-available-p (car entry))
+                   (lua lua-mode lua-ts-mode)
+                   (rust rust-mode rust-ts-mode)
+                   (toml conf-toml-mode toml-ts-mode)
+                   (yaml yaml-mode yaml-ts-mode)))
+    (when (treesit-language-available-p (nth 0 entry))
       (add-to-list 'major-mode-remap-alist
-                   (cons (nth 1 entry)
-                         (nth 2 entry))))))
+                   (cons (nth 1 entry) (nth 2 entry)))))
+
+  (when (treesit-language-available-p 'heex)
+    (add-to-list 'auto-mode-alist
+                 '("\\.[hl]?eex\\'" . heex-ts-mode))))
+
+(defun gnix/ts-indent-offset ()
+  "Return the indentation offset for the current C-like tree-sitter mode."
+  (if (derived-mode-p 'java-ts-mode)
+      java-ts-mode-indent-offset
+    c-ts-mode-indent-offset))
+
+(defun gnix/ts-newline-and-indent ()
+  "Insert a newline and keep C-like scope indentation predictable."
+  (interactive)
+  (let* ((blank-line
+          (save-excursion
+            (beginning-of-line)
+            (looking-at-p "[ \t]*$")))
+         (indent (current-indentation))
+         (control-line
+          (save-excursion
+            (back-to-indentation)
+            (looking-at-p
+             "\\(?:if\\|else\\|for\\|while\\|do\\|switch\\)\\b")))
+         (opens-block
+          (save-excursion
+            (end-of-line)
+            (skip-chars-backward " \t")
+            (eq (char-before) ?{))))
+    (when blank-line
+      (delete-region (line-beginning-position) (line-end-position)))
+    (newline)
+    (if (or opens-block control-line)
+        (indent-to (+ indent (gnix/ts-indent-offset)))
+      (indent-according-to-mode)
+
+      ;; Java's parser can temporarily lose the surrounding scope while
+      ;; braces are incomplete. Keep the indentation stable in that case.
+      (when (and (derived-mode-p 'java-ts-mode)
+                 (> indent 0)
+                 (= (current-indentation) 0))
+        (indent-to indent)))))
+
+(defun gnix/ts-electric-brace ()
+  "Insert a brace, then reindent only that brace line."
+  (interactive)
+  (call-interactively #'self-insert-command)
+  (save-excursion
+    (beginning-of-line)
+    (when (looking-at-p "[ \t]*[{}]")
+      (let ((control-indent
+             (and (derived-mode-p 'c-ts-base-mode)
+                  (eq (char-after
+                       (progn
+                         (back-to-indentation)
+                         (point)))
+                      ?{)
+                  (save-excursion
+                    (forward-line -1)
+                    (back-to-indentation)
+                    (when (looking-at-p
+                           "\\(?:if\\|else\\|for\\|while\\|do\\|switch\\)\\b")
+                      (current-indentation))))))
+        (if control-indent
+            (indent-line-to control-indent)
+          (indent-according-to-mode))))))
+
+(defun gnix/c-like-ts-mode-setup ()
+  (electric-indent-local-mode -1)
+
+  (if (derived-mode-p 'java-ts-mode)
+      (setq-local java-ts-mode-indent-offset 4)
+    (setq-local c-ts-mode-indent-offset 4))
+
+  (setq-local indent-tabs-mode nil)
+
+  (local-set-key (kbd "RET") #'gnix/ts-newline-and-indent)
+  (local-set-key (kbd "<return>") #'gnix/ts-newline-and-indent)
+  (local-set-key (kbd "C-m") #'gnix/ts-newline-and-indent)
+  (local-set-key (kbd "{") #'gnix/ts-electric-brace)
+  (local-set-key (kbd "}") #'gnix/ts-electric-brace))
+
+(add-hook 'c-ts-base-mode-hook #'gnix/c-like-ts-mode-setup)
+(add-hook 'java-ts-mode-hook #'gnix/c-like-ts-mode-setup)
 
 ;; Language Server Protocol
 (use-package eglot
   :custom
   (flymake-show-diagnostics-at-end-of-line nil)
-  (eglot-code-action-indications nil)
   :hook
-  ((simpc-mode . eglot-ensure)
+  ((java-mode . eglot-ensure)
    (java-ts-mode . eglot-ensure)
+   (c-mode . eglot-ensure)
+   (c-ts-mode . eglot-ensure)
+   (c++-mode . eglot-ensure)
+   (c++-ts-mode . eglot-ensure)
+   (rust-mode . eglot-ensure)
    (rust-ts-mode . eglot-ensure)
+   (go-mode . eglot-ensure)
    (go-ts-mode . eglot-ensure)
-   (elixir-ts-mode . eglot-ensure))
+   (elixir-mode . eglot-ensure)
+   (elixir-ts-mode . eglot-ensure)
+   (lua-mode . eglot-ensure)
+   (lua-ts-mode . eglot-ensure))
   :config
-  (add-to-list 'eglot-server-programs
-               '((simpc-mode :language-id "c") . ("clangd")))
+  (setq eglot-code-action-indications nil)
+  (setq eglot-code-action-indicator nil)
+
   (dolist (type '(eglot-error eglot-warning eglot-note))
     (let ((control (get type 'flymake-overlay-control)))
       (setf (alist-get 'face control) nil
             (alist-get 'before-string control) "")
       (put type 'flymake-overlay-control control))))
 
+(use-package elixir-mode)
+(use-package go-mode)
+(use-package rust-mode)
+(use-package lua-mode)
+
 ;; More relevant file types
 (use-package markdown-mode
   :config
   (setq markdown-fontify-code-blocks-natively t))
+
 (use-package yaml-mode)
+
 (add-to-list 'auto-mode-alist '("CODEOWNERS\\'" . conf-mode))
 (add-to-list 'auto-mode-alist '("\\.env\\'" . conf-mode))
 
