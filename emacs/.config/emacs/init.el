@@ -21,16 +21,6 @@
 (setq auto-save-default nil)
 (setq make-backup-files nil)
 
-;; Disable mouse
-(define-key global-map [mouse-1] 'ignore)
-(define-key global-map [mouse-2] 'ignore)
-(define-key global-map [mouse-3] 'ignore)
-(define-key global-map [down-mouse-1] 'ignore)
-(define-key global-map [drag-mouse-1] 'ignore)
-(define-key global-map [mouse-movement] 'ignore)
-(define-key global-map [wheel-up] 'ignore)
-(define-key global-map [wheel-down] 'ignore)
-
 ;; Column bar
 (setq-default fill-column 100)
 (add-hook 'prog-mode-hook #'display-fill-column-indicator-mode)
@@ -42,12 +32,6 @@
   (display-line-numbers-mode)
   (setq display-line-numbers 'relative))
 (add-hook 'prog-mode-hook #'gnix/relative-line-numbers)
-
-;; Decrease echo time
-(setq echo-keystrokes 0.01)
-
-;; Human-readable file sized in Dired
-(setq dired-listing-switches "-alh")
 
 ;; straight.el as the package manager
 (defvar bootstrap-version)
@@ -85,39 +69,33 @@
                     "Iosevka"
                     :height 150)
 
-;; (use-package kaolin-themes
-;;   :demand t
-;;   :init
-;;   (load-theme 'kaolin-ocean t))
-
 (use-package gruber-darker-theme
   :demand t
   :init
   (load-theme 'gruber-darker t))
 
-;; (add-to-list 'custom-theme-load-path "~/.config/emacs/themes/")
-;; (load-theme 'ansi-black t)
-
-(use-package keycast
+;; Dired
+(use-package dired-x
+  :straight nil
   :demand t
-  :config
-  (setq keycast-mode-line-remove-tail-elements nil
-	keycast-mode-line-format "%K  %C%R ")
-  (keycast-mode-line-mode 1))
+  :custom
+  (dired-listing-switches "-alh")
+  (dired-dwim-target t))
 
 ;; Scrolling
-(setq scroll-conservatively 101)
-(setq scroll-margin 10)
-(setq scroll-preserve-screen-position t)
+(setq scroll-conservatively 101
+      scroll-margin 10
+      scroll-preserve-screen-position t)
 
 ;; Multiple cursors
-(use-package multiple-cursors)
-(global-set-key (kbd "C-S-c C-S-c") 'mc/edit-lines)
-(global-set-key (kbd "C->") 'mc/mark-next-like-this)
-(global-set-key (kbd "C-<") 'mc/mark-previous-like-this)
-(global-set-key (kbd "C-c C-<") 'mc/mark-all-like-this)
-(global-set-key (kbd "C-\"") 'mc/skip-to-next-like-this)
-(global-set-key (kbd "C-:") 'mc/skip-to-previous-like-this)
+(use-package multiple-cursors
+  :bind
+  (("C-S-c C-S-c" . mc/edit-lines)
+   ("C->"         . mc/mark-next-like-this)
+   ("C-<"         . mc/mark-previous-like-this)
+   ("C-c C-<"     . mc/mark-all-like-this)
+   ("C-\""        . mc/skip-to-next-like-this)
+   ("C-:"         . mc/skip-to-previous-like-this)))
 
 ;; Editing helpers
 (use-package move-text
@@ -125,51 +103,42 @@
          ("M-n" . move-text-down)))
 
 (global-set-key (kbd "C-,") #'duplicate-dwim)
-
-;; Re-bind to zap UP TO char, but not INCLUDING the char
 (global-set-key (kbd "M-z") 'zap-up-to-char)
 
 ;; Minibuffer and Searching
-(use-package vertico
-  :init
-  (vertico-mode)
+(use-package ido
+  :straight nil
+  :demand t
   :config
-  (setq vertico-cycle t
-        vertico-count 15
-        vertico-resize nil
-        read-file-name-completion-ignore-case t
-        read-buffer-completion-ignore-case t
-        completion-ignore-case t))
+  (ido-mode 1)
+  (ido-everywhere 1))
 
-(use-package marginalia
-  :init
-  (marginalia-mode)
-  :bind (:map minibuffer-local-map
-              ("M-a" . marginalia-cycle))
+(use-package ido-completing-read+
+  :demand t
+  :config
+  (ido-ubiquitous-mode 1))
+
+(use-package smex
+  :bind
+  (("M-x" . smex)
+   ("C-c C-c M-x" . execute-extended-command)))
+
+(use-package helm
+  :bind
+  (("C-c h t" . helm-cmd-t)
+   ("C-c h f" . helm-find)
+   ("C-c h a" . helm-org-agenda-files-headings)
+   ("C-c h r" . helm-recentf))
   :custom
-  (marginalia-max-relative-age 0)
-  (marginalia-align 'right))
+  (helm-ff-transformer-show-only-basename nil))
 
-(use-package orderless
-  :ensure t
-  :config
-  (setq completion-styles '(orderless basic)
-        completion-category-defaults nil))
+(use-package helm-git-grep
+  :bind
+  ("C-c h g g" . helm-git-grep))
 
-(use-package consult
-  :bind(
-        ("M-s M-g" . consult-grep)
-        ("M-s M-r" . consult-ripgrep)
-        ("M-s M-f" . consult-find)
-        ("M-s M-o" . consult-outline)
-        ("M-s M-l" . consult-line)
-        ("M-s M-b" . consult-buffer)))
-
-(use-package wgrep
-  :bind ( :map grep-mode-map
-          ("e" . wgrep-change-to-wgrep-mode)
-          ("C-x C-q" . wgrep-change-to-wgrep-mode)
-          ("C-c C-c" . wgrep-finish-edit)))
+(use-package helm-ls-git
+  :bind
+  ("C-c h g l" . helm-ls-git-ls))
 
 ;; (Better) Unique buffer naming
 (setq uniquify-buffer-name-style 'forward)
@@ -206,17 +175,6 @@
 ;; Built-in persistent state
 (global-auto-revert-mode 1)
 (recentf-mode 1)
-(savehist-mode 1)
-(setq recentf-max-saved-items 150)
-
-;; Terminal emulator
-(use-package vterm
-  :demand t
-  :commands vterm
-  :config
-  (setq term-prompt-regexp "^[^#$%>\n]*[#$%>] *")
-  (setq vterm-shell "bash")
-  (setq vterm-max-scrollback 10000))
 
 ;; Projects
 (use-package envrc
@@ -231,7 +189,6 @@
         "Makefile"
         "makefile"
         "pom.xml"
-        "build.gradle"
         "Cargo.toml"
         "go.mod"
         "mix.exs"))
@@ -241,23 +198,11 @@
   :config
   (editorconfig-mode 1))
 
-;; Development
-
 ;; Bins needed for go, rust, and elixir
 (dolist (dir '("~/.local/bin" "~/.cargo/bin" "~/go/bin"))
   (let ((dir (expand-file-name dir)))
     (add-to-list 'exec-path dir)
     (setenv "PATH" (concat dir ":" (getenv "PATH")))))
-
-;; Pin current window so that no other buffer opens it.
-;; Useful for compilation buffers and shells.
-(defun gnix/pin-window ()
-  (interactive)
-  (set-window-dedicated-p (get-buffer-window (current-buffer)) t))
-
-;; Don't ask before killing the current compilation and scroll as buffer grows
-(setq compilation-always-kill t
-      compilation-scroll-output t)
 
 ;; Compilation (not project-wise like project.el does)
 (global-set-key (kbd "C-x c") #'compile)
@@ -269,167 +214,68 @@
     (ansi-color-apply-on-region compilation-filter-start (point))))
 (add-hook 'compilation-filter-hook #'gnix/colorize-compilation-buffer)
 
-;; Languages
+;; Remove trailing whitespace when saving source files
+(defun gnix/delete-trailing-whitespace-on-save ()
+  (add-hook 'before-save-hook #'delete-trailing-whitespace nil t))
+
+(add-hook 'prog-mode-hook #'gnix/delete-trailing-whitespace-on-save)
+
+;; C/C++
+(use-package simpc-mode
+  :straight (:type git
+             :host github
+             :repo "rexim/simpc-mode")
+  :mode (("\\.[hc]\\(pp\\)?\\'" . simpc-mode)))
+
+;; Tree-sitter
 (use-package treesit
   :straight nil
   :demand t
   :init
   (setq treesit-language-source-alist
         '((bash . ("https://github.com/tree-sitter/tree-sitter-bash"))
-          (c . ("https://github.com/tree-sitter/tree-sitter-c"))
-          (cpp . ("https://github.com/tree-sitter/tree-sitter-cpp"))
           (elixir . ("https://github.com/elixir-lang/tree-sitter-elixir"))
           (go . ("https://github.com/tree-sitter/tree-sitter-go"))
-          (gomod . ("https://github.com/camdencheek/tree-sitter-go-mod"))
-          (heex . ("https://github.com/phoenixframework/tree-sitter-heex"))
           (java . ("https://github.com/tree-sitter/tree-sitter-java"))
           (json . ("https://github.com/tree-sitter/tree-sitter-json"))
-          (lua . ("https://github.com/tree-sitter-grammars/tree-sitter-lua"))
-          (rust . ("https://github.com/tree-sitter/tree-sitter-rust"))
-          (toml . ("https://github.com/tree-sitter-grammars/tree-sitter-toml"))
-          (yaml . ("https://github.com/tree-sitter-grammars/tree-sitter-yaml")))
-        c-ts-mode-indent-style 'k&r)
-
+          (rust . ("https://github.com/tree-sitter/tree-sitter-rust"))))
+  :config
   (dolist (entry '((bash sh-mode bash-ts-mode)
-                   (c c-mode c-ts-mode)
-                   (cpp c++-mode c++-ts-mode)
-                   (c c-or-c++-mode c-or-c++-ts-mode)
                    (elixir elixir-mode elixir-ts-mode)
                    (go go-mode go-ts-mode)
-                   (gomod go-dot-mod-mode go-mod-ts-mode)
                    (java java-mode java-ts-mode)
                    (json js-json-mode json-ts-mode)
-                   (lua lua-mode lua-ts-mode)
-                   (rust rust-mode rust-ts-mode)
-                   (toml conf-toml-mode toml-ts-mode)
-                   (yaml yaml-mode yaml-ts-mode)))
-    (when (treesit-language-available-p (nth 0 entry))
+                   (rust rust-mode rust-ts-mode)))
+    (when (treesit-language-available-p (car entry))
       (add-to-list 'major-mode-remap-alist
-                   (cons (nth 1 entry) (nth 2 entry)))))
+                   (cons (nth 1 entry)
+                         (nth 2 entry))))))
 
-  (when (treesit-language-available-p 'heex)
-    (add-to-list 'auto-mode-alist '("\\.[hl]?eex\\'" . heex-ts-mode))))
-
-(defun gnix/ts-indent-offset ()
-  "Return the indentation offset for the current C-like tree-sitter mode."
-  (if (derived-mode-p 'java-ts-mode)
-      java-ts-mode-indent-offset
-    c-ts-mode-indent-offset))
-
-(defun gnix/ts-newline-and-indent ()
-  "Insert a newline and keep C-like scope indentation predictable."
-  (interactive)
-  (let* ((blank-line (save-excursion
-                       (beginning-of-line)
-                       (looking-at-p "[ \t]*$")))
-         (indent (current-indentation))
-         (control-line
-          (save-excursion
-            (back-to-indentation)
-            (looking-at-p
-             "\\(?:if\\|else\\|for\\|while\\|do\\|switch\\)\\b")))
-         (opens-block
-          (save-excursion
-            (end-of-line)
-            (skip-chars-backward " \t")
-            (eq (char-before) ?{))))
-    (when blank-line
-      (delete-region (line-beginning-position) (line-end-position)))
-    (newline)
-    (if (or opens-block control-line)
-        (indent-to (+ indent (gnix/ts-indent-offset)))
-      (indent-according-to-mode)
-      ;; Java's parser can temporarily lose the surrounding scope while
-      ;; braces are incomplete.  Keep the indentation stable in that case.
-      (when (and (derived-mode-p 'java-ts-mode)
-                 (> indent 0)
-                 (= (current-indentation) 0))
-        (indent-to indent)))))
-
-(defun gnix/ts-electric-brace ()
-  "Insert a brace, then reindent only that brace line."
-  (interactive)
-  (call-interactively #'self-insert-command)
-  (save-excursion
-    (beginning-of-line)
-    (when (looking-at-p "[ \t]*[{}]")
-      (let ((control-indent
-             (and (derived-mode-p 'c-ts-base-mode)
-                  (eq (char-after (progn (back-to-indentation) (point))) ?{)
-                  (save-excursion
-                    (forward-line -1)
-                    (back-to-indentation)
-                    (when (looking-at-p
-                           "\\(?:if\\|else\\|for\\|while\\|do\\|switch\\)\\b")
-                      (current-indentation))))))
-        (if control-indent
-            (indent-line-to control-indent)
-          (indent-according-to-mode))))))
-
-(defun gnix/c-like-ts-mode-setup ()
-  (electric-indent-local-mode -1)
-  (if (derived-mode-p 'java-ts-mode)
-      (setq-local java-ts-mode-indent-offset 4)
-    (setq-local c-ts-mode-indent-offset 4))
-  (setq-local indent-tabs-mode nil)
-  (local-set-key (kbd "RET") #'gnix/ts-newline-and-indent)
-  (local-set-key (kbd "<return>") #'gnix/ts-newline-and-indent)
-  (local-set-key (kbd "C-m") #'gnix/ts-newline-and-indent)
-  (local-set-key (kbd "{") #'gnix/ts-electric-brace)
-  (local-set-key (kbd "}") #'gnix/ts-electric-brace))
-
-(add-hook 'c-ts-base-mode-hook #'gnix/c-like-ts-mode-setup)
-(add-hook 'java-ts-mode-hook #'gnix/c-like-ts-mode-setup)
-
+;; Language Server Protocol
 (use-package eglot
   :custom
   (flymake-show-diagnostics-at-end-of-line nil)
-  :hook ((java-mode . eglot-ensure)
-         (java-ts-mode . eglot-ensure)
-	 (c-mode . eglot-ensure)
-         (c-ts-mode . eglot-ensure)
-	 (c++-mode . eglot-ensure)
-         (c++-ts-mode . eglot-ensure)
-         (rust-mode . eglot-ensure)
-         (rust-ts-mode . eglot-ensure)
-         (go-mode . eglot-ensure)
-         (go-ts-mode . eglot-ensure)
-         (elixir-mode . eglot-ensure)
-         (elixir-ts-mode . eglot-ensure)
-	 (lua-mode . eglot-ensure)
-         (lua-ts-mode . eglot-ensure))
+  (eglot-code-action-indications nil)
+  :hook
+  ((simpc-mode . eglot-ensure)
+   (java-ts-mode . eglot-ensure)
+   (rust-ts-mode . eglot-ensure)
+   (go-ts-mode . eglot-ensure)
+   (elixir-ts-mode . eglot-ensure))
   :config
-  (setq eglot-code-action-indications nil)
-  (setq eglot-code-action-indicator nil)
+  (add-to-list 'eglot-server-programs
+               '((simpc-mode :language-id "c") . ("clangd")))
   (dolist (type '(eglot-error eglot-warning eglot-note))
     (let ((control (get type 'flymake-overlay-control)))
       (setf (alist-get 'face control) nil
             (alist-get 'before-string control) "")
-      (put type 'flymake-overlay-control control)))
-  (let ((java-debug-jar
-         (car
-          (file-expand-wildcards
-           (expand-file-name
-            "~/.config/emacs/debug-adapters/java-debug/com.microsoft.java.debug.plugin/target/com.microsoft.java.debug.plugin-*.jar")))))
-    (add-to-list
-     'eglot-server-programs
-     `((java-mode java-ts-mode) .
-       ("jdtls"
-        :initializationOptions
-        (:bundles [,java-debug-jar]))))))
+      (put type 'flymake-overlay-control control))))
 
-(use-package elixir-mode)
-(use-package go-mode)
-(use-package rust-mode)
-(use-package lua-mode)
-
-;; More relevant file-types
+;; More relevant file types
 (use-package markdown-mode
   :config
   (setq markdown-fontify-code-blocks-natively t))
-
 (use-package yaml-mode)
-
 (add-to-list 'auto-mode-alist '("CODEOWNERS\\'" . conf-mode))
 (add-to-list 'auto-mode-alist '("\\.env\\'" . conf-mode))
 
@@ -451,43 +297,8 @@
         ("RET" . newline)
         ("<return>" . newline)))
 
-;; File-path completion
-(use-package cape
-  :init
-  (add-hook 'completion-at-point-functions #'cape-file))
-
-;; Disable eldoc in the minibuffer
+;; Eldoc only in a separate buffer
 (setq eldoc-display-functions '(eldoc-display-in-buffer))
-
-;; Debugger
-(use-package dape
-  :bind (("<f5>" . dape)
-         ("<f6>" . dape-continue)
-         ("<f9>" . dape-breakpoint-toggle)
-         ("S-<f9>" . dape-breakpoint-remove-all)
-         ("<f10>" . dape-next)
-         ("<f11>" . dape-step-in)
-         ("S-<f11>" . dape-step-out))
-  :custom
-  (dape-buffer-window-arrangement 'right)
-  :config
-  ;; Save all modified buffers before debugging
-  (add-hook 'dape-start-hook
-            (lambda ()
-              (save-some-buffers t t))))
-
-(use-package repeat
-  :config
-  (repeat-mode))
-
-(defun gnix/open-notes ()
-  "Open personal notes in Org overview."
-  (interactive)
-  (find-file "~/org/notes.org")
-  (org-mode)
-  (org-overview))
-
-(global-set-key (kbd "C-c n") #'gnix/open-notes)
 
 ;; Org-mode and Email
 (use-package org
@@ -564,7 +375,7 @@
           (org-schedule nil date)))))
 
   (add-hook 'org-capture-prepare-finalize-hook #'gnix/org-capture-schedule)
-    
+
   (setq org-capture-templates
         '(("w" "Work Log Entry"
            entry (file+datetree "~/org/work-log.org")
@@ -621,7 +432,16 @@
 	  ("personal" . ?p)
           )))
 
-;; PDF viewing with note-taking
+(defun gnix/open-notes ()
+  "Open personal notes in Org overview."
+  (interactive)
+  (find-file "~/org/notes.org")
+  (org-mode)
+  (org-overview))
+
+(global-set-key (kbd "C-c n") #'gnix/open-notes)
+
+;; PDF viewing
 (use-package pdf-tools
   :init
   (pdf-loader-install)
