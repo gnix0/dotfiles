@@ -88,7 +88,7 @@
 ;; (use-package kaolin-themes
 ;;   :demand t
 ;;   :init
-;;   (load-theme 'kaolin-temple t))
+;;   (load-theme 'kaolin-ocean t))
 
 (use-package gruber-darker-theme
   :demand t
@@ -242,6 +242,12 @@
   (editorconfig-mode 1))
 
 ;; Development
+
+;; Bins needed for go, rust, and elixir
+(dolist (dir '("~/.local/bin" "~/.cargo/bin" "~/go/bin"))
+  (let ((dir (expand-file-name dir)))
+    (add-to-list 'exec-path dir)
+    (setenv "PATH" (concat dir ":" (getenv "PATH")))))
 
 ;; Pin current window so that no other buffer opens it.
 ;; Useful for compilation buffers and shells.

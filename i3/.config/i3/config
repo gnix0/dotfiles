@@ -1,3 +1,9 @@
+exec --no-startup-id xset b off
+exec --no-startup-id xset s off
+exec --no-startup-id xset s noblank
+exec --no-startup-id xset -dpms
+exec --no-startup-id xrdb -merge ~/.Xresources
+
 default_border normal 0
 default_floating_border normal 0
 
@@ -17,11 +23,6 @@ font pango:monospace 8
 # Start XDG autostart .desktop files using dex. See also
 # https://wiki.archlinux.org/index.php/XDG_Autostart
 # exec --no-startup-id dex --autostart --environment i3
-
-# no dpms
-exec --no-startup-id xset s off
-exec --no-startup-id xset -dpms
-exec --no-startup-id xset s noblank
 
 # screenshot
 bindsym $mod+p exec --no-startup-id flameshot gui
@@ -82,9 +83,8 @@ bindsym $mod+Ctrl+l move right
 bindsym $mod+f fullscreen toggle
 
 # change container layout (stacked, tabbed, toggle split)
-bindsym $mod+s layout stacking
+bindsym $mod+s layout splith
 bindsym $mod+w layout tabbed
-# bindsym $mod+e layout toggle split
 
 # toggle tiling / floating
 bindsym $mod+Shift+space floating toggle
