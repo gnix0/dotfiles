@@ -228,6 +228,35 @@
 	keycast-mode-line-format "%K  %C%R ")
   (keycast-mode-line-mode 1))
 
+;; C/C++
+(defun astyle-buffer (&optional justify)
+  (interactive)
+  (let ((saved-line-number (line-number-at-pos)))
+    (shell-command-on-region
+     (point-min)
+     (point-max)
+     "astyle --style=kr"
+     nil
+     t)
+    (goto-line saved-line-number)))
+
+(defun gnix/simpc-mode-setup ()
+  (setq-local eglot-ignored-server-capabilities
+              '(:documentOnTypeFormattingProvider))
+  (setq-local indent-tabs-mode nil)
+  (setq-local fill-paragraph-function 'astyle-buffer)
+  (local-set-key (kbd "RET") #'newline-and-indent)
+  (local-set-key (kbd "<return>") #'newline-and-indent)
+  (local-set-key (kbd "C-m") #'newline-and-indent)
+  (local-set-key (kbd "M-q") #'astyle-buffer))
+
+(use-package simpc-mode
+  :straight (:type git
+             :host github
+             :repo "rexim/simpc-mode")
+  :mode ("\\.\\(?:c\\(?:c\\|pp\\|xx\\)?\\|h\\(?:h\\|pp\\|xx\\)?\\)\\'" . simpc-mode)
+  :hook (simpc-mode . gnix/simpc-mode-setup))
+
 ;; Languages
 (use-package treesit
   :straight nil
@@ -235,8 +264,6 @@
   :init
   (setq treesit-language-source-alist
         '((bash . ("https://github.com/tree-sitter/tree-sitter-bash"))
-          (c . ("https://github.com/tree-sitter/tree-sitter-c"))
-          (cpp . ("https://github.com/tree-sitter/tree-sitter-cpp"))
           (elixir . ("https://github.com/elixir-lang/tree-sitter-elixir"))
           (go . ("https://github.com/tree-sitter/tree-sitter-go"))
           (gomod . ("https://github.com/camdencheek/tree-sitter-go-mod"))
@@ -246,13 +273,9 @@
           (lua . ("https://github.com/tree-sitter-grammars/tree-sitter-lua"))
           (rust . ("https://github.com/tree-sitter/tree-sitter-rust"))
           (toml . ("https://github.com/tree-sitter-grammars/tree-sitter-toml"))
-          (yaml . ("https://github.com/tree-sitter-grammars/tree-sitter-yaml")))
-        c-ts-mode-indent-style 'k&r)
+          (yaml . ("https://github.com/tree-sitter-grammars/tree-sitter-yaml"))))
 
   (dolist (entry '((bash sh-mode bash-ts-mode)
-                   (c c-mode c-ts-mode)
-                   (cpp c++-mode c++-ts-mode)
-                   (c c-or-c++-mode c-or-c++-ts-mode)
                    (elixir elixir-mode elixir-ts-mode)
                    (go go-mode go-ts-mode)
                    (gomod go-dot-mod-mode go-mod-ts-mode)
@@ -347,7 +370,6 @@
   (local-set-key (kbd "{") #'gnix/ts-electric-brace)
   (local-set-key (kbd "}") #'gnix/ts-electric-brace))
 
-(add-hook 'c-ts-base-mode-hook #'gnix/c-like-ts-mode-setup)
 (add-hook 'java-ts-mode-hook #'gnix/c-like-ts-mode-setup)
 
 ;; Language Server Protocol
@@ -357,10 +379,7 @@
   :hook
   ((java-mode . eglot-ensure)
    (java-ts-mode . eglot-ensure)
-   (c-mode . eglot-ensure)
-   (c-ts-mode . eglot-ensure)
-   (c++-mode . eglot-ensure)
-   (c++-ts-mode . eglot-ensure)
+   (simpc-mode . eglot-ensure)
    (rust-mode . eglot-ensure)
    (rust-ts-mode . eglot-ensure)
    (go-mode . eglot-ensure)
@@ -370,6 +389,9 @@
    (lua-mode . eglot-ensure)
    (lua-ts-mode . eglot-ensure))
   :config
+  (add-to-list 'eglot-server-programs
+               '((simpc-mode :language-id "c") . ("clangd")))
+
   (setq eglot-code-action-indications nil)
   (setq eglot-code-action-indicator nil)
 
