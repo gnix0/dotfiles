@@ -205,7 +205,7 @@
     (setenv "PATH" (concat dir ":" (getenv "PATH")))))
 
 ;; Compilation (not project-wise like project.el does)
-(global-set-key (kbd "C-x c") #'compile)
+(global-set-key (kbd "C-c k") #'compile)
 
 ;; Colours instead of ANSI escapes on compilation
 (require 'ansi-color)
