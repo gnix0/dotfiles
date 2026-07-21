@@ -22,7 +22,7 @@
 (setq make-backup-files nil)
 
 ;; Column bar
-(setq-default fill-column 100)
+(setq-default fill-column 110)
 (add-hook 'prog-mode-hook #'display-fill-column-indicator-mode)
 
 ;; Relative line numbers
