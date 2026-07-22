@@ -69,10 +69,17 @@
                     "Iosevka"
                     :height 150)
 
-(use-package gruber-darker-theme
-  :demand t
-  :init
-  (load-theme 'gruber-darker t))
+;; (use-package gruber-darker-theme
+;;   :demand t
+;;   :init
+;;   (load-theme 'gruber-darker))
+
+(load (expand-file-name
+       "themes/gruber-darker-custom.el"
+       user-emacs-directory)
+      nil
+      'nomessage)
+(enable-theme 'gruber-darker-custom)
 
 ;; Dired
 (use-package dired-x
@@ -240,14 +247,124 @@
      t)
     (goto-line saved-line-number)))
 
+(defun gnix/simpc--line-starts-with-closing-delimiter-p ()
+  "Return non-nil when the current line starts with a closing delimiter."
+  (save-excursion
+    (back-to-indentation)
+    (memq (char-after) '(?\) ?\] ?}))))
+
+(defun gnix/simpc--control-paren-p (open-paren)
+  "Return non-nil when OPEN-PAREN belongs to a control statement."
+  (save-excursion
+    (goto-char open-paren)
+    (string-match-p
+     "\\_<\\(?:if\\|for\\|switch\\|while\\)\\_>\\s-*\\'"
+     (buffer-substring-no-properties (line-beginning-position) (point)))))
+
+(defun gnix/simpc--control-before-brace-indentation (open-brace)
+  "Return the control statement's indentation before OPEN-BRACE, if any."
+  (save-excursion
+    (goto-char open-brace)
+    (skip-chars-backward " \t\n")
+    (when (eq (char-before) ?\))
+      (let ((open-paren (ignore-errors (scan-sexps (point) -1))))
+        (when (and open-paren (gnix/simpc--control-paren-p open-paren))
+          (goto-char open-paren)
+          (current-indentation))))))
+
+(defun gnix/simpc--macro-body-indentation ()
+  "Return indentation for the first line of a continued macro body."
+  (save-excursion
+    (beginning-of-line)
+    (when (> (line-number-at-pos) 1)
+      (forward-line -1)
+      (when (save-excursion
+              (end-of-line)
+              (skip-chars-backward " \t")
+              (eq (char-before) ?\\))
+        (back-to-indentation)
+        (when (looking-at-p "#\\s-*define\\_>")
+          (+ (current-indentation) 4))))))
+
+(defun gnix/simpc--after-top-level-close-indentation ()
+  "Return indentation after a top-level closing brace, if applicable."
+  (let ((previous (simpc--previous-non-empty-line)))
+    (when (and previous
+               (string-prefix-p "}" (string-trim-left (car previous))))
+      (max (- (cdr previous) 4) 0))))
+
+(defun gnix/simpc--delimiter-indentation (open-delimiter)
+  "Return AStyle-like indentation relative to OPEN-DELIMITER."
+  (let ((closing-delimiter
+         (gnix/simpc--line-starts-with-closing-delimiter-p)))
+    (save-excursion
+      (goto-char open-delimiter)
+      (let ((open-column (current-column))
+            (open-indent (current-indentation))
+            (control-indent
+             (and (eq (char-after) ?{)
+                  (gnix/simpc--control-before-brace-indentation
+                   open-delimiter))))
+        (cond
+         (closing-delimiter (or control-indent open-indent))
+         ((eq (char-after) ?\()
+          (if (gnix/simpc--control-paren-p open-delimiter)
+              (+ open-indent 8)
+            (1+ open-column)))
+         ((eq (char-after) ?{)
+          (+ (or control-indent open-indent)
+             4)))))))
+
+(defun gnix/simpc-indent-line ()
+  "Indent a Simple C line, including expressions continued across lines."
+  (interactive)
+  (let* ((offset-from-indentation
+          (max (- (current-column) (current-indentation)) 0))
+         (open-delimiter
+          (save-excursion
+            (back-to-indentation)
+            (nth 1 (syntax-ppss))))
+         (after-label
+          (let ((previous (simpc--previous-non-empty-line)))
+            (and previous
+                 (string-suffix-p
+                  ":"
+                  (string-trim-right (car previous))))))
+         (desired-indentation
+          (cond
+           ((and open-delimiter (not after-label))
+            (gnix/simpc--delimiter-indentation open-delimiter))
+           ((gnix/simpc--macro-body-indentation))
+           ((gnix/simpc--after-top-level-close-indentation))
+           (t (simpc--desired-indentation)))))
+    (indent-line-to desired-indentation)
+    (forward-char offset-from-indentation)))
+
+(defun gnix/simpc-electric-closing-delimiter ()
+  "Insert a closing delimiter and reindent it when it starts the line."
+  (interactive)
+  (let ((starts-line
+         (string-match-p
+          "\\`[ \t]*\\'"
+          (buffer-substring-no-properties
+           (line-beginning-position)
+           (point)))))
+    (call-interactively #'self-insert-command)
+    (when starts-line
+      (indent-according-to-mode))))
+
 (defun gnix/simpc-mode-setup ()
   (setq-local eglot-ignored-server-capabilities
               '(:documentOnTypeFormattingProvider))
   (setq-local indent-tabs-mode nil)
+  (setq-local indent-line-function #'gnix/simpc-indent-line)
   (setq-local fill-paragraph-function 'astyle-buffer)
   (local-set-key (kbd "RET") #'newline-and-indent)
   (local-set-key (kbd "<return>") #'newline-and-indent)
   (local-set-key (kbd "C-m") #'newline-and-indent)
+  (local-set-key (kbd ")") #'gnix/simpc-electric-closing-delimiter)
+  (local-set-key (kbd "]") #'gnix/simpc-electric-closing-delimiter)
+  (local-set-key (kbd "}") #'gnix/simpc-electric-closing-delimiter)
   (local-set-key (kbd "M-q") #'astyle-buffer))
 
 (use-package simpc-mode

@@ -3,6 +3,12 @@ URxvt*depth: 32
 URxvt.transparent: false
 URxvt.font: xft:Iosevka:size=15
 URxvt.scrollBar: false
+URxvt.saveLines: 10000
+URxvt.scrollTtyOutput: false
+URxvt.scrollWithBuffer: true
+URxvt.scrollTtyKeypress: true
+URxvt.secondaryScroll: true
+URxvt.mouseWheelScrollPage: false
 URxvt.geometry: 80x-1
 
 ! Gruber-Darker
