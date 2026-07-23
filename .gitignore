@@ -14,6 +14,8 @@
 /emacs/.config/emacs/.mc-lists.el
 /emacs/.config/emacs/bookmarks
 /emacs/.config/emacs/themes/
+!/emacs/.config/emacs/themes/gruber-darker-custom.el
+!/emacs/.config/emacs/themes/gruber-lighter-custom.el
 /emacs/.config/emacs/elpa/
 /emacs/.config/emacs/lisp/
 /emacs/.config/emacs/smex-items

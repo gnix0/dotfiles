@@ -69,17 +69,10 @@
                     "Iosevka"
                     :height 150)
 
-;; (use-package gruber-darker-theme
-;;   :demand t
-;;   :init
-;;   (load-theme 'gruber-darker))
-
-(load (expand-file-name
-       "themes/gruber-darker-custom.el"
-       user-emacs-directory)
-      nil
-      'nomessage)
-(enable-theme 'gruber-darker-custom)
+(use-package gruber-darker-theme
+  :demand t
+  :init
+  (load-theme 'gruber-darker t))
 
 ;; Dired
 (use-package dired-x
