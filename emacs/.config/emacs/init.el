@@ -74,19 +74,8 @@
 ;;   :config
 ;;   (load-theme 'gruber-darker t))
 
-(use-package doom-themes
-  :demand t
-  :config
-  (load-theme 'doom-monokai-pro t))
-
-;; This is a port of the "Vitruvian Man Dark" colorscheme
-;; from the VS Code original "Davinci" themes.
-;; It is not, however, a perfect port yet. Hence, it is not
-;; currently being used nor have been made available on my
-;; GitHub profile. I'll do it when I have the time. :3
-;; (add-to-list 'custom-theme-load-path
-;; 	     "~/.config/emacs/themes/")
-;; (load-theme 'davinci t)
+(add-to-list 'custom-theme-load-path "~/.config/emacs/themes/")
+(load-theme 'monokai t)
 
 ;; Dired
 (use-package dired-x
