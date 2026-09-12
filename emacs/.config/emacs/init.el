@@ -74,8 +74,10 @@
 ;;   :config
 ;;   (load-theme 'gruber-darker t))
 
-(add-to-list 'custom-theme-load-path "~/.config/emacs/themes/")
-(load-theme 'monokai t)
+(use-package doom-themes
+  :demand t
+  :config
+  (load-theme 'doom-monokai-pro t))
 
 ;; Dired
 (use-package dired-x
