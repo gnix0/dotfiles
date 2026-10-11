@@ -69,7 +69,7 @@ ZSH_THEME="robbyrussell"
 # Custom plugins may be added to $ZSH_CUSTOM/plugins/
 # Example format: plugins=(rails git textmate ruby lighthouse)
 # Add wisely, as too many plugins slow down shell startup.
-plugins=(git)
+plugins=()
 
 source $ZSH/oh-my-zsh.sh
 
@@ -110,3 +110,14 @@ export PATH="$HOME/.local/bin:$PATH"
 export PATH="$HOME/usr/sbin:$PATH"
 
 command -v direnv >/dev/null 2>&1 && eval "$(direnv hook bash)"
+
+# Remove Git aliases retained by an already-running shell when reloading this file.
+for git_alias_name in ${(k)aliases}; do
+  if [[ ${aliases[$git_alias_name]} == *git* ]]; then
+    unalias "$git_alias_name"
+  fi
+done
+unset git_alias_name
+
+# External GDB frontend; keep the current project directory.
+alias gf='"$HOME/gf/gf2"'
