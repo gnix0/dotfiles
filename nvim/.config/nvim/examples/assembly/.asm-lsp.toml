@@ -1,0 +1,9 @@
+[default_config]
+assembler = "gas"
+instruction_set = "arm"
+
+[opts]
+compiler = "arm-none-eabi-gcc"
+diagnostics = true
+# Never fall back to a host GCC/Clang for target-specific diagnostics.
+default_diagnostics = false

@@ -1,0 +1,66 @@
+{
+  "version": "2.0.0",
+  "tasks": [
+    {
+      "label": "IDF build",
+      "type": "process",
+      "command": "idf.py",
+      "args": [
+        "build"
+      ],
+      "options": {
+        "cwd": "${workspaceFolder}"
+      },
+      "problemMatcher": "$gcc",
+      "group": "build"
+    },
+    {
+      "label": "IDF clean",
+      "type": "process",
+      "command": "idf.py",
+      "args": [
+        "clean"
+      ],
+      "options": {
+        "cwd": "${workspaceFolder}"
+      },
+      "problemMatcher": []
+    },
+    {
+      "label": "IDF flash (explicit)",
+      "type": "process",
+      "command": "idf.py",
+      "args": [
+        "-p",
+        "${input:port}",
+        "flash"
+      ],
+      "options": {
+        "cwd": "${workspaceFolder}"
+      },
+      "problemMatcher": "$gcc"
+    },
+    {
+      "label": "IDF monitor (explicit)",
+      "type": "process",
+      "command": "idf.py",
+      "args": [
+        "-p",
+        "${input:port}",
+        "monitor"
+      ],
+      "options": {
+        "cwd": "${workspaceFolder}"
+      },
+      "problemMatcher": []
+    }
+  ],
+  "inputs": [
+    {
+      "id": "port",
+      "type": "promptString",
+      "description": "Serial device for this board",
+      "default": "/dev/ttyUSB0"
+    }
+  ]
+}
