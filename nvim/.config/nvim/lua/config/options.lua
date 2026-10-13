@@ -31,5 +31,7 @@ opt.formatprg = ""
 opt.equalprg = ""
 -- No text wrapping while typing. Native indentation and explicit = remain.
 opt.formatoptions:remove({ "t", "a" })
+-- Shared clipboard
+opt.clipboard = "unnamedplus"
 
 require("config.editing").setup()
