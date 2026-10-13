@@ -20,8 +20,8 @@ hl.monitor({
 })
 
 -- Select each monitor's initial workspace explicitly.
-hl.workspace_rule({ workspace = "1", monitor = "HDMI-A-1", default = true })
-hl.workspace_rule({ workspace = "2", monitor = "eDP-1", default = true })
+hl.workspace_rule({ workspace = "2", monitor = "HDMI-A-1", default = true })
+hl.workspace_rule({ workspace = "1", monitor = "eDP-1", default = true })
 
 ---------------------
 ---- MY PROGRAMS ----
