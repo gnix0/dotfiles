@@ -1,5 +1,5 @@
 [general]
-import = ["/home/gnix/dotfiles/alacritty/.config/alacritty/themes/nightfox.toml"]
+import = ["/home/gnix/dotfiles/alacritty/.config/alacritty/themes/monokai_pro.toml"]
 
 [font]
 normal = { family = "IosevkaTermSlab Nerd Font Mono", style = "Regular" }
