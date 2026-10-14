@@ -1,0 +1,181 @@
+#!/usr/bin/env bash
+# Small interactive setup assistant. Does not build or execute existing projects.
+set -euo pipefail
+usage() {
+    cat <<'HELP'
+Usage: fwdev [--dry-run] [--help]
+Interactively create or prepare native C/C++, STM32/ARM, ESP-IDF, Rust,
+Go, Python, or Java projects. Existing files are preserved. No package installs,
+builds, flashing, target selection, or automatic direnv approval.
+--dry-run  Show proposed operations without writing or activating SDKs.
+Project names for generated scaffolding: letters, digits, underscore; start
+with a letter. Existing paths may contain spaces (ESP-IDF forbids spaces).
+HELP
+}
+dry=false
+mode='' kind='' language='' answer=''
+for arg in "$@"; do
+    case $arg in --help|-h) usage; exit 0;; --dry-run) dry=true;; *) usage >&2; exit 2;; esac
+done
+fail() { printf 'fwdev: %s\n' "$*" >&2; exit 1; }
+need() { command -v "$1" >/dev/null 2>&1 || fail "Missing dependency: $1. Install/configure it yourself, then rerun."; }
+warn_tool() { command -v "$1" >/dev/null 2>&1 || printf 'NOTE: %s is not on PATH; install/configure it before using that feature.\n' "$1"; }
+ask() { local reply_value; read -r -p "$2" reply_value || fail 'Input ended; no further changes made.'; printf -v "$1" '%s' "${reply_value:-${3:-}}"; }
+run() {
+    if $dry; then printf 'Would run:'; printf ' %q' "$@"; printf '\n'; else "$@"; fi
+}
+# readlink follows the Stow symlink to the package's adjacent data directory.
+base=$(dirname -- "$(readlink -f -- "${BASH_SOURCE[0]}")")
+templates=$(realpath -- "$base/../share/fwdev/templates")
+[[ -d $templates ]] || fail 'Missing templates; stow the complete dev package.'
+printf '1) New project\n2) Prepare existing project\n'
+ask mode 'Mode [1/2]: '
+[[ $mode == 1 || $mode == 2 ]] || fail 'Choose mode 1 or 2.'
+printf '1) Native C/C++\n2) STM32 / ARM bare-metal\n3) ESP-IDF\n4) Rust\n5) Go\n6) Python\n7) Java\n'
+ask kind 'Project type [1-7]: '
+[[ $kind =~ ^[1-7]$ ]] || fail 'Choose a project type from 1 to 7.'
+name=''
+if [[ $mode == 1 ]]; then
+    ask name 'Project name (letters/digits/underscore): '
+    [[ $name =~ ^[A-Za-z][A-Za-z0-9_]*$ ]] || fail 'Invalid project name.'
+    ask parent 'Parent directory [current directory]: ' "$PWD"
+    parent=${parent/#\~/$HOME}
+    project=$(realpath -m -- "$parent/$name")
+else
+    ask project 'Existing project directory [current directory]: ' "$PWD"
+    project=${project/#\~/$HOME}
+    [[ -d $project ]] || fail 'Existing project directory does not exist.'
+    project=$(realpath -- "$project")
+fi
+[[ ! -e $project || -d $project ]] || fail 'Project path is not a directory.'
+# Never generate into a nonempty directory, even when "new" was selected again.
+scaffold=false
+if [[ $mode == 1 ]] && { [[ ! -d $project ]] || [[ -z $(find "$project" -mindepth 1 -maxdepth 1 -print -quit) ]]; }; then
+    scaffold=true
+else
+    printf 'Preserve existing contents: %s\n' "$project"
+fi
+lang=C ext=c sdk='' venv=false rust_kind=1 module=''
+case $kind in
+    1)
+        warn_tool clangd
+        if $scaffold || [[ -f $project/CMakeLists.txt ]]; then need cmake;
+        elif [[ -f $project/Makefile || -f $project/makefile || -f $project/GNUmakefile ]]; then need make; fi
+        if $scaffold; then
+            ask language 'Language [1=C, 2=C++; default 1]: ' 1
+            case $language in 1) need cc;; 2) lang=CXX; ext=cpp; need c++;; *) fail 'Choose 1 or 2.';; esac
+        fi;;
+    2) need arm-none-eabi-gcc; warn_tool clangd; warn_tool arm-none-eabi-gdb; warn_tool openocd;;
+    3)
+        need direnv; need python; need cmake; need ninja
+        [[ $project != *[[:space:]]* ]] || fail 'ESP-IDF does not support project paths containing whitespace.'
+        # Existing .envrc is never sourced or replaced by this script.
+        if $scaffold || [[ ! -e $project/.envrc && ! -L $project/.envrc ]]; then
+            ask sdk 'Trusted ESP-IDF SDK directory: ' "${IDF_PATH:-$HOME/esp/esp-idf}"
+            sdk=${sdk/#\~/$HOME}
+            [[ -f $sdk/export.sh && -f $sdk/tools/idf.py ]] || fail 'SDK must contain export.sh and tools/idf.py.'
+            sdk=$(realpath -- "$sdk")
+            [[ $sdk != *[[:space:]]* ]] || fail 'ESP-IDF SDK paths containing whitespace are unsupported.'
+        fi;;
+    4)
+        need cargo; warn_tool rust-analyzer
+        if $scaffold; then
+            ask rust_kind 'Rust [1=host binary, 2=embedded library starting point; default 1]: ' 1
+            [[ $rust_kind == 1 || $rust_kind == 2 ]] || fail 'Choose 1 or 2.'
+        fi;;
+    5)
+        need go
+        if $scaffold; then
+            ask module 'Go module path (e.g. example.com/owner/project): '
+            [[ -n $module && $module != -* && $module != *[[:space:]]* ]] || fail 'Provide a valid Go module path.'
+        fi;;
+    6)
+        need python
+        ask answer 'Use/create project .venv with direnv? [Y/n]: ' y
+        case $answer in y|Y) venv=true; need direnv;; n|N) ;; *) fail 'Answer y or n.';; esac
+        if $venv && [[ -e $project/.venv || -L $project/.venv ]]; then
+            [[ -x $project/.venv/bin/python ]] || fail 'Existing .venv is not a usable virtualenv; preserved.'
+        fi;;
+    7) need javac;;
+esac
+# All interactive choices and required dependency checks precede mutations.
+if [[ ! -d $project ]]; then run mkdir -p -- "$project"; printf '%s directory: %s\n' "$($dry && echo 'Would create' || echo 'Created')" "$project"; fi
+create() {
+    local target=$1 content=$2
+    if [[ -e $project/$target || -L $project/$target ]]; then
+        printf 'Preserved: %s\n' "$project/$target"
+    elif $dry; then
+        printf 'Would create: %s\n' "$project/$target"
+    else
+        mkdir -p -- "$(dirname -- "$project/$target")"
+        (set -o noclobber; printf '%s\n' "$content" > "$project/$target")
+        printf 'Created: %s\n' "$project/$target"
+    fi
+}
+if $scaffold; then
+    case $kind in
+        1)
+            content=$(<"$templates/native/CMakeLists.txt")
+            content=${content//@NAME@/$name}; content=${content//@LANG@/$lang}; content=${content//@EXT@/$ext}
+            create CMakeLists.txt "$content"
+            create "main.$ext" "$(<"$templates/native/main.$ext")";;
+        3)
+            if $dry; then
+                printf 'Would activate SDK %s in a subprocess and run idf.py create-project --path %q %q\n' "$sdk" "$project" "$name"
+            else
+                # SDK activation scripts are not nounset-safe. Trust is in the explicitly selected SDK.
+                # shellcheck disable=SC1091
+                (set +u; source "$sdk/export.sh" >/dev/null; cd /tmp; python "$sdk/tools/idf.py" create-project --path "$project" "$name")
+                printf 'Created by ESP-IDF:\n'; find "$project" -type f -print
+            fi;;
+        4)
+            rust_option=--bin; [[ $rust_kind == 2 ]] && rust_option=--lib
+            run cargo init "$rust_option" --vcs none --name "$name" "$project"
+            if ! $dry; then printf 'Created by Cargo:\n'; find "$project" -type f -print; fi;;
+        5)
+            if $dry; then printf 'Would run go mod init %q in %s\n' "$module" "$project";
+            else (cd "$project"; go mod init "$module"); printf 'Created: %s/go.mod\n' "$project"; fi;;
+        6) create main.py 'def main():
+    print("Hello, world!")
+
+
+if __name__ == "__main__":
+    main()';;
+        7) create src/Main.java 'public class Main {
+    public static void main(String[] args) {
+        System.out.println("Hello, world!");
+    }
+}';;
+    esac
+fi
+if [[ $kind == 3 ]]; then
+    create .clangd "$(<"$templates/esp-idf/clangd")"
+    if [[ -e $project/.envrc || -L $project/.envrc ]]; then printf 'Preserved: %s/.envrc (review its SDK activation yourself)\n' "$project";
+    else
+        printf -v quoted_sdk '%q' "$sdk"
+        content=$(<"$templates/env/esp.envrc")
+        content=${content//@SDK@/$quoted_sdk}
+        create .envrc "$content"
+    fi
+elif $venv; then
+    if [[ -e $project/.venv || -L $project/.venv ]]; then printf 'Reused: %s/.venv\n' "$project";
+    else run python -m venv "$project/.venv"; printf '%s .venv/: %s\n' "$($dry && echo 'Would create' || echo 'Created')" "$project"; fi
+    create .envrc "$(<"$templates/env/python.envrc")"
+fi
+printf '\nProject: %s\n' "$project"
+case $kind in
+    1|2)
+        if [[ -f $project/CMakePresets.json || -f $project/CMakeUserPresets.json ]]; then
+            printf 'Next: review the existing presets and configure with your chosen preset; enable CMAKE_EXPORT_COMPILE_COMMANDS in that build.\n'
+        elif [[ -f $project/CMakeLists.txt ]] || { [[ $kind == 1 ]] && $scaffold; }; then
+            printf 'Next: configure using your project toolchain/settings and -DCMAKE_EXPORT_COMPILE_COMMANDS=ON (conventional directory: build/).\n'
+        elif [[ -f $project/Makefile || -f $project/makefile || -f $project/GNUmakefile ]]; then
+            printf 'Next: use the existing Make targets; generate compile_commands.json with the project generator or Bear around a real compilation.\n'
+        else printf 'Next: add your chosen firmware/build project. No board/build configuration was fabricated.\n'; fi;;
+    3) printf 'Next: cd into the project, review .envrc, then direnv allow. For a NEW project select your MCU with idf.py set-target TARGET, then idf.py reconfigure (or build). Existing target/settings are preserved.\n';;
+    4) printf 'Next: use Cargo normally. For embedded: choose target, linker, runtime, and features in standard Cargo/project configuration.\n';;
+    5) printf 'Next: add/edit Go packages, then go test ./... or go build ./...\n';;
+    6) printf 'Next: review .envrc and direnv allow if present; install dependencies using the project package manager.\n';;
+    7) printf 'Next: use the existing Maven/Gradle setup, or javac -d build src/Main.java for the new plain-Java starter.\n';;
+esac
+printf 'Start nvim from the activated project shell. No environment can be exported into your parent shell by fwdev.\n'

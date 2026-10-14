@@ -19,32 +19,67 @@ The editor uses the **Nightfox** colorscheme; Alacritty imports the Nightfox pal
 - [Assembly, linker scripts, and device trees](#assembly-linker-scripts-and-device-trees)
 - [Debugging with gf and GDB](#debugging-with-gf-and-gdb)
 - [Maintenance and troubleshooting](#maintenance-and-troubleshooting)
+- [Templates and maintenance](#templates-and-maintenance)
 
 ## Starting a session
 
-The Stow package is `nvim/.config/nvim`, linked to `~/.config/nvim`. Edit the
-files in the repository to change your configuration.
+Run **`fwdev`**, choose new/existing and a project type, then follow its short
+next-step report. Enter the project, review and allow `.envrc` if one was created,
+and start `nvim` there. After that, use the project's normal build/debug commands.
 
-1. Open a shell in your project root.
-2. Activate the project's environment, if required: Python virtualenv, ESP-IDF,
-   or a toolchain-specific PATH.
-3. Configure/build once if the project needs generated headers or a compilation database.
-4. Run `nvim .` for the directory or `nvim path/to/file` for a file.
-5. Use `Space ff` to find source, `Space fg` to search its contents, and `Space oo`
-   to choose a build/test task.
+```sh
+fwdev                 # interactive setup
+fwdev --dry-run       # same questions; no files or SDK activation
+fwdev --help
+```
 
-Neovim inherits the shell's environment when it starts. Existing sessions do not
-inherit later shell changes. Use separate processes for projects using different
-SDKs or compiler environments.
+The executable lives at `~/.local/bin/fwdev`, linked through the `dev` Stow package
+to `dev/.local/bin/fwdev` in this repository. It is already executable. On another
+machine, from the dotfiles root run `stow --no-folding --target="$HOME" dev nvim`.
+The Zsh configuration adds `~/.local/bin` to PATH. Core requirements are Bash and
+GNU coreutils; each project type checks its own toolchain. No system packages or
+project dependencies are silently installed.
 
-LazyVim's project root can differ from the current directory. `:pwd` shows the
-current directory; `:lua print(LazyVim.root())` shows the detected root. Root-based
-file search and tasks should operate on the project you intend.
+One-time shell integration is already in `.zshrc`:
 
-A project may have a `.lazy.lua` containing editor plugin overrides. Read it before
-accepting Neovim's trust prompt: it is executable Lua. Launch from that project
-root. Changing `:cd` is not a substitute for restarting with another project's
-startup overrides.
+```zsh
+command -v direnv >/dev/null 2>&1 && eval "$(direnv hook zsh)"
+```
+
+Open a new shell after changing it. For an environment-bearing project:
+
+```sh
+cd /path/to/project
+cat .envrc             # review the selected SDK/environment code
+direnv allow          # explicit approval; fwdev never does this
+nvim
+```
+
+Direnv activates at the next shell prompt and restores the previous environment
+when you leave. A subprocess such as fwdev cannot change its parent shell's
+environment. `direnv exec /path/to/project COMMAND` supplies an authorized
+environment to a command but **does not change the command's working directory**;
+`cd` into the project first when the command relies on its working directory.
+
+New tmux panes each run their own shell hook. Enter the desired project in each
+pane; use independent Neovim sessions for different SDKs/virtualenvs. A running
+Neovim process does not receive later shell environment changes. Restart it after
+changing SDK or target. A host workspace opened in an IDF-started Neovim process
+still selects system clangd when outside that IDF project.
+
+New scaffolding is generated only into an empty/new directory. Rerunning with
+New on a nonempty directory behaves as preparation: existing files are kept.
+Existing CMake/preset/Make/Cargo/Go/Java/Python files and `.envrc` are never
+executed or replaced by the initializer. Existing `.envrc` needs your own review
+and any necessary merge; the initializer cannot infer its behavior safely.
+Choose the same project type when rerunning. All interactive choices and required
+dependency checks occur before writes. A failed external scaffolding command can
+leave partial files; inspect these before retrying.
+
+LazyVim's root may differ from `:pwd`; use `:lua print(LazyVim.root())` to inspect
+it. File pickers/tasks use the detected root. Ordinary language support no longer
+requires project-local Neovim Lua. Optional `.lazy.lua` files still require trust
+and should be reserved for actual project-specific settings.
 
 ## Editing and completion
 
@@ -226,280 +261,235 @@ LSP completion, diagnostics, and navigation depend on server/project support.
 
 ## Building and testing
 
-The normal loop is **edit → save → build/test → inspect output → navigate errors**.
-Saving itself does not build, flash, or launch a debugger.
+Initialization and development are separate. fwdev does not build, choose an MCU,
+flash, monitor, run tests, or start a debugger. The normal loop is
+**edit → save → build/test in a shell → inspect output → navigate diagnostics**.
 
-Overseer discovers supported project commands, including Make/Cargo and
-`.vscode/tasks.json`. This file format is also useful without using VS Code.
-Existing examples are under [examples](examples/); copy the relevant task file
-into a project and adjust paths, names, and arguments. Never overwrite existing
-project tasks: merge the entries you want.
-
-Use `Space oo` to run, `Space ow` to inspect output, and `Space ot` for task actions.
-Task error extraction depends on the problem matcher/output format. If tasks
-are missing, confirm the detected project root and inspect `:OverseerRun`.
-The same commands can always be run directly in a terminal.
-
-Common shell commands:
+Overseer remains optional: `Space oo` selects a task, `Space ow` opens its output
+list, and `Space ot` provides task actions. It discovers supported Make/Cargo
+commands and existing `.vscode/tasks.json`. No task files are generated by fwdev.
+If you want custom tasks, create them using your real project commands; no task
+runner is required to use this environment.
 
 ```sh
-cmake -S . -B build -G Ninja -DCMAKE_EXPORT_COMPILE_COMMANDS=ON
 cmake --build build
 ctest --test-dir build --output-on-failure
-make                 # or a documented target from the project's Makefile
-ninja -C build       # requires an already configured Ninja build
+make                  # choose the project's documented target
+ninja -C build        # requires a configured Ninja build
 cargo check
 cargo test
 go test ./...
 python -m pytest
 ```
 
-Use CMake configure/build/test presets when a project supplies them. Do not
-replace project build conventions with the generic commands above.
+Presets and project-native build commands take precedence over these generic
+examples. Saving never runs a build or source-modifying action.
 
 ## Native C and C++ projects
 
-For a new project, define targets, include directories, defines, and language
-standards in its build system. For an existing project, follow its build instructions.
+Choose Native C/C++ in fwdev. For a new project, select C or C++; it creates only
+`CMakeLists.txt` and `main.c`/`main.cpp`. Compilation database export is enabled
+in the generated CMake file. No `.envrc`, `.clangd`, `.lazy.lua`, or tasks are needed.
 
-1. Configure with compilation database export; choose a Debug build when needed:
+```sh
+cd /path/to/new_project
+cmake -S . -B build -G Ninja -DCMAKE_BUILD_TYPE=Debug
+cmake --build build
+nvim
+```
 
-   ```sh
-   cmake -S . -B build -G Ninja -DCMAKE_BUILD_TYPE=Debug \
-     -DCMAKE_EXPORT_COMPILE_COMMANDS=ON
-   cmake --build build
-   ```
+For an existing project, fwdev preserves all build files and reports whether it
+found presets, CMake, or Make. It does not run existing project configuration code.
+Select the appropriate preset/toolchain yourself. Enable
+`CMAKE_EXPORT_COMPILE_COMMANDS=ON` through that build's existing configuration.
+For an ordinary CMake project without presets:
 
-2. Tell clangd where the database lives with a project `.clangd`:
+```sh
+cmake -S . -B build -G Ninja -DCMAKE_EXPORT_COMPILE_COMMANDS=ON
+```
 
-   ```yaml
-   CompileFlags:
-     CompilationDatabase: build
-   ```
+clangd discovers a database at the project root or conventional `build/` directory;
+there is no generated `.clangd` just to point at `build/`. For a nonstandard build
+location, intentionally expose its database at the project root or configure its
+location in your own `.clangd`. Existing configuration always remains yours.
 
-3. Start `nvim` in the project root and open a translation unit. Use `K`, `gd`,
-   and `gl` to inspect types, definitions, and diagnostics.
-4. Run the project's tests before debugging or committing.
+For Make, use the project's database generator or an explicitly installed Bear:
+`bear -- make <target>`. Capture a real compilation; an already up-to-date build
+may produce no useful commands. fwdev does not clean the project for you.
 
-[examples/native/.clangd](examples/native/.clangd) supplies that database setting.
-For Make projects, use the project's compilation database generator; if none
-exists, an installed capture tool such as Bear can capture actual compiler commands.
-Bear is a separate dependency. Regenerate the database after changing build flags.
-Neovim does not copy/symlink it or run CMake on save.
+The central module `lua/config/toolchains.lua` reads the conventional database
+without executing its commands. It permits clangd to query exact installed
+`/usr/bin/arm-none-eabi-*` or supported RISC-V GCC/G++ paths only when the database
+names those compilers. It never grants a wildcard covering a repository or PATH.
+CPU, ABI, include paths and defines come from the real database.
 
-clangd needs actual compile commands, not a global pile of include paths. Header
-files can inherit a nearby source command; investigate the selected command when
-a header's diagnostics differ from its owning translation unit.
-See [clangd's compilation database guide](https://clangd.llvm.org/installation#project-setup).
+[clangd project setup](https://clangd.llvm.org/installation#project-setup) and
+[system-header discovery](https://clangd.llvm.org/guides/system-headers) explain
+why the compile command and the compiler's headers both matter.
 
 ## STM32 projects
 
-For a new STM32F446RE project, choose a board-specific starting point: an existing
-firmware repository, a compatible STM32Cube-generated project, or a deliberate
-bare-metal build. Neovim does not generate the clock setup, startup assembly,
-interrupt table, linker memory regions, HAL, or RTOS configuration.
+Choose STM32 / ARM bare-metal in fwdev. It checks ARM GCC and reports missing
+clangd/GDB/OpenOCD tools. New creates a workspace directory; existing inspects
+build metadata. It does not generate firmware or replace your build system.
 
-1. Confirm the exact MCU, board, probe, and build system.
-2. Confirm the cross compiler is on PATH:
+Bring your board-specific project into that directory: an existing firmware
+repository, an appropriate Cube-generated project, or your own bare-metal setup.
+You choose the MCU, CPU/FPU ABI, linker memory regions, startup/vector table,
+clock configuration, HAL/RTOS and probe settings. Those choices belong in the
+firmware project and are never guessed by fwdev.
 
-   ```sh
-   arm-none-eabi-gcc --version
-   arm-none-eabi-gdb --version
-   openocd --version
-   ```
+For a project that already supplies a CMake toolchain file, for example:
 
-3. Configure using the project's toolchain file/preset, for example:
+```sh
+cmake -S . -B build -G Ninja \
+  -DCMAKE_TOOLCHAIN_FILE=cmake/arm-none-eabi.cmake \
+  -DCMAKE_BUILD_TYPE=Debug -DCMAKE_EXPORT_COMPILE_COMMANDS=ON
+cmake --build build
+nvim
+```
 
-   ```sh
-   cmake -S . -B build -G Ninja \
-     -DCMAKE_TOOLCHAIN_FILE=cmake/arm-none-eabi.cmake \
-     -DCMAKE_BUILD_TYPE=Debug -DCMAKE_EXPORT_COMPILE_COMMANDS=ON
-   cmake --build build
-   ```
+Use the project's actual toolchain filename or preset. No per-project Lua or
+query-driver flags in `.clangd` are needed for the supported system compilers.
+The database supplies all substantive target settings. Nonstandard compiler
+installations require deliberate extension of the trusted paths in
+`config/toolchains.lua`; unknown compiler paths are never auto-approved.
 
-   The toolchain filename is illustrative: use the project's real file. With Make,
-   use its targets and compilation database capture instead.
-4. Copy/adapt [embedded .clangd](examples/embedded/.clangd) and
-   [embedded .lazy.lua](examples/embedded/.lazy.lua) into the project. The latter
-   allows clangd to query only the selected compiler executables for target/includes.
-5. Confirm compile commands contain the intended CPU, ABI, FPU flags, defines,
-   and include paths. STM32F446RE is Cortex-M4F, but floating-point ABI and library
-   choices must agree across the complete project. Keep these decisions in the build.
-6. Open Neovim from this root and inspect diagnostics on a representative source file.
-7. Inspect the linked ELF before programming:
+Inspect the linked ELF (replace its name with your real output):
 
-   ```sh
-   arm-none-eabi-size -A build/firmware.elf
-   arm-none-eabi-readelf -h -S build/firmware.elf
-   arm-none-eabi-nm -n -S build/firmware.elf
-   arm-none-eabi-objdump -d -S build/firmware.elf > /tmp/firmware.asm
-   nvim /tmp/firmware.asm
-   ```
+```sh
+arm-none-eabi-size -A build/firmware.elf
+arm-none-eabi-readelf -h -S build/firmware.elf
+arm-none-eabi-nm -n -S build/firmware.elf
+arm-none-eabi-objdump -d -S build/firmware.elf > /tmp/firmware.asm
+nvim /tmp/firmware.asm
+```
 
-Replace `firmware.elf` with the produced target. Sections show memory usage,
-symbols locate objects/functions, and mixed source/disassembly helps inspect
-what the compiler emitted. A linker map generated by the build is also useful.
-
-For an ST-Link-equipped Nucleo-F4 board, this installed OpenOCD script is a
-starting point to check against the physical board:
+For an ST-Link-equipped Nucleo-F4, check that `board/st_nucleo_f4.cfg` matches your
+board before using it. Start its server separately:
 
 ```sh
 openocd -f board/st_nucleo_f4.cfg
-```
-
-Then, in another terminal at the project root:
-
-```sh
-arm-none-eabi-gdb -nx build/firmware.elf
+arm-none-eabi-gdb -nx build/firmware.elf  # in another terminal
 ```
 
 ```gdb
 target extended-remote localhost:3333
 monitor reset halt
 break main
-# Only when you explicitly intend to program this connected board:
+# Only if you intend to program the connected board:
 load
 continue
 ```
 
-Reset behavior is target/server-specific. `load` writes the image; omit it when
-attaching to firmware already programmed. Other boards need their own OpenOCD
-configuration, connection method, and reset strategy. Hardware connection and
-flashing examples have not been exercised by this editor setup.
-[OpenOCD's GDB guide](https://openocd.org/doc/html/GDB-and-OpenOCD.html) explains the connection.
-
-RISC-V follows the same separation: correct compiler/database, compatible GDB,
-server configuration, ELF, and target initialization. Do not reuse ARM debugger
-paths or STM32 reset/configuration files.
+Connecting, resetting and programming are distinct operations. Other boards
+require their own server/probe/reset configuration. RISC-V follows the same
+workflow with its actual compiler, GDB, ELF and server configuration.
+Hardware flashing/debugging is not part of the initializer's tests.
 
 ## ESP-IDF projects
 
-Use a dedicated shell for the selected SDK. Your shell has `get_idf`, equivalent
-to sourcing `~/esp/esp-idf/export.sh`; it does not activate automatically.
-
-For a new project:
+This is the reference workflow:
 
 ```sh
-get_idf
-mkdir -p ~/projects
-cd ~/projects
-idf.py create-project my_esp_app
-cd my_esp_app
-idf.py --list-targets
-idf.py set-target esp32     # replace with the actual chip, e.g. esp32c3
-idf.py menuconfig
-idf.py build
+fwdev                 # New → ESP-IDF → name → parent → trusted SDK directory
+cd /path/to/project
+cat .envrc
+cat .clangd
+direnv allow          # activates the selected SDK at the shell prompt
+idf.py set-target esp32c6   # YOUR selection; only when creating/changing a target
+idf.py reconfigure         # generates build/config and compile_commands.json
+nvim
 ```
 
-For an existing project, activate its required IDF version and run its documented
-configuration/build steps. Do not casually run `set-target`: it clears the build
-and regenerates sdkconfig. Keep sdkconfig.defaults and board choices deliberate.
-See the [IDF command reference](https://docs.espressif.com/projects/esp-idf/en/stable/esp32/api-guides/tools/idf-py.html).
+fwdev offers `$IDF_PATH` or `~/esp/esp-idf` as the SDK default; enter another
+installed SDK path when needed. It validates the SDK location and uses its actual
+`export.sh` in a subprocess, then official `idf.py create-project`. It does not
+rely on `get_idf` or other interactive aliases. ESP-IDF project/SDK paths containing
+whitespace are rejected before changes because the toolchain does not support them.
+Native/Python paths with spaces are tested.
 
-For editor support:
+Only `.envrc` and a small ESP `.clangd` are added to the official scaffold:
 
-1. Locate the Espressif clangd executable for the installed SDK. This machine's
-   previously validated path was:
+- `.envrc` activates that SDK and exports a project-directory marker. Leaving
+  restores the previous PATH and SDK variables through direnv. It does not
+  select a target, configure, build or install anything.
+- `.clangd` contains GCC compatibility fixes needed by the installed IDF 6.1 /
+  Espressif clangd combination: use query-driver builtin headers and remove five
+  unsupported GCC flags. It does not contain query-driver startup options,
+  SDK paths, target flags or a database path. Existing `.clangd` is preserved;
+  merge the compatibility entries if diagnostics show those known errors.
 
-   ```sh
-   export ESP_CLANGD="$HOME/.espressif/tools/esp-clangd/esp-21.1.3_20260408/esp-clangd/bin/clangd"
-   test -x "$ESP_CLANGD"
-   ```
+The central Neovim code uses the activated SDK's clangd from PATH under
+`$IDF_TOOLS_PATH/tools/esp-clangd` (default `~/.espressif/tools`). It selects exact
+SDK compiler paths present in the database, supporting unified and older
+chip-specific Xtensa compiler names as well as RISC-V. It does not guess the chip
+from a filename or hardcode a versioned tool directory. One clangd client handles
+a workspace; its command is selected when that client starts.
 
-   Check it after SDK upgrades. This export belongs in the project shell.
-2. Copy/adapt [ESP .clangd](examples/esp-idf/.clangd) and
-   [ESP .lazy.lua](examples/esp-idf/.lazy.lua) to the project. Select compiler names
-   matching the actual chip: the supplied example uses xtensa-esp32-elf; C3/C6 use
-   riscv32-esp-elf, while S3 uses xtensa-esp32s3-elf.
-3. Confirm `build/compile_commands.json` exists after building. If not, configure
-   database export with the project's IDF/CMake settings, for example
-   `idf.py -DCMAKE_EXPORT_COMPILE_COMMANDS=ON reconfigure`.
-4. Launch `nvim` from this activated shell. Approve the project Lua only after review.
-5. Optionally merge [ESP tasks](examples/esp-idf/.vscode/tasks.json) into the
-   project's `.vscode/tasks.json`; choose them using `Space oo`.
+For an existing project choose Existing → ESP-IDF. sdkconfig, components, build
+files, selected target and existing environment/config files are preserved.
+Review any existing `.envrc`: it must activate the intended SDK and export
+`DEV_IDF_PROJECT="$PWD"` for the central selection. Do not copy a template over it.
+If no database exists, run `idf.py reconfigure` in that authorized environment.
+The database does not exist merely because the initializer completed.
 
-Build, programming, and serial monitoring are separate choices:
+`set-target` clears/reconfigures build settings: do not run it casually on an
+existing project. fwdev never calls it. Restart Neovim after changing target or
+SDK so the compiler allowlist is recalculated from the new database.
+
+Continue with normal commands, each invoked intentionally:
 
 ```sh
 idf.py build
-idf.py -p /dev/ttyUSB0 flash     # explicitly programs the selected device
+idf.py -p /dev/ttyUSB0 flash
 idf.py -p /dev/ttyUSB0 monitor
 ```
 
-Select the actual device (`/dev/ttyACM0` is also common). Exit IDF Monitor with
-`Ctrl-]`. Flash can build first when needed. No editor task flashes automatically.
-For JTAG debugging, use the selected IDF target's GDB and Espressif OpenOCD
-configuration; do not substitute the STM32 example. SDK-specific hardware setup
-is outside what has been validated here.
-
-For a normal Linux project afterward, open a fresh shell and a new Neovim process.
-This avoids leaking IDF PATH and SDK variables into unrelated work.
+Choose the actual serial port. IDF Monitor exits with `Ctrl-]`; flash may build
+first. JTAG debugging uses the selected SDK's GDB/OpenOCD and the board's actual
+configuration, independently of Neovim. See the
+[IDF command reference](https://docs.espressif.com/projects/esp-idf/en/stable/esp32/api-guides/tools/idf-py.html).
+If SDK clangd or compilers are missing, use the selected SDK's documented tools
+installer yourself. fwdev never downloads a replacement SDK or toolchain.
 
 ## Rust, Go, Python, and Java
 
-### Rust
+| fwdev choice | New project | Existing project |
+| --- | --- | --- |
+| Rust host | `cargo init --bin --vcs none` | Preserve Cargo metadata |
+| Rust embedded | `cargo init --lib --vcs none`; library starting point only | Preserve target/runtime/features |
+| Go | `go mod init` with the module path you supply | Preserve go.mod and source |
+| Python | Small main.py; optional `.venv` and `.envrc` | Optionally reuse/create `.venv`; preserve files |
+| Java | Plain src/Main.java | Preserve Maven/Gradle and source |
 
-```sh
-cargo new my_app
-cd my_app
-cargo check
-nvim
-cargo test
-rust-gdb target/debug/my_app
-```
+These languages receive no project Lua or task files. Rust, Go and Java need no
+`.envrc` for ordinary system toolchains. No Git repository is created for you.
 
-Rustaceanvim manages rust-analyzer. Background diagnostics use `cargo check`, not
-forced Clippy or all features. Use `:RustLsp` completion/help to discover actions;
-`Space ce` explains errors. Code actions remain explicit.
+Rustaceanvim manages rust-analyzer and runs `cargo check`, without globally forcing
+all features. Use `cargo check`, `cargo test`, `rust-gdb`, and `:RustLsp` as usual.
+For embedded Rust, set the target/linker/runtime in the actual Cargo project;
+creating a library is not a complete runnable firmware. Use standard
+`.cargo/config.toml` target settings first. If rust-analyzer still requires distinct
+feature/target overrides, the optional embedded Lua template is available for
+manual adaptation and trust, never auto-installed.
 
-For firmware, set the build target/linker in `.cargo/config.toml`, install the
-required rustup target deliberately, and align rust-analyzer's target/features
-using [the Rust project override](examples/rust/.lazy.lua). Its example is
-`thumbv7em-none-eabihf` with default features disabled. Adapt it to your crate;
-no global target is selected. Runner/probe-rs settings belong to the project.
-Do not assume a `rust-analyzer.json` is read by this installed integration.
+Go uses gopls and go.mod. Add your packages, then `go test ./...` / `go build ./...`.
+Delve remains an optional external dependency.
 
-### Go
+Python's optional `.venv` is created once using `python -m venv`. An existing
+usable environment is reused; an unusable `.venv` is preserved and reported.
+Review `.envrc`, run `direnv allow`, and install project dependencies through the
+project's package manager. Leaving the directory restores the prior Python/PATH.
+Pyright/Ruff remain configured; inspect the selected interpreter if imports are
+wrong. `python -m pytest` needs pytest in that environment; `python -m pdb script.py`
+needs no debug adapter. No packages are installed globally by fwdev.
 
-```sh
-mkdir my_go_app
-cd my_go_app
-go mod init example.com/my_go_app
-nvim
-go test ./...
-go build ./...
-```
-
-Gopls reads the module. Merge [Go tasks](examples/go/.vscode/tasks.json) if desired.
-Delve is the language-specific debugger; it was not found on PATH during this
-session. No Go debugger was installed as part of the editor setup.
-
-### Python
-
-```sh
-mkdir my_python_app
-cd my_python_app
-python -m venv .venv
-source .venv/bin/activate
-# Install the project's declared dependencies/test tools using its chosen manager.
-nvim
-python -m pytest
-python -m pdb path/to/script.py
-```
-
-Pyright and Ruff supply diagnostics. Set interpreter/configuration through the
-project's pyproject.toml or supported Pyright configuration as needed; activating
-a virtualenv alone should not be treated as proof that the server chose it.
-Inspect server diagnostics and imports. Pytest must exist in the selected
-environment. [Python tasks](examples/python/.vscode/tasks.json) prompt for an
-interpreter. Debugpy was not importable in the system Python at the last check.
-
-### Java
-
-Open the project root with its Maven/Gradle files. Jdtls supplies navigation,
-completion, and diagnostics. Use the project wrapper (`./gradlew test`, `./mvnw test`)
-when provided. Its JDT workspace is kept distinct per project. Java formatting,
-import organization on save, and editor debug/test adapters are disabled.
+Java uses jdtls. For an existing project use its Maven/Gradle wrapper after review.
+For the new plain starter: `javac -d build src/Main.java`, then
+`java -cp build Main`. fwdev does not assume Maven coordinates or Gradle plugins.
+Jdtls workspaces remain separate per project; save-time import organization and
+editor debug/test adapters remain disabled.
 
 ## Assembly, linker scripts, and device trees
 
@@ -507,7 +497,7 @@ import organization on save, and editor debug/test adapters are disabled.
 as device tree. Treesitter covers asm/nasm, linker scripts, Make, and device tree.
 
 Asm-lsp attaches only with `.asm-lsp.toml` in the project. Start from
-[the assembly example](examples/assembly/.asm-lsp.toml) and choose the instruction
+[the optional assembly template](../../../dev/.local/share/fwdev/templates/optional/assembly/asm-lsp.toml) and choose the instruction
 set (`arm`, `riscv`, or `x86-64`), assembler dialect, and matching compiler.
 Its example disables host-compiler fallback diagnostics. Highlighting is not
 proof the assembler accepts the source: assemble/build it with the real toolchain.
@@ -585,7 +575,7 @@ path=/usr/bin/gdb
 arguments=-nx build/app
 ```
 
-For ARM, adapt [the project GF example](examples/debugging/.project.gf):
+For ARM, adapt [the optional project GF template](../../../dev/.local/share/fwdev/templates/optional/debugging/project.gf):
 
 ```ini
 [gdb]
@@ -602,7 +592,7 @@ Use the console for target-specific initialization; Program is an explicit flash
 operation, not a connection prerequisite. `.project.gf` is not automatically
 created or loaded by Neovim. Launch GF from the firmware project root.
 
-The reusable [embedded.gdb](examples/debugging/embedded.gdb) connects without
+The reusable [embedded.gdb](../../../dev/.local/share/fwdev/templates/optional/debugging/embedded.gdb) connects without
 programming. Terminal alternative:
 
 ```sh
@@ -624,7 +614,7 @@ no sudo installation is required.
 | --- | --- |
 | No language features | `:checkhealth vim.lsp`, `:lua vim.print(vim.lsp.get_clients({bufnr=0}))`, `:Mason`; confirm filetype/root/server executable |
 | Wrong C/C++ includes or architecture | Inspect compile_commands.json, `.clangd`, selected compiler, and query-driver paths; rebuild generated headers |
-| ESP project override fails at startup | Activate the correct SDK, verify ESP_CLANGD and target compiler executables, then restart Neovim |
+| ESP clangd fails at startup | Check `direnv status`, `IDF_PATH`, `DEV_IDF_PROJECT`, `command -v clangd`, SDK tool installation and the generated database; restart Neovim |
 | Wrong Python import/type information | Verify project interpreter/config and virtualenv dependencies |
 | Missing tasks | Verify root, build manifests, and `.vscode/tasks.json`; try the shell command directly |
 | No completion popup | Press Ctrl-Space; if LSP candidates are missing, check server attachment |
@@ -642,15 +632,28 @@ Update plugins deliberately through Lazy, review changes, and restart. Preserve
 `lazy-lock.json` for reproducible plugin revisions. SDK/compiler upgrades are
 separate from plugin upgrades. Check project-local compiler paths afterward.
 
-After changing the editor configuration, the existing behavioral suite can run
-from `~/.config/nvim`:
+After changing the editor configuration, restart Neovim and review the changes.
+Real board connection, flashing, and GF interaction must be checked on the actual
+target. Use the compiler/build results as the authority for firmware correctness,
+and review `git diff` before each commit.
 
-```sh
-nvim --headless -i NONE '+lua dofile("tests/verify.lua")'
-```
+## Templates and maintenance
 
-It uses temporary fixtures and exercises editing/completion/save behavior; it
-does not program hardware. [VALIDATION.md](VALIDATION.md) records earlier machine
-checks and their limits. Real board connection, flashing, and GF interaction must
-be checked on the actual target. Use the compiler/build results as the authority
-for firmware correctness, and review `git diff` before each commit.
+Templates live in the Stow package at
+[dev/.local/share/fwdev/templates](../../../dev/.local/share/fwdev/templates).
+The old Neovim `examples/` tree has been replaced:
+
+- `native/`: CMake and C/C++ source consumed by fwdev for new projects.
+- `env/`: reviewed ESP-IDF/Python direnv files consumed by fwdev as needed.
+- `esp-idf/clangd`: necessary ESP GCC/header compatibility configuration.
+- `optional/`: assembly configuration, embedded Rust override, GF project config,
+  and GDB connection commands. These are manual starting points, never copied by
+  the initializer. Adapt names/settings before use.
+
+There are no stored generic `.vscode` task collections or `.clangd` files solely
+pointing at `build/`. Existing projects using the old `.lazy.lua` approach should
+be reviewed: remove redundant clangd overrides after central detection works.
+Do not change unrelated project-specific Lua. In particular, old overrides that
+append flags to a table-valued `cmd` must be retired: central `cmd` now selects
+one process command per workspace.
+

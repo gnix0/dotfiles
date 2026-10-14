@@ -1,0 +1,5 @@
+# ESP-IDF GCC compatibility only. Target/ABI/includes remain in the build database.
+# Espressif's standalone clangd package can omit its own builtin header bundle.
+CompileFlags:
+  BuiltinHeaders: QueryDriver
+  Remove: [-fno-shrink-wrap, -fstrict-volatile-bitfields, -fno-tree-switch-conversion, -fzero-init-padding-bits=*, -fno-malloc-dce]

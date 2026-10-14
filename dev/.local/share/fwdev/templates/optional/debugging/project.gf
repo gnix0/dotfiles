@@ -1,6 +1,6 @@
 # Copy into the project root; change GDB and ELF for that project.
 [gdb]
-path=/usr/bin/arm-none-eabi-gdb
+path=arm-none-eabi-gdb
 arguments=-nx build/firmware.elf
 
 [commands]

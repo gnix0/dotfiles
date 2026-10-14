@@ -67,6 +67,18 @@ return {
           config.cmd[1] = path
         end
       end
+      -- Resolve the command when the workspace client is started, not globally
+      -- from whichever SDK happened to be active when Neovim was launched.
+      opts.servers.clangd.root_dir = function(buf, on_dir)
+        on_dir(require("config.toolchains").root(buf))
+      end
+      local clangd_command = vim.deepcopy(opts.servers.clangd.cmd)
+      opts.servers.clangd.cmd = function(dispatchers, config)
+        local command = require("config.toolchains").command(clangd_command, config.root_dir)
+        return vim.lsp.rpc.start(command, dispatchers, {
+          cwd = config.cmd_cwd, env = config.cmd_env, detached = config.detached,
+        })
+      end
       -- Mason's npm packages require system Node/npm. Do not repeatedly try
       -- impossible installations; restarting after installing them enables these.
       if vim.fn.executable("node") == 0 or vim.fn.executable("npm") == 0 then

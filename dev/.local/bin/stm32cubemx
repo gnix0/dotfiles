@@ -1,0 +1,36 @@
+#!/bin/sh
+set -eu
+
+app=/opt/stm32cubemx/STM32CubeMX
+bundled_java=/opt/stm32cubemx/jre/bin/java
+
+if [ -x "$bundled_java" ]; then
+    exec "$bundled_java" -jar "$app" "$@"
+fi
+
+if command -v archlinux-java-run >/dev/null 2>&1; then
+    exec archlinux-java-run --min 21 -- -jar "$app" "$@"
+fi
+
+java_bin=$(command -v java || true)
+if [ -z "$java_bin" ]; then
+    printf '%s\n' 'stm32cubemx: install Java 21 or newer, or install archlinux-java-run.' >&2
+    exit 127
+fi
+
+java_major=$(
+    "$java_bin" -version 2>&1 |
+        sed -n '1s/.*version "\([0-9][0-9]*\).*/\1/p'
+)
+case $java_major in
+    ''|*[!0-9]*)
+        printf 'stm32cubemx: could not determine Java version from %s.\n' "$java_bin" >&2
+        exit 1
+        ;;
+esac
+if [ "$java_major" -lt 21 ]; then
+    printf 'stm32cubemx: Java 21 or newer is required; found Java %s.\n' "$java_major" >&2
+    exit 1
+fi
+
+exec "$java_bin" -jar "$app" "$@"
