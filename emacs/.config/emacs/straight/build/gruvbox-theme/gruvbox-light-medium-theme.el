@@ -1,1 +1,0 @@
-/home/gnix/.config/emacs/straight/repos/emacs-theme-gruvbox/gruvbox-light-medium-theme.el

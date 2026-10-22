@@ -1,1 +1,0 @@
-/home/gnix/.config/emacs/straight/repos/multiple-cursors.el/mc-mark-more.el

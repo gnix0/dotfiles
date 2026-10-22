@@ -1,1 +1,0 @@
-/home/gnix/.config/emacs/straight/repos/pdf-view-restore/pdf-view-restore.el

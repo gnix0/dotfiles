@@ -1,1 +1,0 @@
-/home/gnix/.config/emacs/straight/repos/use-package/.github/PULL_REQUEST_TEMPLATE.md

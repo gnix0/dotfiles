@@ -1,1 +1,0 @@
-/home/gnix/.config/emacs/straight/repos/go-mode.el/go-mode.el

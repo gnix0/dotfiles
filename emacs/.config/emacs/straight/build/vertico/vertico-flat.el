@@ -1,1 +1,0 @@
-/home/gnix/.config/emacs/straight/repos/vertico/extensions/vertico-flat.el
