@@ -67,17 +67,22 @@
 (set-face-attribute 'default nil
                     :font
                     "IosevkaTermSlab Nerd Font"
-                    :height 135)
+                    :height 140)
 
 ;; (use-package gruber-darker-theme
 ;;   :demand t
 ;;   :config
 ;;   (load-theme 'gruber-darker t))
 
-(use-package doom-themes
+;; (use-package doom-themes
+;;   :demand t
+;;   :config
+;;   (load-theme 'doom-monokai-pro t))
+
+(use-package gruvbox-theme
   :demand t
   :config
-  (load-theme 'doom-monokai-pro t))
+  (load-theme 'gruvbox-dark-soft t))
 
 ;; Dired
 (use-package dired-x

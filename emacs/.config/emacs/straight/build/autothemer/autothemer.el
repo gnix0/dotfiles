@@ -1,0 +1,1 @@
+/home/gnix/.config/emacs/straight/repos/autothemer/autothemer.el

@@ -1,0 +1,1 @@
+/home/gnix/.config/emacs/straight/repos/multiple-cursors.el/multiple-cursors.el

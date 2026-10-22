@@ -1,0 +1,1 @@
+/home/gnix/.config/emacs/straight/repos/pdf-tools/server/epdfinfo.c

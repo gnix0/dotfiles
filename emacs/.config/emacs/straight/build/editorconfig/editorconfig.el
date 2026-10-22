@@ -1,0 +1,1 @@
+/home/gnix/.config/emacs/straight/repos/editorconfig-emacs/editorconfig.el

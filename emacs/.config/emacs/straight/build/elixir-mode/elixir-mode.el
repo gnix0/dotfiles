@@ -1,0 +1,1 @@
+/home/gnix/.config/emacs/straight/repos/emacs-elixir/elixir-mode.el

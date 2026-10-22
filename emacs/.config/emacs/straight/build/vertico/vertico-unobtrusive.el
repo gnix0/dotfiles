@@ -1,0 +1,1 @@
+/home/gnix/.config/emacs/straight/repos/vertico/extensions/vertico-unobtrusive.el
