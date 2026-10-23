@@ -108,6 +108,7 @@ export EDITOR="nvim"
 export PATH="$HOME/.cargo/bin:$HOME/go/bin:$PATH"
 export PATH="$HOME/.local/bin:$PATH"
 export PATH="$HOME/usr/sbin:$PATH"
+export PATH="$HOME/.config/emacs/bin:$PATH"
 
 command -v direnv >/dev/null 2>&1 && eval "$(direnv hook zsh)"
 
