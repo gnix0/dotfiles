@@ -79,10 +79,11 @@
 ;;   :config
 ;;   (load-theme 'doom-monokai-pro t))
 
-(use-package gruvbox-theme
+(use-package catppuccin-theme
   :demand t
   :config
-  (load-theme 'gruvbox-dark-soft t))
+  (setq catppuccin-flavor 'macchiato)
+  (load-theme 'catppuccin t))
 
 ;; Dired
 (use-package dired-x
