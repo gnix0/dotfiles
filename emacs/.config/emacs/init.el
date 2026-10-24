@@ -66,8 +66,8 @@
 ;; Font & Theme
 (set-face-attribute 'default nil
                     :font
-                    "IosevkaTermSlab Nerd Font"
-                    :height 140)
+                    "Terminess Nerd Font Mono"
+                    :height 180)
 
 ;; (use-package gruber-darker-theme
 ;;   :demand t
