@@ -33,6 +33,10 @@
   (setq display-line-numbers 'relative))
 (add-hook 'prog-mode-hook #'gnix/relative-line-numbers)
 
+;; Tabs (global, ideal for general editing)
+(setq-default indent-tabs-mode nil
+	      tab-width 4)
+
 ;; straight.el as the package manager
 (defvar bootstrap-version)
 (let ((bootstrap-file
@@ -69,21 +73,16 @@
                     "IosevkaTermSlab Nerd Font Mono"
                     :height 150)
 
-;; (use-package gruber-darker-theme
-;;   :demand t
-;;   :config
-;;   (load-theme 'gruber-darker t))
-
-;; (use-package doom-themes
-;;   :demand t
-;;   :config
-;;   (load-theme 'doom-monokai-pro t))
-
-(use-package catppuccin-theme
+(use-package gruber-darker-theme
   :demand t
   :config
-  (setq catppuccin-flavor 'macchiato)
-  (load-theme 'catppuccin t))
+  (load-theme 'gruber-darker t))
+
+;; (use-package catppuccin-theme
+;;   :demand t
+;;   :config
+;;   (setq catppuccin-flavor 'macchiato)
+;;   (load-theme 'catppuccin t))
 
 ;; Dired
 (use-package dired-x
@@ -206,7 +205,7 @@
     (setenv "PATH" (concat dir ":" (getenv "PATH")))))
 
 ;; Compilation (not project-wise like project.el does)
-(global-set-key (kbd "C-x c") #'compile)
+(global-set-key (kbd "C-c x") #'compile)
 
 ;; Colours instead of ANSI escapes on compilation
 (require 'ansi-color)
@@ -231,8 +230,8 @@
 
 ;; C/C++
 (defun gnix/c-ts-mode-setup ()
-  (setq-local c-ts-mode-indent-style 'k&r
-              c-ts-mode-indent-offset 4
+  (c-ts-mode-set-style 'k&r)
+  (setq-local c-ts-indent-offset 4
               indent-tabs-mode nil
               eglot-ignored-server-capabilities
               '(:documentOnTypeFormattingProvider))
@@ -261,7 +260,6 @@
   :init
   (setq treesit-language-source-alist
         '((bash . ("https://github.com/tree-sitter/tree-sitter-bash" "v0.23.3"))
-          (c       . ("https://github.com/tree-sitter/tree-sitter-c" "v0.23.6"))
           (cpp     . ("https://github.com/tree-sitter/tree-sitter-cpp" "v0.23.4"))
           (elixir  . ("https://github.com/elixir-lang/tree-sitter-elixir" "v0.3.0"))
           (go      . ("https://github.com/tree-sitter/tree-sitter-go" "v0.23.4"))
@@ -273,6 +271,9 @@
           (rust    . ("https://github.com/tree-sitter/tree-sitter-rust" "v0.23.3"))
           (toml    . ("https://github.com/tree-sitter-grammars/tree-sitter-toml" "v0.7.0"))
           (yaml    . ("https://github.com/ikatyang/tree-sitter-yaml"))))
+
+  ;; Use the compatible C grammar recipe maintained by Emacs.
+  (require 'c-ts-mode)
 
   (dolist (entry '((bash sh-mode bash-ts-mode)
                    (c c-mode c-ts-mode)
@@ -316,6 +317,9 @@
   :config
   (setq eglot-code-action-indications nil)
   (setq eglot-code-action-indicator nil)
+  (add-hook 'eglot-managed-mode-hook
+            (lambda ()
+              (eglot-inlay-hints-mode -1)))
 
   (dolist (type '(eglot-error eglot-warning eglot-note))
     (let ((control (get type 'flymake-overlay-control)))
@@ -331,6 +335,29 @@
   :config
   (setq markdown-fontify-code-blocks-natively t))
 (use-package yaml-mode)
+
+;; (Sane) Indentation defaults
+(add-to-list 'auto-mode-alist '("\\.clangd\\'" . yaml-mode))
+
+(dolist (hook '(yaml-mode-hook yaml-ts-mode-hook))
+  (add-hook hook
+            (lambda ()
+              (setq-local indent-tabs-mode nil
+                          yaml-indent-offset 2))))
+
+(add-hook 'makefile-mode-hook
+          (lambda ()
+            (setq-local indent-tabs-mode t)))
+
+(dolist (hook '(go-mode-hook go-ts-mode-hook))
+  (add-hook hook
+            (lambda ()
+              (setq-local indent-tabs-mode t
+                          tab-width 4))))
+
+(add-to-list 'auto-mode-alist '("\\.svd\\'" . nxml-mode))
+(add-to-list 'auto-mode-alist '("\\.ioc\\'" . conf-javaprop-mode))
+(add-to-list 'auto-mode-alist '("/openocd\\.cfg\\'" . tcl-mode))
 
 (add-to-list 'auto-mode-alist '("CODEOWNERS\\'" . conf-mode))
 (add-to-list 'auto-mode-alist '("\\.env\\'" . conf-mode))

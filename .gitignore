@@ -2,3 +2,7 @@
 /emacs/.config/emacs/straight/
 /emacs/.config/emacs/auto-save-list/
 /emacs/.config/emacs/transient/
+/emacs/.config/emacs/tree-sitter/
+/emacs/.config/emacs/recentf.eld
+/emacs/.config/emacs/.mc-lists.el
+/emacs/.config/emacs/bookmarks.eld

@@ -1,9 +1,9 @@
 [general]
-import = ["/home/gnix/dotfiles/alacritty/.config/alacritty/themes/catppuccin_macchiato.toml"]
+import = ["/home/gnix/dotfiles/alacritty/.config/alacritty/themes/gruber_darker.toml"]
 
 [font]
 normal = { family = "IosevkaTermSlab Nerd Font Mono", style = "Regular" }
-size = 16
+size = 15
 
 [window]
 opacity = 1
