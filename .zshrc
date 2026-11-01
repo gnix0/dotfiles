@@ -122,3 +122,9 @@ unset git_alias_name
 
 # External GDB frontend; keep the current project directory.
 alias gf='"$HOME/gf/gf2"'
+
+# kof — managed by scripts/install.sh
+export PATH="/home/gnix/.local/share/kof/current/bin:$PATH"
+
+# npm global installs in /local/share
+export PATH="$HOME/.local/share/npm/bin:$PATH"
