@@ -229,8 +229,23 @@
   (keycast-mode-line-mode 1))
 
 ;; C/C++
+(defun gnix/c-ts-preprocessor-line-p (_node _parent bol &rest _)
+  "Match a preprocessor line even before its directive is complete."
+  (save-excursion
+    (goto-char bol)
+    (back-to-indentation)
+    (and (eq (char-after) ?#)
+         (not (nth 8 (syntax-ppss))))))
+
 (defun gnix/c-ts-mode-setup ()
   (c-ts-mode-set-style 'k&r)
+  (setq-local treesit-simple-indent-rules
+              (mapcar
+               (lambda (entry)
+                 (cons (car entry)
+                       (cons '(gnix/c-ts-preprocessor-line-p column-0 0)
+                             (cdr entry))))
+               treesit-simple-indent-rules))
   (setq-local c-ts-indent-offset 4
               indent-tabs-mode nil
               eglot-ignored-server-capabilities
