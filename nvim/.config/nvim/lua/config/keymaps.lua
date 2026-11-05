@@ -1,35 +1,31 @@
--- Keymaps are automatically loaded on the VeryLazy event
--- Default keymaps that are always set: https://github.com/LazyVim/LazyVim/blob/main/lua/lazyvim/config/keymaps.lua
--- Add any additional keymaps here
+vim.keymap.set("n", "<Up>", "<Nop>", { noremap = true, silent = true })
+vim.keymap.set("n", "<Down>", "<Nop>", { noremap = true, silent = true })
+vim.keymap.set("n", "<Left>", "<Nop>", { noremap = true, silent = true })
+vim.keymap.set("n", "<Right>", "<Nop>", { noremap = true, silent = true })
+vim.keymap.set("i", "<Up>", "<Nop>", { noremap = true, silent = true })
+vim.keymap.set("i", "<Down>", "<Nop>", { noremap = true, silent = true })
+vim.keymap.set("i", "<Left>", "<Nop>", { noremap = true, silent = true })
+vim.keymap.set("i", "<Right>", "<Nop>", { noremap = true, silent = true })
+vim.keymap.set("v", "<Up>", "<Nop>", { noremap = true, silent = true })
+vim.keymap.set("v", "<Down>", "<Nop>", { noremap = true, silent = true })
+vim.keymap.set("v", "<Left>", "<Nop>", { noremap = true, silent = true })
+vim.keymap.set("v", "<Right>", "<Nop>", { noremap = true, silent = true })
 
-local function delete(mode, lhs)
-  pcall(vim.keymap.del, mode, lhs)
-end
-for _, mode in ipairs({ "n", "x" }) do
-  for _, lhs in ipairs({ "<leader>cf", "<leader>cF" }) do delete(mode, lhs) end
-end
-for _, lhs in ipairs({ "<leader>uf", "<leader>uF", "<leader>up" }) do delete("n", lhs) end
--- Remove LazyVim's native-snippet handling on Escape as well.
-delete("i", "<Esc>")
-delete("s", "<Esc>")
-vim.keymap.set("n", "<Esc>", "<cmd>nohlsearch<cr>", { desc = "Clear Search Highlight" })
-for _, mode in ipairs({ "n", "i", "x" }) do
-  for _, key in ipairs({ "<Up>", "<Down>", "<Left>", "<Right>" }) do
-    vim.keymap.set(mode, key, "<Nop>", { silent = true })
-  end
-end
+vim.keymap.set("n", "<C-d>", "<C-d>zz", { noremap = true, silent = true })
+vim.keymap.set("n", "<C-u>", "<C-u>zz", { noremap = true, silent = true })
+vim.keymap.set("n", "n", "nzzzv", { noremap = true, silent = true })
+vim.keymap.set("n", "N", "Nzzzv", { noremap = true, silent = true })
 
--- Clear the search menu, including mappings installed by LazyVim utilities.
-for _, mode in ipairs({ "n", "x" }) do
-  for _, map in ipairs(vim.api.nvim_get_keymap(mode)) do
-    if map.lhs:sub(1, 2) == " s" then delete(mode, map.lhs) end
-  end
-end
-vim.keymap.set("n", "<C-d>", "<C-d>zz", { silent = true })
-vim.keymap.set("n", "<C-u>", "<C-u>zz", { silent = true })
-vim.keymap.set("n", "n", "nzzzv", { silent = true })
-vim.keymap.set("n", "N", "Nzzzv", { silent = true })
+vim.keymap.set("n", "<S-h>", "<cmd>bprevious<cr>", { desc = "Prev Buffer", silent = true })
+vim.keymap.set("n", "<S-l>", "<cmd>bnext<cr>", { desc = "Next Buffer", silent = true })
+vim.keymap.set("n", "<leader>bd", "<cmd>bdelete<cr>", { desc = "Delete Buffer", silent = true })
+vim.keymap.set('n', '<Esc>', '<cmd>nohlsearch<CR>')
+
 vim.keymap.set("n", "gl", vim.diagnostic.open_float, { desc = "Line Diagnostics" })
+
+vim.keymap.set("v", "<", "<gv", { silent = true })
+vim.keymap.set("v", ">", ">gv", { silent = true })
+
 vim.keymap.set("n", "<leader>sv", "<C-w>v", { desc = "Split Vertical" })
 vim.keymap.set("n", "<leader>sh", "<C-w>s", { desc = "Split Horizontal" })
 vim.keymap.set("n", "<leader>se", "<C-w>=", { desc = "Equalize Splits" })
@@ -38,3 +34,21 @@ vim.keymap.set("n", "<leader>sj", "<C-w>-", { desc = "Decrease Height" })
 vim.keymap.set("n", "<leader>sk", "<C-w>+", { desc = "Increase Height" })
 vim.keymap.set("n", "<leader>s>", "10<C-w>>", { desc = "Increase Width" })
 vim.keymap.set("n", "<leader>s<", "10<C-w><", { desc = "Decrease Width" })
+
+vim.keymap.set("n", "<C-h>", "<C-w>h", { desc = "Go to Left Window", silent = true })
+vim.keymap.set("n", "<C-j>", "<C-w>j", { desc = "Go to Lower Window", silent = true })
+vim.keymap.set("n", "<C-k>", "<C-w>k", { desc = "Go to Upper Window", silent = true })
+vim.keymap.set("n", "<C-l>", "<C-w>l", { desc = "Go to Right Window", silent = true })
+
+local function toggle_netrw()
+    if vim.bo.filetype == "netrw" then
+        vim.cmd.Rexplore()
+    else
+        vim.cmd.Explore()
+    end
+end
+
+vim.keymap.set("n", "<leader>e", toggle_netrw, {
+    silent = true,
+    desc = "Toggle Netrw",
+})
