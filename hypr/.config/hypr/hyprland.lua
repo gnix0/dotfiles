@@ -82,13 +82,13 @@ hl.permission("/usr/(bin|local/bin)/grim", "screencopy", "allow")
 -- Refer to https://wiki.hypr.land/Configuring/Basics/Variables/
 hl.config({
     general = {
-        gaps_in  = 5,
-        gaps_out = 5,
+        gaps_in  = 0,
+        gaps_out = 0,
 
         border_size = 2,
 
         col = {
-            active_border   = { colors = {"rgba(33ccffee)", "rgba(00ff99ee)"}, angle = 45 },
+            active_border = { colors = {"rgba(b14242ee)", "rgba(d87c4aee)"}, angle = 45 },
             inactive_border = "rgba(595959aa)",
         },
 
