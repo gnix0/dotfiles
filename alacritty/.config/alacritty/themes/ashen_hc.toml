@@ -1,0 +1,32 @@
+# Ashen Pure Black for Alacritty
+# Based on Ashen by Daniel Fichtinger (MIT License)
+# Source: https://github.com/ficd0/ashen/blob/main/alacritty/ashen.toml
+# Adaptation: foundational backgrounds changed from #121212 to #000000.
+
+[colors.primary]
+background = '#000000'
+foreground = '#f5f5f5'
+
+[colors.cursor]
+cursor = '#f5f5f5'
+text = '#000000'
+
+[colors.normal]
+black = '#000000'
+red = '#B14242'
+green = '#D87C4A'
+yellow = '#E49A44'
+blue = '#4A8B8B'
+magenta = '#a7a7a7'
+cyan = '#b4b4b4'
+white = '#d5d5d5'
+
+[colors.bright]
+black = '#949494'
+red = '#B14242'
+green = '#D87C4A'
+yellow = '#E49A44'
+blue = '#4A8B8B'
+magenta = '#a7a7a7'
+cyan = '#b4b4b4'
+white = '#d5d5d5'

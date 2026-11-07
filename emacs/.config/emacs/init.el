@@ -71,7 +71,7 @@
 (set-face-attribute 'default nil
                     :font
                     "IosevkaTermSlab Nerd Font Mono"
-                    :height 150)
+                    :height 180)
 
 ; (use-package gruber-darker-theme
 ;   :demand t
