@@ -232,40 +232,23 @@
 	keycast-mode-line-format "%2s%K  %C%R ")
   (keycast-mode-line-mode 1))
 
-;; C/C++
-(defun gnix/c-ts-preprocessor-line-p (_node _parent bol &rest _)
-  "Match a preprocessor line even before its directive is complete."
-  (save-excursion
-    (goto-char bol)
-    (back-to-indentation)
-    (and (eq (char-after) ?#)
-         (not (nth 8 (syntax-ppss))))))
-
-(defun gnix/c-ts-mode-setup ()
-  (c-ts-mode-set-style 'k&r)
-  (setq-local treesit-simple-indent-rules
-              (mapcar
-               (lambda (entry)
-                 (cons (car entry)
-                       (cons '(gnix/c-ts-preprocessor-line-p column-0 0)
-                             (cdr entry))))
-               treesit-simple-indent-rules))
-  (setq-local c-ts-indent-offset 4
+;; C/C++: indent new lines and braces without rearranging existing code.
+(defun gnix/c-mode-setup ()
+  (c-set-style "k&r")
+  (c-set-offset 'func-decl-cont 0)
+  (electric-indent-local-mode -1)
+  (setq-local c-basic-offset 4
               indent-tabs-mode nil
+              c-electric-flag t
+              c-auto-newline nil
+              c-cleanup-list nil
               eglot-ignored-server-capabilities
               '(:documentOnTypeFormattingProvider))
-  (local-set-key (kbd "RET") #'newline-and-indent))
+  (local-set-key (kbd "RET") #'newline-and-indent)
+  (local-set-key (kbd "<return>") #'newline-and-indent))
 
-(defun gnix/c++-ts-mode-setup ()
-  (setq-local c++-ts-mode-indent-style 'k&r
-	      c++-ts-mode-indent-offset 4
-	      indent-tabs-mode nil
-	      eglot-ignored-server-capabilities
-	      '(:documentOnTypeFormattingProvider))
-  (local-set-key (kbd "RET") #'newline-and-indent))
-
-(add-hook 'c-ts-base-mode-hook #'gnix/c-ts-mode-setup)
-(add-hook 'c++-ts-mode-hook #'gnix/c++-ts-mode-setup)
+(add-hook 'c-mode-hook #'gnix/c-mode-setup)
+(add-hook 'c++-mode-hook #'gnix/c-mode-setup)
 
 ;; Align region
 (add-hook 'prog-mode-hook
@@ -291,12 +274,7 @@
           (toml    . ("https://github.com/tree-sitter-grammars/tree-sitter-toml" "v0.7.0"))
           (yaml    . ("https://github.com/ikatyang/tree-sitter-yaml"))))
 
-  ;; Use the compatible C grammar recipe maintained by Emacs.
-  (require 'c-ts-mode)
-
   (dolist (entry '((bash sh-mode bash-ts-mode)
-                   (c c-mode c-ts-mode)
-                   (cpp c++-mode c++-ts-mode)
                    (elixir elixir-mode elixir-ts-mode)
                    (go go-mode go-ts-mode)
                    (gomod go-dot-mod-mode go-mod-ts-mode)
@@ -313,7 +291,7 @@
   (when (treesit-language-available-p 'heex)
     (add-to-list 'auto-mode-alist
                  '("\\.[hl]?eex\\'" . heex-ts-mode))))
-
+()
 ;; Language Server Protocol
 (use-package eglot
   :custom
