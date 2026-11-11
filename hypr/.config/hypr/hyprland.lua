@@ -29,7 +29,7 @@ hl.workspace_rule({ workspace = "1", monitor = "eDP-1", default = true })
 
 -- Set programs that you use
 local terminal    = "alacritty"
-local fileManager = "dolphin"
+local fileManager = "thunar"
 local menu        = "rofi -show run"
 local browser	  = "firefox"
 local editor      = "emacs"
