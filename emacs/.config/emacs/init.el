@@ -73,10 +73,10 @@
                     "IosevkaTermSlab Nerd Font Mono"
                     :height 150)
 
-(use-package gruber-darker-theme
-  :demand t
-  :config
-  (load-theme 'gruber-darker t))
+;; (use-package gruber-darker-theme
+;;   :demand t
+;;   :config
+;;   (load-theme 'gruber-darker t))
 
 ;; (use-package catppuccin-theme
 ;;   :demand t
@@ -84,9 +84,9 @@
 ;;   (setq catppuccin-flavor 'macchiato)
 ;;   (load-theme 'catppuccin t))
 
-;; (add-to-list 'custom-theme-load-path
-;;              "/home/gnix/developer/ashen-hc-theme/")
-;; (load-theme 'ashen-hc t)
+(add-to-list 'custom-theme-load-path
+             "/home/gnix/developer/ashen-minimal-theme/")
+(load-theme 'ashen-minimal-hc t)
 
 ;; Dired
 (use-package dired-x
@@ -236,16 +236,15 @@
 (defun gnix/c-mode-setup ()
   (c-set-style "k&r")
   (c-set-offset 'func-decl-cont 0)
-  (electric-indent-local-mode -1)
-  (setq-local c-basic-offset 4
+  (electric-indent-local-mode 1)
+  (setq-local electric-indent-inhibit t
+              c-basic-offset 4
               indent-tabs-mode nil
               c-electric-flag t
               c-auto-newline nil
               c-cleanup-list nil
               eglot-ignored-server-capabilities
-              '(:documentOnTypeFormattingProvider))
-  (local-set-key (kbd "RET") #'newline-and-indent)
-  (local-set-key (kbd "<return>") #'newline-and-indent))
+              '(:documentOnTypeFormattingProvider)))
 
 (add-hook 'c-mode-hook #'gnix/c-mode-setup)
 (add-hook 'c++-mode-hook #'gnix/c-mode-setup)
