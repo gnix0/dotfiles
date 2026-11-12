@@ -73,10 +73,11 @@
                     "IosevkaTermSlab Nerd Font Mono"
                     :height 150)
 
-;; (use-package gruber-darker-theme
-;;   :demand t
-;;   :config
-;;   (load-theme 'gruber-darker t))
+(use-package gruber-darker-theme
+  :demand t
+  :config
+  (load-theme 'gruber-darker t))
+
 
 ;; (use-package catppuccin-theme
 ;;   :demand t
@@ -84,9 +85,9 @@
 ;;   (setq catppuccin-flavor 'macchiato)
 ;;   (load-theme 'catppuccin t))
 
-(add-to-list 'custom-theme-load-path
-             "/home/gnix/developer/ashen-minimal-theme/")
-(load-theme 'ashen-minimal-hc t)
+;; (add-to-list 'custom-theme-load-path
+;;              "/home/gnix/developer/ashen-minimal-theme/")
+;; (load-theme 'ashen-minimal-hc t)
 
 ;; Dired
 (use-package dired-x
@@ -125,7 +126,7 @@
   (vertico-mode)
   :config
   (setq vertico-cycle t
-	vertico-count 15
+	vertico-count 8
 	vertico-resize nil
 	read-file-name-completion-ignore-case t
 	read-buffer-completion-ignore-case t
