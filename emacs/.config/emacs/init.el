@@ -71,23 +71,16 @@
 (set-face-attribute 'default nil
                     :font
                     "IosevkaTermSlab Nerd Font Mono"
-                    :height 150)
+                    :height 170)
 
-(use-package gruber-darker-theme
-  :demand t
-  :config
-  (load-theme 'gruber-darker t))
-
-
-;; (use-package catppuccin-theme
+;; (use-package gruber-darker-theme
 ;;   :demand t
 ;;   :config
-;;   (setq catppuccin-flavor 'macchiato)
-;;   (load-theme 'catppuccin t))
+;;   (load-theme 'gruber-darker t))
 
-;; (add-to-list 'custom-theme-load-path
-;;              "/home/gnix/developer/ashen-minimal-theme/")
-;; (load-theme 'ashen-minimal-hc t)
+(add-to-list 'custom-theme-load-path
+             "/home/gnix/developer/ashen-minimal-theme/")
+(load-theme 'ashen-minimal-hc t)
 
 ;; Dired
 (use-package dired-x
@@ -250,6 +243,19 @@
 (add-hook 'c-mode-hook #'gnix/c-mode-setup)
 (add-hook 'c++-mode-hook #'gnix/c-mode-setup)
 
+;; A first ':' is indistinguishable from a label terminator.  CC Mode's
+;; c-electric-colon immediately outdents it, then reindents on the second ':'.
+;; Insert C++ colons normally; newline and TAB still indent syntactically.
+(with-eval-after-load 'cc-mode
+  (define-key c++-mode-map (kbd ":") #'self-insert-command))
+
+;; C++: enable LSP awareness for newer features, like modules
+(with-eval-after-load 'eglot
+  (add-to-list 'eglot-server-programs
+               '((c++-mode c++-ts-mode)
+                 "clangd"
+                 "--experimental-modules-support")))
+
 ;; Align region
 (add-hook 'prog-mode-hook
 	  (lambda ()
@@ -291,7 +297,7 @@
   (when (treesit-language-available-p 'heex)
     (add-to-list 'auto-mode-alist
                  '("\\.[hl]?eex\\'" . heex-ts-mode))))
-()
+
 ;; Language Server Protocol
 (use-package eglot
   :custom
