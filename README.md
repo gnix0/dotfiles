@@ -2,9 +2,7 @@
 
 For terminal-first development, run `fwdev` from `~/.local/bin` (Stow package
 `dev`). It prepares new/existing projects and reviewed direnv environments while
-leaving builds, target selection, flashing and debugging explicit. See the
-[Neovim development handbook](nvim/.config/nvim/README.md) for setup, workflows,
-keymaps and tool configuration.
+leaving builds, target selection, flashing and debugging explicit.
 
 ## Keyboard Layout (Kinesis Advantage 360)
 
@@ -42,6 +40,4 @@ stow <app_dir_name>
 ```
 
 > [!NOTE]
-> These configurations are tailored to my own system and workflow. Feel free to use them as reference or
-> inspiration, but do not expect them to work out of the box on your machine. Building your own configuration
-> is one of the best ways to learn the tools you use and create an environment that fits your own workflow.
+> The configs here is tailored to my own workflows and the way I like doing things. Feel free to use them as a reference or inspiration, but do not expect them to work out of the box on your machine, or for the tools, themes, keybinds, etc. here to suit your own preferences. Building your own configuration is one of the best ways to learn the tools you use and create an environment that feels great to work in. Everything here is a result of years of experience and just using sh*t everyday. I did not settle on my editor first try, nor did I settle on my binds the 10th time. Hell, I didn't settle on the font the 50th time (probably more). I suggest you do the same. Enjoy your own journey! xD
