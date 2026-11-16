@@ -70,17 +70,17 @@
 ;; Font & Theme
 (set-face-attribute 'default nil
                     :font
-                    "IosevkaTermSlab Nerd Font Mono"
-                    :height 170)
+                    "Ioskeley Mono Light"
+                    :height 150)
 
-;; (use-package gruber-darker-theme
-;;   :demand t
-;;   :config
-;;   (load-theme 'gruber-darker t))
+(use-package gruber-darker-theme
+  :demand t
+  :config
+  (load-theme 'gruber-darker t))
 
-(add-to-list 'custom-theme-load-path
-             "/home/gnix/developer/ashen-minimal-theme/")
-(load-theme 'ashen-minimal-hc t)
+;; (add-to-list 'custom-theme-load-path
+;;              "/home/gnix/developer/ashen-minimal-theme/")
+;; (load-theme 'ashen-minimal-hc t)
 
 ;; Dired
 (use-package dired-x
