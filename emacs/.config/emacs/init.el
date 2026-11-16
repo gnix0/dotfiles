@@ -230,11 +230,8 @@
 (defun gnix/c-mode-setup ()
   (c-set-style "k&r")
   (c-set-offset 'func-decl-cont 0)
-  (electric-indent-local-mode 1)
-  (setq-local electric-indent-inhibit t
-              c-basic-offset 4
+  (setq-local c-basic-offset 4
               indent-tabs-mode nil
-              c-electric-flag t
               c-auto-newline nil
               c-cleanup-list nil
               eglot-ignored-server-capabilities
@@ -243,18 +240,21 @@
 (add-hook 'c-mode-hook #'gnix/c-mode-setup)
 (add-hook 'c++-mode-hook #'gnix/c-mode-setup)
 
-;; A first ':' is indistinguishable from a label terminator.  CC Mode's
-;; c-electric-colon immediately outdents it, then reindents on the second ':'.
-;; Insert C++ colons normally; newline and TAB still indent syntactically.
 (with-eval-after-load 'cc-mode
   (define-key c++-mode-map (kbd ":") #'self-insert-command))
 
-;; C++: enable LSP awareness for newer features, like modules
-(with-eval-after-load 'eglot
-  (add-to-list 'eglot-server-programs
-               '((c++-mode c++-ts-mode)
-                 "clangd"
-                 "--experimental-modules-support")))
+(defun gnix/c-ts-mode-setup ()
+  (setq-local c-ts-indent-offset 4
+              indent-tabs-mode nil
+              electric-indent-inhibit nil
+              electric-indent-chars '(?\n ?})
+              eglot-ignored-server-capabilities
+              '(:documentOnTypeFormattingProvider))
+  (c-ts-mode-set-style 'k&r)
+  (electric-indent-local-mode 1))
+
+(add-hook 'c-ts-mode-hook #'gnix/c-ts-mode-setup)
+(add-hook 'c++-ts-mode-hook #'gnix/c-ts-mode-setup)
 
 ;; Align region
 (add-hook 'prog-mode-hook
@@ -265,38 +265,24 @@
 (use-package treesit
   :straight nil
   :demand t
-  :init
-  (setq treesit-language-source-alist
-        '((bash . ("https://github.com/tree-sitter/tree-sitter-bash" "v0.23.3"))
-          (cpp     . ("https://github.com/tree-sitter/tree-sitter-cpp" "v0.23.4"))
-          (elixir  . ("https://github.com/elixir-lang/tree-sitter-elixir" "v0.3.0"))
-          (go      . ("https://github.com/tree-sitter/tree-sitter-go" "v0.23.4"))
-          (gomod   . ("https://github.com/camdencheek/tree-sitter-go-mod" "v1.0.2"))
-          (heex    . ("https://github.com/phoenixframework/tree-sitter-heex" "v0.8.0"))
-          (java    . ("https://github.com/tree-sitter/tree-sitter-java" "v0.23.5"))
-          (json    . ("https://github.com/tree-sitter/tree-sitter-json" "v0.24.8"))
-          (lua     . ("https://github.com/tree-sitter-grammars/tree-sitter-lua" "v0.2.0"))
-          (rust    . ("https://github.com/tree-sitter/tree-sitter-rust" "v0.23.3"))
-          (toml    . ("https://github.com/tree-sitter-grammars/tree-sitter-toml" "v0.7.0"))
-          (yaml    . ("https://github.com/ikatyang/tree-sitter-yaml"))))
-
-  (dolist (entry '((bash sh-mode bash-ts-mode)
-                   (elixir elixir-mode elixir-ts-mode)
-                   (go go-mode go-ts-mode)
-                   (gomod go-dot-mod-mode go-mod-ts-mode)
-                   (java java-mode java-ts-mode)
-                   (json js-json-mode json-ts-mode)
-                   (lua lua-mode lua-ts-mode)
-                   (rust rust-mode rust-ts-mode)
-                   (toml conf-toml-mode toml-ts-mode)
-                   (yaml yaml-mode yaml-ts-mode)))
-    (when (treesit-language-available-p (nth 0 entry))
-      (add-to-list 'major-mode-remap-alist
-                   (cons (nth 1 entry) (nth 2 entry)))))
-
-  (when (treesit-language-available-p 'heex)
-    (add-to-list 'auto-mode-alist
-                 '("\\.[hl]?eex\\'" . heex-ts-mode))))
+  :custom
+  (treesit-enabled-modes
+   '(c-ts-mode
+     c++-ts-mode
+     bash-ts-mode
+     elixir-ts-mode
+     go-ts-mode
+     go-mod-ts-mode
+     java-ts-mode
+     json-ts-mode
+     lua-ts-mode
+     rust-ts-mode
+     toml-ts-mode
+     yaml-ts-mode))
+  (treesit-auto-install-grammar 'ask)
+  :config
+  (add-to-list 'auto-mode-alist
+               '("\\.[hl]?eex\\'" . heex-ts-mode)))
 
 ;; Language Server Protocol
 (use-package eglot
