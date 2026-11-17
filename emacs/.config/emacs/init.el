@@ -70,8 +70,7 @@
 ;; Font & Theme
 (set-face-attribute 'default nil
                     :font
-                    "Ioskeley Mono Light"
-                    :height 150)
+                    "Ioskeley Mono Light 17")
 
 (use-package gruber-darker-theme
   :demand t
@@ -140,6 +139,9 @@
 
 ;; (Better) Unique buffer naming
 (setq uniquify-buffer-name-style 'forward)
+
+;; Man pages
+(global-set-key (kbd "C-c m") #'man)
 
 ;; Version control
 (use-package magit)

@@ -3,7 +3,7 @@ import = ["/home/gnix/dotfiles/alacritty/.config/alacritty/themes/gruber_darker.
 
 [font]
 normal = { family = "Ioskeley Mono", style = "Light" }
-size = 15
+size = 17
 
 [window]
 opacity = 1
