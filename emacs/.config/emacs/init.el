@@ -70,12 +70,18 @@
 ;; Font & Theme
 (set-face-attribute 'default nil
                     :font
-                    "Ioskeley Mono Light 17")
+                    "Ioskeley Mono Light 15")
 
-(use-package gruber-darker-theme
+;; (use-package gruber-darker-theme
+;;   :demand t
+;;   :config
+;;   (load-theme 'gruber-darker t))
+
+(use-package catppuccin-theme
   :demand t
   :config
-  (load-theme 'gruber-darker t))
+  (setq catppuccin-flavor 'macchiato)
+  (load-theme 'catppuccin t))
 
 ;; (add-to-list 'custom-theme-load-path
 ;;              "/home/gnix/developer/ashen-minimal-theme/")
