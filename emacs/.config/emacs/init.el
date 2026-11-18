@@ -1,6 +1,6 @@
 ;;; init.el --- Personal Emacs Configuration -*- lexical-binding: t; -*-
 
-;; Author: Gustavo Arantes (gnix)
+;; Author: Gustavo Arantes aka gnix
 ;; Created: July 2026
 
 (setq user-full-name "Gustavo Oliveira Arantes"
@@ -33,9 +33,14 @@
   (setq display-line-numbers 'relative))
 (add-hook 'prog-mode-hook #'gnix/relative-line-numbers)
 
-;; Tabs (global, ideal for general editing)
+;; Tabs
 (setq-default indent-tabs-mode nil
 	      tab-width 4)
+
+;; RET behavior that just gets out of my way
+(defun gnix/prog-newline-setup ()
+  (local-set-key (kbd "RET") #'newline-and-indent))
+(add-hook 'prog-mode-hook #'gnix/prog-newline-setup)
 
 ;; straight.el as the package manager
 (defvar bootstrap-version)
@@ -190,7 +195,7 @@
 (setq project-list-file "~/.config/emacs/emacs-projects-list"
       project-vc-extra-root-markers
       '("CMakeLists.txt"
-	".clangd"
+	    ".clangd"
         "GNUmakefile"
         "Makefile"
         "makefile"
@@ -251,19 +256,6 @@
 (with-eval-after-load 'cc-mode
   (define-key c++-mode-map (kbd ":") #'self-insert-command))
 
-(defun gnix/c-ts-mode-setup ()
-  (setq-local c-ts-indent-offset 4
-              indent-tabs-mode nil
-              electric-indent-inhibit nil
-              electric-indent-chars '(?\n ?})
-              eglot-ignored-server-capabilities
-              '(:documentOnTypeFormattingProvider))
-  (c-ts-mode-set-style 'k&r)
-  (electric-indent-local-mode 1))
-
-(add-hook 'c-ts-mode-hook #'gnix/c-ts-mode-setup)
-(add-hook 'c++-ts-mode-hook #'gnix/c-ts-mode-setup)
-
 ;; Align region
 (add-hook 'prog-mode-hook
 	  (lambda ()
@@ -275,8 +267,7 @@
   :demand t
   :custom
   (treesit-enabled-modes
-   '(c-ts-mode
-     c++-ts-mode
+   '(cmake-ts-mode
      bash-ts-mode
      elixir-ts-mode
      go-ts-mode
@@ -301,16 +292,29 @@
    (c-ts-mode . eglot-ensure)
    (c++-mode . eglot-ensure)
    (c++-ts-mode . eglot-ensure)
+   (cmake-mode . eglot-ensure)
+   (cmake-ts-mode . eglot-ensure)
+   (sh-mode . eglot-ensure)
+   (bash-ts-mode . eglot-ensure)
    (java-mode . eglot-ensure)
    (java-ts-mode . eglot-ensure)
    (rust-mode . eglot-ensure)
    (rust-ts-mode . eglot-ensure)
    (go-mode . eglot-ensure)
    (go-ts-mode . eglot-ensure)
+   (go-dot-mod-mode . eglot-ensure)
+   (go-mod-ts-mode . eglot-ensure)
    (elixir-mode . eglot-ensure)
    (elixir-ts-mode . eglot-ensure)
    (lua-mode . eglot-ensure)
-   (lua-ts-mode . eglot-ensure))
+   (lua-ts-mode . eglot-ensure)
+   (json-mode . eglot-ensure)
+   (json-ts-mode . eglot-ensure)
+   (yaml-mode . eglot-ensure)
+   (yaml-ts-mode . eglot-ensure)
+   (conf-toml-mode . eglot-ensure)
+   (heex-ts-mode . eglot-ensure)
+   (toml-ts-mode . eglot-ensure))
   :config
   (setq eglot-code-action-indications nil)
   (setq eglot-code-action-indicator nil)
@@ -333,7 +337,6 @@
   (setq markdown-fontify-code-blocks-natively t))
 (use-package yaml-mode)
 
-;; (Sane) Indentation defaults
 (add-to-list 'auto-mode-alist '("\\.clangd\\'" . yaml-mode))
 
 (dolist (hook '(yaml-mode-hook yaml-ts-mode-hook))
