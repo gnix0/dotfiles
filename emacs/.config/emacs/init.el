@@ -82,18 +82,9 @@
 ;;   :config
 ;;   (load-theme 'gruber-darker t))
 
-(use-package solarized-theme
-  :demand t
-  :config
-  (load-theme 'solarized-dark t))
-
-;; (add-to-list 'custom-theme-load-path
-;;              (expand-file-name "~/.config/emacs/themes/"))
-;; (load-theme 'nord t)
-
-;; (add-to-list 'custom-theme-load-path
-;;              "/home/gnix/developer/ashen-minimal-theme/")
-;; (load-theme 'ashen-minimal-hc t)
+(add-to-list 'custom-theme-load-path
+             "/home/gnix/developer/ashen-minimal-theme/")
+(load-theme 'ashen-minimal-hc t)
 
 ;; Dired
 (use-package dired-x
