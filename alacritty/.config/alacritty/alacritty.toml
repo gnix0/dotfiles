@@ -3,7 +3,7 @@ import = ["/home/gnix/dotfiles/alacritty/.config/alacritty/themes/catppuccin_mac
 
 [font]
 normal = { family = "Ioskeley Mono", style = "Light" }
-size = 17
+size = 15
 
 [window]
 opacity = 1
