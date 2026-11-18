@@ -81,16 +81,15 @@
 ;;   :demand t
 ;;   :config
 ;;   (load-theme 'gruber-darker t))
-(add-to-list 'custom-theme-load-path
-             (expand-file-name "~/.config/emacs/themes/"))
 
-(load-theme 'nord t)
+(use-package zenburn-theme
+  :demand t
+  :config
+  (load-theme 'zenburn t))
 
-;; (use-package catppuccin-theme
-;;   :demand t
-;;   :config
-;;   (setq catppuccin-flavor 'macchiato)
-;;   (load-theme 'catppuccin t))
+;; (add-to-list 'custom-theme-load-path
+;;              (expand-file-name "~/.config/emacs/themes/"))
+;; (load-theme 'nord t)
 
 ;; (add-to-list 'custom-theme-load-path
 ;;              "/home/gnix/developer/ashen-minimal-theme/")
