@@ -73,6 +73,7 @@
 (defalias 'yes-or-no-p 'y-or-n-p)
 
 ;; Font & Theme
+
 (set-face-attribute 'default nil
                     :font
                     "IBM Plex Mono Medium 15")
@@ -82,9 +83,14 @@
 ;;   :config
 ;;   (load-theme 'gruber-darker t))
 
-(add-to-list 'custom-theme-load-path
-             "/home/gnix/developer/ashen-minimal-theme/")
-(load-theme 'ashen-minimal-hc t)
+(use-package solarized-theme
+  :demand t
+  :config
+  (load-theme 'solarized-dark t))
+
+;; (add-to-list 'custom-theme-load-path
+;;              "/home/gnix/developer/ashen-minimal-theme/")
+;; (load-theme 'ashen-minimal-hc t)
 
 ;; Dired
 (use-package dired-x
