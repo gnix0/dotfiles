@@ -75,17 +75,17 @@
 ;; Font & Theme
 (set-face-attribute 'default nil
                     :font
-                    "Ioskeley Mono Light 15")
+                    "IBM Plex Mono Medium 15")
 
 ;; (use-package gruber-darker-theme
 ;;   :demand t
 ;;   :config
 ;;   (load-theme 'gruber-darker t))
 
-(use-package zenburn-theme
+(use-package solarized-theme
   :demand t
   :config
-  (load-theme 'zenburn t))
+  (load-theme 'solarized-dark t))
 
 ;; (add-to-list 'custom-theme-load-path
 ;;              (expand-file-name "~/.config/emacs/themes/"))

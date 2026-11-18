@@ -1,8 +1,8 @@
 [general]
-import = ["/home/gnix/dotfiles/alacritty/.config/alacritty/themes/zenburn.toml"]
+import = ["/home/gnix/dotfiles/alacritty/.config/alacritty/themes/solarized_dark.toml"]
 
 [font]
-normal = { family = "Ioskeley Mono", style = "Light" }
+normal = { family = "IBM Plex Mono", style = "Medium" }
 size = 15
 
 [window]
