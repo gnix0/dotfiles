@@ -7,3 +7,5 @@
 /emacs/.config/emacs/.mc-lists.el
 /emacs/.config/emacs/bookmarks.eld
 /emacs/.config/emacs/emacs-projects-list
+/emacs/.config/emacs/elpa/
+/emacs/.config/emacs/themes/

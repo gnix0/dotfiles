@@ -81,12 +81,16 @@
 ;;   :demand t
 ;;   :config
 ;;   (load-theme 'gruber-darker t))
+(add-to-list 'custom-theme-load-path
+             (expand-file-name "~/.config/emacs/themes/"))
 
-(use-package catppuccin-theme
-  :demand t
-  :config
-  (setq catppuccin-flavor 'macchiato)
-  (load-theme 'catppuccin t))
+(load-theme 'nord t)
+
+;; (use-package catppuccin-theme
+;;   :demand t
+;;   :config
+;;   (setq catppuccin-flavor 'macchiato)
+;;   (load-theme 'catppuccin t))
 
 ;; (add-to-list 'custom-theme-load-path
 ;;              "/home/gnix/developer/ashen-minimal-theme/")
@@ -321,6 +325,19 @@
   (add-hook 'eglot-managed-mode-hook
             (lambda ()
               (eglot-inlay-hints-mode -1)))
+
+  ;; Keep semantic-token change notifications buffer-local.
+  (defun gnix/eglot-semtok-hook ()
+    (remove-hook 'eglot--send-changes-hook
+                 #'eglot--semtok-after-send-changes)
+    (if eglot-semantic-tokens-mode
+        (add-hook 'eglot--send-changes-hook
+                  #'eglot--semtok-after-send-changes nil t)
+      (remove-hook 'eglot--send-changes-hook
+                   #'eglot--semtok-after-send-changes t)))
+
+  (add-hook 'eglot-semantic-tokens-mode-hook
+            #'gnix/eglot-semtok-hook)
 
   (dolist (type '(eglot-error eglot-warning eglot-note))
     (let ((control (get type 'flymake-overlay-control)))
