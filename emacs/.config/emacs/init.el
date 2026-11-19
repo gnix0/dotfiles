@@ -78,19 +78,15 @@
                     :font
                     "IBM Plex Mono Medium 15")
 
-;; (use-package gruber-darker-theme
-;;   :demand t
-;;   :config
-;;   (load-theme 'gruber-darker t))
-
 (use-package solarized-theme
   :demand t
   :config
   (load-theme 'solarized-dark t))
 
-;; (add-to-list 'custom-theme-load-path
-;;              "/home/gnix/developer/ashen-minimal-theme/")
-;; (load-theme 'ashen-minimal-hc t)
+;; (use-package zenburn-theme
+;;   :demand t
+;;   :config
+;;   (load-theme 'zenburn t))
 
 ;; Dired
 (use-package dired-x
