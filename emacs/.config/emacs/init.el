@@ -78,15 +78,11 @@
                     :font
                     "IBM Plex Mono Medium 15")
 
-(use-package solarized-theme
+(use-package catppuccin-theme
   :demand t
   :config
-  (load-theme 'solarized-dark t))
-
-;; (use-package zenburn-theme
-;;   :demand t
-;;   :config
-;;   (load-theme 'zenburn t))
+  (setq catppuccin-flavor 'frappe)
+  (load-theme 'catppuccin t))
 
 ;; Dired
 (use-package dired-x
