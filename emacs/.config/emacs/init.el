@@ -73,16 +73,14 @@
 (defalias 'yes-or-no-p 'y-or-n-p)
 
 ;; Font & Theme
-
 (set-face-attribute 'default nil
                     :font
-                    "IBM Plex Mono Medium 15")
+                    "IBM Plex Mono Medium 16")
 
-(use-package catppuccin-theme
+(use-package solarized-theme
   :demand t
   :config
-  (setq catppuccin-flavor 'frappe)
-  (load-theme 'catppuccin t))
+  (load-theme 'solarized-dark t))
 
 ;; Dired
 (use-package dired-x
@@ -134,7 +132,7 @@
 
 (use-package marginalia
   :bind (:map minibuffer-local-map
-	      ("M-A" . marginalia-cycle))
+	          ("M-A" . marginalia-cycle))
   :init
   (marginalia-mode)
   :custom
@@ -156,9 +154,9 @@
             (setq-local fill-column 72)))
 
 (use-package diff-hl
-  :hook ((prog-mode . diff-hl-mode)
-         (text-mode . diff-hl-mode)
-         (dired-mode . diff-hl-dired-mode)
+  :hook ((prog-mode          . diff-hl-mode)
+         (text-mode          . diff-hl-mode)
+         (dired-mode         . diff-hl-dired-mode)
          (magit-post-refresh . diff-hl-magit-post-refresh))
   :config
   (diff-hl-flydiff-mode)
@@ -228,7 +226,7 @@
   :demand t
   :config
   (setq keycast-mode-line-remove-tail-elements nil
-	keycast-mode-line-format "%2s%K  %C%R ")
+	    keycast-mode-line-format "%2s%K  %C%R ")
   (keycast-mode-line-mode 1))
 
 ;; C/C++: indent new lines and braces without rearranging existing code.
@@ -250,8 +248,8 @@
 
 ;; Align region
 (add-hook 'prog-mode-hook
-	  (lambda ()
-	    (local-set-key (kbd "C-c <tab>") #'align)))
+	      (lambda ()
+	        (local-set-key (kbd "C-c <tab>") #'align)))
 
 ;; Languages
 (use-package treesit
@@ -280,33 +278,33 @@
   :custom
   (flymake-show-diagnostics-at-end-of-line nil)
   :hook
-  ((c-mode . eglot-ensure)
-   (c-ts-mode . eglot-ensure)
-   (c++-mode . eglot-ensure)
-   (c++-ts-mode . eglot-ensure)
-   (cmake-mode . eglot-ensure)
-   (cmake-ts-mode . eglot-ensure)
-   (sh-mode . eglot-ensure)
-   (bash-ts-mode . eglot-ensure)
-   (java-mode . eglot-ensure)
-   (java-ts-mode . eglot-ensure)
-   (rust-mode . eglot-ensure)
-   (rust-ts-mode . eglot-ensure)
-   (go-mode . eglot-ensure)
-   (go-ts-mode . eglot-ensure)
+  ((c-mode          . eglot-ensure)
+   (c-ts-mode       . eglot-ensure)
+   (c++-mode        . eglot-ensure)
+   (c++-ts-mode     . eglot-ensure)
+   (cmake-mode      . eglot-ensure)
+   (cmake-ts-mode   . eglot-ensure)
+   (sh-mode         . eglot-ensure)
+   (bash-ts-mode    . eglot-ensure)
+   (java-mode       . eglot-ensure)
+   (java-ts-mode    . eglot-ensure)
+   (rust-mode       . eglot-ensure)
+   (rust-ts-mode    . eglot-ensure)
+   (go-mode         . eglot-ensure)
+   (go-ts-mode      . eglot-ensure)
    (go-dot-mod-mode . eglot-ensure)
-   (go-mod-ts-mode . eglot-ensure)
-   (elixir-mode . eglot-ensure)
-   (elixir-ts-mode . eglot-ensure)
-   (lua-mode . eglot-ensure)
-   (lua-ts-mode . eglot-ensure)
-   (json-mode . eglot-ensure)
-   (json-ts-mode . eglot-ensure)
-   (yaml-mode . eglot-ensure)
-   (yaml-ts-mode . eglot-ensure)
-   (conf-toml-mode . eglot-ensure)
-   (heex-ts-mode . eglot-ensure)
-   (toml-ts-mode . eglot-ensure))
+   (go-mod-ts-mode  . eglot-ensure)
+   (elixir-mode     . eglot-ensure)
+   (elixir-ts-mode  . eglot-ensure)
+   (lua-mode        . eglot-ensure)
+   (lua-ts-mode     . eglot-ensure)
+   (json-mode       . eglot-ensure)
+   (json-ts-mode    . eglot-ensure)
+   (yaml-mode       . eglot-ensure)
+   (yaml-ts-mode    . eglot-ensure)
+   (conf-toml-mode  . eglot-ensure)
+   (heex-ts-mode    . eglot-ensure)
+   (toml-ts-mode    . eglot-ensure))
   :config
   (setq eglot-code-action-indications nil)
   (setq eglot-code-action-indicator nil)
@@ -360,12 +358,11 @@
               (setq-local indent-tabs-mode t
                           tab-width 4))))
 
-(add-to-list 'auto-mode-alist '("\\.svd\\'" . nxml-mode))
-(add-to-list 'auto-mode-alist '("\\.ioc\\'" . conf-javaprop-mode))
+(add-to-list 'auto-mode-alist '("\\.svd\\'"         . nxml-mode))
+(add-to-list 'auto-mode-alist '("\\.ioc\\'"         . conf-javaprop-mode))
 (add-to-list 'auto-mode-alist '("/openocd\\.cfg\\'" . tcl-mode))
-
-(add-to-list 'auto-mode-alist '("CODEOWNERS\\'" . conf-mode))
-(add-to-list 'auto-mode-alist '("\\.env\\'" . conf-mode))
+(add-to-list 'auto-mode-alist '("CODEOWNERS\\'"     . conf-mode))
+(add-to-list 'auto-mode-alist '("\\.env\\'"         . conf-mode))
 
 ;; Diagnostics
 (global-set-key (kbd "C-c d") #'flymake-show-buffer-diagnostics)
@@ -387,24 +384,24 @@
 (use-package org
   :straight nil
   :hook
-  (org-mode . org-indent-mode)
-  (org-mode . visual-line-mode)
+  (org-mode       . org-indent-mode)
+  (org-mode       . visual-line-mode)
   :bind
-  (("C-c l" . org-store-link)
-   ("C-c a" . org-agenda)
-   ("C-c c" . org-capture))
+  (("C-c l"       . org-store-link)
+   ("C-c a"       . org-agenda)
+   ("C-c c"       . org-capture))
   :config
   (setq org-agenda-files '("~/org")
-	org-agenda-start-on-weekday 0
-	calendar-week-start-day 0
+	    org-agenda-start-on-weekday 0
+	    calendar-week-start-day 0
         org-agenda-use-time-grid nil
         org-log-done 'time
         org-return-follows-link t
         org-hide-emphasis-markers t
         org-agenda-prefix-format
         '((agenda . " %i %-12:c% s")
-          (todo . " %i %-12:c")
-          (tags . " %i %-12:c")
+          (todo   . " %i %-12:c")
+          (tags   . " %i %-12:c")
           (search . " %i %-12:c")))
 
   (defun gnix/org-clock-sum-string (minutes)
@@ -464,17 +461,14 @@
            entry (file+datetree "~/org/work-log.org")
            "* %?"
            :empty-lines 0)
-
           ("n" "Note"
            entry (file+function "~/org/notes.org" gnix/org-notes-date-heading)
            "*** %?"
            :empty-lines 0)
-
           ("t" "To-do"
            entry (file+headline "~/org/todos.org" "Tasks")
            "* TODO [#B] %?\n "
            :empty-lines 0)
-
           ("c" "Code To-Do"
            entry (file+headline "~/org/todos.org" "Code Related Tasks")
            "* TODO [#B] %?\n:Created: %T\n%i\n%a\nProposed Solution: "
@@ -486,41 +480,39 @@
 
   ;; TODO colors
   (setq org-todo-keyword-faces
-        '(("TODO" . (:foreground "GoldenRod" :weight bold))
-          ("PLANNING" . (:foreground "DeepPink" :weight bold))
+        '(("TODO"        . (:foreground "GoldenRod" :weight bold))
+          ("PLANNING"    . (:foreground "DeepPink" :weight bold))
           ("IN-PROGRESS" . (:foreground "Cyan" :weight bold))
-          ("VERIFYING" . (:foreground "DarkOrange" :weight bold))
-          ("BLOCKED" . (:foreground "Red" :weight bold))
-          ("DONE" . (:foreground "LimeGreen" :weight bold))
-          ("OBE" . (:foreground "LimeGreen" :weight bold))
-          ("WONT-DO" . (:foreground "LimeGreen" :weight bold))))
+          ("VERIFYING"   . (:foreground "DarkOrange" :weight bold))
+          ("BLOCKED"     . (:foreground "Red" :weight bold))
+          ("DONE"        . (:foreground "LimeGreen" :weight bold))
+          ("OBE"         . (:foreground "LimeGreen" :weight bold))
+          ("WONT-DO"     . (:foreground "LimeGreen" :weight bold))))
 
   (setq org-tag-alist
-      '(;; Area (choose one)
-        (:startgroup)
-        ("@embedded"    . ?e)
-        ("@programming" . ?p)
-        ("@electronics" . ?E)
-        ("@linux"       . ?l)
-        ("@math"        . ?m)
-        ("@physics"     . ?P)
-        ("@cs"          . ?s)
-        (:endgroup)
-
-        ;; Type
-        ("study"     . ?S)
-        ("read"      . ?r)
-        ("implement" . ?i)
-        ("bug"       . ?b)
-        ("feature"   . ?f)
-        ("research"  . ?R)
-        ("chore"     . ?c)
-        ("docs"      . ?d)
-        ("testing"   . ?t)
-
-        ;; Context
-        ("work"     . ?w)
-        ("personal" . ?x))))
+        '(;; Area (choose one)
+          (:startgroup)
+          ("@embedded"    . ?e)
+          ("@programming" . ?p)
+          ("@electronics" . ?E)
+          ("@linux"       . ?l)
+          ("@math"        . ?m)
+          ("@physics"     . ?P)
+          ("@cs"          . ?s)
+          (:endgroup)
+          ;; Type
+          ("study"        . ?S)
+          ("read"         . ?r)
+          ("implement"    . ?i)
+          ("bug"          . ?b)
+          ("feature"      . ?f)
+          ("research"     . ?R)
+          ("chore"        . ?c)
+          ("docs"         . ?d)
+          ("testing"      . ?t)
+          ;; Context
+          ("work"         . ?w)
+          ("personal"     . ?x))))
 
 (defun gnix/open-notes ()
   "Open personal notes in Org overview."
