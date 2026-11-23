@@ -205,8 +205,18 @@
     (add-to-list 'exec-path dir)
     (setenv "PATH" (concat dir ":" (getenv "PATH")))))
 
-;; Compilation (not project-wise like project.el does)
+;; Compilation bind & behavior
 (global-set-key (kbd "C-c x") #'compile)
+
+(defun gnix/compilation-read-command (_command)
+  (read-shell-command "Compile command: "
+                      (or (car compile-history) "")
+                      'compile-history))
+
+(with-eval-after-load 'compile
+  (advice-add 'compilation-read-command :override
+              #'gnix/compilation-read-command))
+
 
 ;; Colours instead of ANSI escapes on compilation
 (require 'ansi-color)
@@ -259,6 +269,8 @@
   (treesit-enabled-modes
    '(cmake-ts-mode
      bash-ts-mode
+     verilog-ts-mode
+     vhdl-ts-mode
      elixir-ts-mode
      go-ts-mode
      go-mod-ts-mode
@@ -286,6 +298,10 @@
    (cmake-ts-mode   . eglot-ensure)
    (sh-mode         . eglot-ensure)
    (bash-ts-mode    . eglot-ensure)
+   (verilog-mode    . eglot-ensure)
+   (verilog-ts-mode . eglot-ensure)
+   (vhdl-mode       . eglot-ensure)
+   (vhdl-ts-mode    . eglot-ensure)
    (java-mode       . eglot-ensure)
    (java-ts-mode    . eglot-ensure)
    (rust-mode       . eglot-ensure)
@@ -306,6 +322,12 @@
    (heex-ts-mode    . eglot-ensure)
    (toml-ts-mode    . eglot-ensure))
   :config
+  (add-to-list 'eglot-server-programs
+               '((verilog-mode verilog-ts-mode)
+                 . ("verible-verilog-ls" "--rules_config_search")))
+  (add-to-list 'eglot-server-programs
+               '((vhdl-mode vhdl-ts-mode)
+                 . ("vhdl_ls")))
   (setq eglot-code-action-indications nil)
   (setq eglot-code-action-indicator nil)
   (add-hook 'eglot-managed-mode-hook
@@ -363,6 +385,48 @@
 (add-to-list 'auto-mode-alist '("/openocd\\.cfg\\'" . tcl-mode))
 (add-to-list 'auto-mode-alist '("CODEOWNERS\\'"     . conf-mode))
 (add-to-list 'auto-mode-alist '("\\.env\\'"         . conf-mode))
+
+(use-package verilog-ts-mode
+  :mode (("\\.v\\'"   . verilog-ts-mode)
+         ("\\.vh\\'"  . verilog-ts-mode)
+         ("\\.sv\\'"  . verilog-ts-mode)
+         ("\\.svh\\'" . verilog-ts-mode))
+  :bind
+  (:map verilog-ts-mode-map
+        ("M-?" . xref-find-references))
+  :custom
+  (verilog-ts-linter-enable nil))
+
+(with-eval-after-load 'verilog-ts-mode
+  (setq verilog-auto-newline nil)
+  (dolist (key '(";" ":" "`"))
+    (keymap-set verilog-ts-mode-map key #'self-insert-command))
+  (keymap-set verilog-ts-mode-map "RET" #'newline))
+
+(add-hook 'verilog-ts-mode-hook
+          (lambda ()
+            (setq-local electric-indent-inhibit t)))
+
+(use-package vhdl-ts-mode
+  :mode (("\\.vhd\\'"  . vhdl-ts-mode)
+         ("\\.vhdl\\'" . vhdl-ts-mode))
+  :bind
+  (:map vhdl-ts-mode-map
+        ("TAB" . indent-according-to-mode)
+        ("RET" . newline)
+        ("M-TAB" . completion-at-point)
+        ("M-?" . xref-find-references))
+  :custom
+  (vhdl-ts-linter-enable nil)
+  :config
+  (dolist (key '("'" "," "-" "." ";" "SPC" "[" "]"))
+    (keymap-set vhdl-ts-mode-map key #'self-insert-command)))
+
+(add-hook 'vhdl-mode-hook
+          (lambda ()
+            (vhdl-electric-mode -1)
+            (vhdl-stutter-mode -1)
+            (setq-local electric-indent-inhibit t)))
 
 ;; Diagnostics
 (global-set-key (kbd "C-c d") #'flymake-show-buffer-diagnostics)
