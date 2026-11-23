@@ -1,9 +1,5 @@
 # Dotfiles
 
-For terminal-first development, run `fwdev` from `~/.local/bin` (Stow package
-`dev`). It prepares new/existing projects and reviewed direnv environments while
-leaving builds, target selection, flashing and debugging explicit.
-
 ## Keyboard Layout (Kinesis Advantage 360)
 
 ![kinesis layout](./assets/kinesis_layout.png)
