@@ -1,11 +1,16 @@
 ;; -*- lexical-binding: t; -*-
+
 (setq gc-cons-threshold most-positive-fixnum
       gc-cons-percentage 0.5)
+
 (add-hook 'emacs-startup-hook
-	  (lambda ()
-	    (setq gc-cons-threshold 800000)))
+          (lambda ()
+            (setq gc-cons-threshold 800000
+                  gc-cons-percentage 0.1)))
+
 (push '(menu-bar-lines . 0) default-frame-alist)
 (push '(tool-bar-lines . 0) default-frame-alist)
-(push '(vertical-scroll-bars) default-frame-alist)
-(setq package-enable-at-startup nil)
-(add-to-list 'warning-suppress-types '(files missing-lexbind-cookie))
+(push '(vertical-scroll-bars . nil) default-frame-alist)
+
+(add-to-list 'warning-suppress-types
+             '(files missing-lexbind-cookie))

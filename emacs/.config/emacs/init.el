@@ -16,22 +16,22 @@
 (setq use-file-dialog nil)
 (add-hook 'text-mode-hook #'visual-line-mode)
 (setq ring-bell-function #'ignore)
+(add-hook 'prog-mode-hook #'display-line-numbers-mode)
 
 ;; Disable auto-saving and backups
-(setq auto-save-default nil)
-(setq make-backup-files nil)
+(setq auto-save-default nil
+      make-backup-files nil
+      create-lockfiles nil)
+
+;; Keep Customize-generated settings separate
+(setq custom-file
+      (expand-file-name "custom.el" user-emacs-directory))
+
+(load custom-file 'noerror 'nomessage)
 
 ;; Column bar
 (setq-default fill-column 110)
 (add-hook 'prog-mode-hook #'display-fill-column-indicator-mode)
-
-;; Relative line numbers
-(defun gnix/relative-line-numbers ()
-  "Enable relative line numbers."
-  (interactive)
-  (display-line-numbers-mode)
-  (setq display-line-numbers 'relative))
-(add-hook 'prog-mode-hook #'gnix/relative-line-numbers)
 
 ;; Tabs
 (setq-default indent-tabs-mode nil
@@ -42,27 +42,17 @@
   (local-set-key (kbd "RET") #'newline-and-indent))
 (add-hook 'prog-mode-hook #'gnix/prog-newline-setup)
 
-;; straight.el as the package manager
-(defvar bootstrap-version)
-(let ((bootstrap-file
-       (expand-file-name
-        "straight/repos/straight.el/bootstrap.el"
-        (or (bound-and-true-p straight-base-dir)
-            user-emacs-directory)))
-      (bootstrap-version 7))
-  (unless (file-exists-p bootstrap-file)
-    (with-current-buffer
-        (url-retrieve-synchronously
-         "https://raw.githubusercontent.com/radian-software/straight.el/develop/install.el"
-         'silent 'inhibit-cookies)
-      (goto-char (point-max))
-      (eval-print-last-sexp)))
-  (load bootstrap-file nil 'nomessage))
+;; Package management
 
-;; Tidier specification and better performance
-(straight-use-package 'use-package)
-(setq straight-use-package-by-default t)
-(setq use-package-always-defer t)
+(require 'package)
+
+(add-to-list 'package-archives
+             '("melpa" . "https://melpa.org/packages/") t)
+
+(require 'use-package)
+
+(setq use-package-always-ensure t
+      use-package-always-defer t)
 
 ;; Remove default scratch message and 'C-h C-a' on start
 (setq initial-scratch-message nil)
@@ -70,21 +60,21 @@
   (message ""))
 
 ;; 'y' and 'n' for confirmation on dialogs
-(defalias 'yes-or-no-p 'y-or-n-p)
+(setq use-short-answers t)
 
 ;; Font & Theme
 (set-face-attribute 'default nil
                     :font
-                    "IBM Plex Mono Medium 16")
+                    "IBM Plex Mono 15")
 
-(use-package solarized-theme
+(use-package zenburn-theme
   :demand t
   :config
-  (load-theme 'solarized-dark t))
+  (load-theme 'zenburn t))
 
 ;; Dired
 (use-package dired-x
-  :straight nil
+  :ensure nil
   :demand t
   :custom
   (dired-listing-switches "-alh")
@@ -149,7 +139,7 @@
 
 (setq git-commit-summary-max-length 50)
 
-(add-hook 'git-commit-mode-hook
+(add-hook 'git-commit-setup-hook
           (lambda ()
             (setq-local fill-column 72)))
 
@@ -159,28 +149,27 @@
          (dired-mode         . diff-hl-dired-mode)
          (magit-post-refresh . diff-hl-magit-post-refresh))
   :config
-  (diff-hl-flydiff-mode)
-  (diff-hl-margin-mode))
+  (diff-hl-margin-mode 1))
 
 (use-package ediff
-  :straight nil
-  :defer t
+  :ensure nil
   :config
   (setq ediff-window-setup-function #'ediff-setup-windows-plain)
   (setq ediff-split-window-function #'split-window-horizontally))
 
 (use-package smerge-mode
-  :straight nil
+  :ensure nil
   :bind ("C-c e" . smerge-ediff)) ;; Visual conflict resolution; use M-x smerge-mode for simple cases
 
 ;; Built-in persistent state
 (global-auto-revert-mode 1)
 (recentf-mode 1)
 
+(global-set-key (kbd "C-c r") #'recentf-open-files)
+
 ;; Projects
 (use-package envrc
-  :init
-  (envrc-global-mode))
+  :hook (after-init . envrc-global-mode))
 
 (setq project-list-file "~/.config/emacs/emacs-projects-list"
       project-vc-extra-root-markers
@@ -194,10 +183,7 @@
         "go.mod"
         "mix.exs"))
 
-(use-package editorconfig
-  :demand t
-  :config
-  (editorconfig-mode 1))
+(editorconfig-mode 1)
 
 ;; Bins needed for go, rust, and elixir
 (dolist (dir '("~/.local/bin" "~/.cargo/bin" "~/go/bin"))
@@ -207,6 +193,7 @@
 
 ;; Compilation bind & behavior
 (global-set-key (kbd "C-c x") #'compile)
+(setq compilation-scroll-output 'first-error)
 
 (defun gnix/compilation-read-command (_command)
   (read-shell-command "Compile command: "
@@ -217,27 +204,13 @@
   (advice-add 'compilation-read-command :override
               #'gnix/compilation-read-command))
 
-
-;; Colours instead of ANSI escapes on compilation
-(require 'ansi-color)
-(defun gnix/colorize-compilation-buffer ()
-  (let ((inhibit-read-only t))
-    (ansi-color-apply-on-region compilation-filter-start (point))))
-(add-hook 'compilation-filter-hook #'gnix/colorize-compilation-buffer)
+(add-hook 'compilation-filter-hook #'ansi-color-compilation-filter)
 
 ;; Remove trailing whitespace when saving source files
 (defun gnix/delete-trailing-whitespace-on-save ()
   (add-hook 'before-save-hook #'delete-trailing-whitespace nil t))
 
 (add-hook 'prog-mode-hook #'gnix/delete-trailing-whitespace-on-save)
-
-;; Keycast
-(use-package keycast
-  :demand t
-  :config
-  (setq keycast-mode-line-remove-tail-elements nil
-	    keycast-mode-line-format "%2s%K  %C%R ")
-  (keycast-mode-line-mode 1))
 
 ;; C/C++: indent new lines and braces without rearranging existing code.
 (defun gnix/c-mode-setup ()
@@ -263,14 +236,12 @@
 
 ;; Languages
 (use-package treesit
-  :straight nil
+  :ensure nil
   :demand t
   :custom
   (treesit-enabled-modes
    '(cmake-ts-mode
      bash-ts-mode
-     verilog-ts-mode
-     vhdl-ts-mode
      elixir-ts-mode
      go-ts-mode
      go-mod-ts-mode
@@ -280,47 +251,29 @@
      rust-ts-mode
      toml-ts-mode
      yaml-ts-mode))
-  (treesit-auto-install-grammar 'ask)
-  :config
-  (add-to-list 'auto-mode-alist
-               '("\\.[hl]?eex\\'" . heex-ts-mode)))
+  (treesit-auto-install-grammar 'ask))
 
 ;; Language Server Protocol
 (use-package eglot
+  :ensure nil
   :custom
   (flymake-show-diagnostics-at-end-of-line nil)
   :hook
-  ((c-mode          . eglot-ensure)
-   (c-ts-mode       . eglot-ensure)
-   (c++-mode        . eglot-ensure)
-   (c++-ts-mode     . eglot-ensure)
-   (cmake-mode      . eglot-ensure)
-   (cmake-ts-mode   . eglot-ensure)
-   (sh-mode         . eglot-ensure)
-   (bash-ts-mode    . eglot-ensure)
-   (verilog-mode    . eglot-ensure)
-   (verilog-ts-mode . eglot-ensure)
-   (vhdl-mode       . eglot-ensure)
-   (vhdl-ts-mode    . eglot-ensure)
-   (java-mode       . eglot-ensure)
-   (java-ts-mode    . eglot-ensure)
-   (rust-mode       . eglot-ensure)
-   (rust-ts-mode    . eglot-ensure)
-   (go-mode         . eglot-ensure)
-   (go-ts-mode      . eglot-ensure)
-   (go-dot-mod-mode . eglot-ensure)
-   (go-mod-ts-mode  . eglot-ensure)
-   (elixir-mode     . eglot-ensure)
-   (elixir-ts-mode  . eglot-ensure)
-   (lua-mode        . eglot-ensure)
-   (lua-ts-mode     . eglot-ensure)
-   (json-mode       . eglot-ensure)
-   (json-ts-mode    . eglot-ensure)
-   (yaml-mode       . eglot-ensure)
-   (yaml-ts-mode    . eglot-ensure)
-   (conf-toml-mode  . eglot-ensure)
-   (heex-ts-mode    . eglot-ensure)
-   (toml-ts-mode    . eglot-ensure))
+  ((c-mode
+    c++-mode
+    cmake-ts-mode
+    bash-ts-mode
+    verilog-ts-mode
+    vhdl-ts-mode
+    java-ts-mode
+    rust-ts-mode
+    go-ts-mode
+    go-mod-ts-mode
+    elixir-ts-mode
+    lua-ts-mode
+    json-ts-mode
+    yaml-ts-mode
+    toml-ts-mode) . eglot-ensure)
   :config
   (add-to-list 'eglot-server-programs
                '((verilog-mode verilog-ts-mode)
@@ -353,38 +306,26 @@
             (alist-get 'before-string control) "")
       (put type 'flymake-overlay-control control))))
 
-(use-package elixir-mode)
-(use-package go-mode)
-(use-package rust-mode)
-(use-package lua-mode)
-(use-package markdown-mode
-  :config
-  (setq markdown-fontify-code-blocks-natively t))
-(use-package yaml-mode)
-
-(add-to-list 'auto-mode-alist '("\\.clangd\\'" . yaml-mode))
-
-(dolist (hook '(yaml-mode-hook yaml-ts-mode-hook))
-  (add-hook hook
-            (lambda ()
-              (setq-local indent-tabs-mode nil
-                          yaml-indent-offset 2))))
+(add-to-list 'auto-mode-alist '("\\.clangd\\'" . yaml-ts-mode))
 
 (add-hook 'makefile-mode-hook
           (lambda ()
             (setq-local indent-tabs-mode t)))
 
-(dolist (hook '(go-mode-hook go-ts-mode-hook))
-  (add-hook hook
-            (lambda ()
-              (setq-local indent-tabs-mode t
-                          tab-width 4))))
+(add-hook 'go-ts-mode-hook
+          (lambda ()
+            (setq-local indent-tabs-mode t
+                        tab-width 4)))
 
 (add-to-list 'auto-mode-alist '("\\.svd\\'"         . nxml-mode))
 (add-to-list 'auto-mode-alist '("\\.ioc\\'"         . conf-javaprop-mode))
 (add-to-list 'auto-mode-alist '("/openocd\\.cfg\\'" . tcl-mode))
 (add-to-list 'auto-mode-alist '("CODEOWNERS\\'"     . conf-mode))
 (add-to-list 'auto-mode-alist '("\\.env\\'"         . conf-mode))
+
+(use-package markdown-mode
+  :config
+  (setq markdown-fontify-code-blocks-natively t))
 
 (use-package verilog-ts-mode
   :mode (("\\.v\\'"   . verilog-ts-mode)
@@ -400,8 +341,7 @@
 (with-eval-after-load 'verilog-ts-mode
   (setq verilog-auto-newline nil)
   (dolist (key '(";" ":" "`"))
-    (keymap-set verilog-ts-mode-map key #'self-insert-command))
-  (keymap-set verilog-ts-mode-map "RET" #'newline))
+    (keymap-set verilog-ts-mode-map key #'self-insert-command)))
 
 (add-hook 'verilog-ts-mode-hook
           (lambda ()
@@ -413,7 +353,6 @@
   :bind
   (:map vhdl-ts-mode-map
         ("TAB" . indent-according-to-mode)
-        ("RET" . newline)
         ("M-TAB" . completion-at-point)
         ("M-?" . xref-find-references))
   :custom
@@ -446,10 +385,9 @@
 
 ;; Org-mode
 (use-package org
-  :straight nil
+  :ensure nil
   :hook
   (org-mode       . org-indent-mode)
-  (org-mode       . visual-line-mode)
   :bind
   (("C-c l"       . org-store-link)
    ("C-c a"       . org-agenda)
@@ -601,5 +539,3 @@
   :after pdf-tools
   :hook
   (pdf-view-mode . pdf-view-restore-mode))
-
-(setq enable-local-variables :all)

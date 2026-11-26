@@ -1,5 +1,4 @@
 /emacs/.config/emacs/eln-cache/
-/emacs/.config/emacs/straight/
 /emacs/.config/emacs/auto-save-list/
 /emacs/.config/emacs/transient/
 /emacs/.config/emacs/tree-sitter/
@@ -9,3 +8,5 @@
 /emacs/.config/emacs/emacs-projects-list
 /emacs/.config/emacs/elpa/
 /emacs/.config/emacs/themes/
+/emacs/.config/emacs/tramp
+/emacs/.config/emacs/custom.el
