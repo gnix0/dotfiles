@@ -67,10 +67,10 @@
                     :font
                     "IBM Plex Mono 15")
 
-(use-package zenburn-theme
+(use-package kanagawa-themes
   :demand t
   :config
-  (load-theme 'zenburn t))
+  (load-theme 'kanagawa-wave t))
 
 ;; Dired
 (use-package dired-x
